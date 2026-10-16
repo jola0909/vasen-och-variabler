@@ -4,6 +4,13 @@ Ett matematikäventyr för årskurs 7, 8 och 9, på svenska. Mörkskogen, fjäll
 
 **Spela här: https://jola0909.github.io/vasen-och-variabler/**
 
+## Två utseenden
+
+Spelet finns i två versioner med samma spelmotor, samma frågor och samma sparade progress:
+
+- **Klassisk** (`index.html`): nordisk folksaga med norrsken och skogssilhuetter.
+- **Arena** (`arena/index.html`): esportskänsla med neon, vinklade paneler och rangsystemet Brons–Legend. Väsendena har tuffare namn som Sköldmön, Ratatosk, Kraken och Fenrisvalpen. Svitar ger rop som *I farten!* och *Ostoppbar!*, och träffar ger gnistor och skakningar.
+
 Spelet är en enda HTML-fil utan beroenden. Du kan också öppna `index.html` direkt i en webbläsare.
 
 ## Spelet
@@ -34,7 +41,7 @@ Framstegen sparas i webbläsarens `localStorage`. När spelet körs som Claude-a
 
 Källkoden ligger i `src/`:
 
-- `src/head.html` – titel, stilar och sidans grundstruktur
+- `src/themes/klassisk.html` och `src/themes/arena.html` – titel, stilar, sidans grundstruktur och temats namn och texter (`window.THEME`)
 - `src/gen.js` – frågegeneratorerna för alla 26 områden
 - `src/game.js` – spelmotorn: strider, våg, kast, väsen, kistor, uppdrag och sparning
 
@@ -48,4 +55,4 @@ npm test
 npm run build
 ```
 
-`npm test` slumpar fram 31 200 frågor och kontrollerar att alla har fyra unika alternativ, rätt svar bland dem och ett skrivsvar som går att tolka. `npm run build` slår ihop källfilerna till `index.html` och `dist/vasen-och-variabler.html`.
+`npm test` slumpar fram 31 200 frågor och kontrollerar att alla har fyra unika alternativ, rätt svar bland dem och ett skrivsvar som går att tolka. `npm run build` slår ihop källfilerna till `index.html`, `arena/index.html` och motsvarande filer i `dist/`.

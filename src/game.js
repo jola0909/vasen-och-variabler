@@ -41,6 +41,11 @@ const V = [
   { id: 'lindorm', n: 'Lindormen', e: '🐉', r: 'l', lore: 'Den fullvuxna draken. Bara de modigaste öppnar kistan där den sover.', fx: l => ({ dmg: .25 + .05 * l, crit: .25 + .1 * l }) }
 ];
 const VB = Object.fromEntries(V.map(v => [v.id, v]));
+/* Tema: en skin kan byta namn, bilder, texter, ljud och effekter (window.THEME sätts i temats head-fil) */
+const TH = window.THEME || {};
+const tx = (k, d) => (TH.text && TH.text[k] !== undefined ? TH.text[k] : d);
+if (TH.vasen) for (const id in TH.vasen) if (VB[id]) Object.assign(VB[id], TH.vasen[id]);
+const BRAND = TH.brand || 'Väsen <span>&amp;</span> Variabler';
 const STARTERS = ['tomte', 'pyssling', 'ekorre'];
 function fxText(fx) {
   const pc = v => Math.round(v * 100) + ' %';
@@ -108,6 +113,12 @@ const WORLDS = [
       { n: 'Forsen', t: 'boss', topics: ['linje', 'fun', 'ekvsys', 'rot', 'tiop', 'proc3', 'sann2', 'kvad', 'likf'], d: 3 }
     ] }
 ];
+if (TH.worlds) TH.worlds.forEach((o, i) => {
+  if (!o) return;
+  const { levelNames, ...rest } = o;
+  Object.assign(WORLDS[i], rest);
+  if (levelNames) levelNames.forEach((n, j) => { if (n) WORLDS[i].levels[j].n = n; });
+});
 const lvlKey = (w, i) => `${w}-${i}`;
 
 /* ===== Kistor ===== */
@@ -153,8 +164,9 @@ const ACH = [
   { id: 'd7', ic: '📅', n: 'Trogen', d: 'Spela 7 dagar i rad', test: s => s.login.best >= 7 },
   { id: 'master', ic: '🥇', n: 'Guldfärdighet', d: 'Nå guldnivå i en färdighet', test: s => Object.keys(s.mastery).some(t => masteryMedal(s, t) === 3) }
 ];
-const TITLES = [[1, 'Lärling'], [3, 'Runläsare'], [5, 'Talväktare'], [8, 'Ekvationsjägare'], [12, 'Runmästare'], [16, 'Väsenviskare'], [20, 'Matemagiker']];
+const TITLES = TH.titles || [[1, 'Lärling'], [3, 'Runläsare'], [5, 'Talväktare'], [8, 'Ekvationsjägare'], [12, 'Runmästare'], [16, 'Väsenviskare'], [20, 'Matemagiker']];
 const titleFor = l => TITLES.filter(t => l >= t[0]).pop()[1];
+const tierFor = l => TITLES.filter(t => l >= t[0]).length - 1;
 const xpFor = l => 60 + l * 40;
 const teamSlots = () => (S.level >= 6 ? 3 : S.level >= 3 ? 2 : 1);
 
@@ -231,16 +243,19 @@ const SFX = {
     try {
       this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)();
       const c = this.ctx;
-      const seq = { right: [[660, .07], [990, .12]], wrong: [[220, .16], [160, .24]], hit: [[180, .08]], coin: [[988, .05], [1319, .12]], chest: [[523, .09], [659, .09], [784, .09], [1047, .32]],
+      const seq = { right: [[660, .07], [990, .12]], wrong: [[220, .16], [160, .24]], hit: TH.sfx === 'arena' ? [[140, .16]] : [[180, .08]], coin: [[988, .05], [1319, .12]], chest: [[523, .09], [659, .09], [784, .09], [1047, .32]],
         win: [[523, .11], [659, .11], [784, .11], [1047, .45]], lose: [[392, .2], [330, .2], [262, .4]], click: [[620, .03]], star: [[1175, .08], [1568, .14]], shot: [[880, .05], [440, .1]] }[kind];
       if (!seq) return;
       let t = c.currentTime;
       for (const [f, d] of seq) {
         const o = c.createOscillator(), g = c.createGain();
-        o.type = kind === 'wrong' || kind === 'lose' ? 'sawtooth' : 'triangle';
+        const bad = kind === 'wrong' || kind === 'lose';
+        const arena = TH.sfx === 'arena';
+        o.type = bad ? 'sawtooth' : arena ? (kind === 'hit' ? 'sine' : 'square') : 'triangle';
         o.frequency.value = f;
+        if (arena && kind === 'hit') o.frequency.exponentialRampToValueAtTime(38, t + d);
         g.gain.setValueAtTime(.0001, t);
-        g.gain.exponentialRampToValueAtTime(kind === 'wrong' ? .07 : .13, t + .01);
+        g.gain.exponentialRampToValueAtTime(arena ? (kind === 'hit' ? .35 : bad ? .07 : .06) : (kind === 'wrong' ? .07 : .13), t + .01);
         g.gain.exponentialRampToValueAtTime(.0001, t + d);
         o.connect(g).connect(c.destination);
         o.start(t); o.stop(t + d + .03);
@@ -256,6 +271,25 @@ function toast(html, ms = 3200) {
   el.className = 'toast'; el.innerHTML = html;
   $('#toasts').appendChild(el);
   setTimeout(() => el.remove(), ms);
+}
+function callout(text, cls = '') {
+  const el = document.createElement('div');
+  el.className = 'callout ' + cls; el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+function burst(x, y, n = 12) {
+  if (reduceMotion || !TH.juice) return;
+  for (let i = 0; i < n; i++) {
+    const sp = document.createElement('i');
+    const a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 70;
+    sp.className = 'spark';
+    sp.style.left = x + 'px'; sp.style.top = y + 'px';
+    sp.style.setProperty('--dx', Math.cos(a) * r + 'px');
+    sp.style.setProperty('--dy', Math.sin(a) * r + 'px');
+    document.body.appendChild(sp);
+    setTimeout(() => sp.remove(), 700);
+  }
 }
 function banner(text, sub = '') {
   const el = document.createElement('div');
@@ -325,7 +359,7 @@ function addXP(n) {
     else if (S.level % 3 === 0) { S.chests.tra++; extra = ' + Träkista'; }
     ups.push(S.level);
     setTimeout(() => {
-      banner(`Nivå ${S.level}!`, titleFor(S.level));
+      banner(`${tx('levelUp', 'Nivå')} ${S.level}!`, titleFor(S.level));
       SFX.play('win');
       toast(`<b>Ny nivå ${S.level}</b> · +${g} guld${extra}${S.level === 3 || S.level === 6 ? '<br>En ny plats i ditt lag har öppnats!' : ''}${S.level === 2 ? '<br>Runtornet är upplåst!' : ''}`, 5000);
     }, 600);
@@ -448,12 +482,12 @@ function render() {
 function go(screen, arg) { stopTimer(); G.screen = screen; G.arg = arg; render(); window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); }
 function renderTop() {
   const top = $('#top');
-  if (!S) { top.innerHTML = `<span class="brand">Väsen <span>&amp;</span> Variabler</span>`; return; }
+  if (!S) { top.innerHTML = `<span class="brand">${BRAND}</span>`; return; }
   const pct = Math.round(S.xp / xpFor(S.level) * 100);
   top.innerHTML = `
-    <button class="brand" data-act="hub" aria-label="Till byn">Väsen <span>&amp;</span> Variabler</button>
+    <button class="brand" data-act="hub" aria-label="Till byn">${BRAND}</button>
     <div class="stats">
-      <div class="lvlchip" title="${S.xp} / ${xpFor(S.level)} XP"><span class="badge">${S.level}</span><div><small>${esc(titleFor(S.level))}</small><div class="xp"><i style="width:${pct}%"></i></div></div></div>
+      <div class="lvlchip" title="${S.xp} / ${xpFor(S.level)} XP"><span class="badge" data-tier="${tierFor(S.level)}">${S.level}</span><div><small>${esc(titleFor(S.level))}</small><div class="xp"><i style="width:${pct}%"></i></div></div></div>
       <span class="chip gold" title="Guld">🪙 <b>${S.gold}</b></span>
       <span class="chip star" title="Stjärnor">★ <b>${totalStars(S)}</b></span>
       <button class="iconbtn" data-act="sound" aria-label="${S.sound ? 'Stäng av ljud' : 'Slå på ljud'}">${S.sound ? '🔊' : '🔇'}</button>
@@ -470,9 +504,9 @@ SCREENS.setup = () => {
   const st = G.setup;
   return `<section class="stack">
     <div class="hero">
-      <div class="eyebrow">Ett matteäventyr för åk 7–9</div>
-      <h1>Väsen <span>&amp;</span> Variabler</h1>
-      <p>Mörkskogen, fjällen och Dimsjön har tagits över av vilda väsen. Med matematik som magi besegrar du dem, löser trollens vågar och samlar väsen från den nordiska folktron till ditt lag.</p>
+      <div class="eyebrow">${tx('heroEyebrow', 'Ett matteäventyr för åk 7–9')}</div>
+      <h1>${BRAND}</h1>
+      <p>${tx('heroText', 'Mörkskogen, fjällen och Dimsjön har tagits över av vilda väsen. Med matematik som magi besegrar du dem, löser trollens vågar och samlar väsen från den nordiska folktron till ditt lag.')}</p>
     </div>
     <div class="panel stack">
       <div><label class="eyebrow" for="pname">Vad heter du?</label>
@@ -528,7 +562,7 @@ SCREENS.hub = () => {
           <p class="muted" style="font-size:12px;margin:8px 0 0">Klara alla tre för en extra Träkista. Nya uppdrag varje dag. 🔥 ${S.login.streak} ${S.login.streak === 1 ? 'dag' : 'dagar'} i rad.</p>
         </div>
         <div class="panel stack" style="gap:10px">
-          <div class="screenhead"><h3>Ditt lag</h3><button class="btn small ghost" data-act="vasen">Byt väsen</button></div>
+          <div class="screenhead"><h3>${tx('team', 'Ditt lag')}</h3><button class="btn small ghost" data-act="vasen">Byt väsen</button></div>
           <div class="teamrow">${team}</div>
           <p class="muted" style="margin:0;font-size:13px">${fxText(teamFx()) || 'Välj väsen till laget i Väsenboken.'}</p>
         </div>
@@ -593,7 +627,7 @@ function startLevel(w, i) {
   if (L.t === 'balance') return startBalance(w, i);
   if (L.t === 'cannon') return startCannon(w, i);
   const boss = L.t === 'boss';
-  const foe = boss ? { n: W.boss.n, e: W.boss.e } : L.elite ? { n: foeFor(W, i).n + 'flocken', e: foeFor(W, i).e } : foeFor(W, i);
+  const foe = boss ? { n: W.boss.n, e: W.boss.e } : L.elite ? { n: L.n, e: W.foes[0][1] } : foeFor(W, i);
   startBattle({ kind: 'level', w, i, topics: L.topics, d: L.d, boss, elite: !!L.elite, foe, hp: boss ? 330 : L.elite ? 160 : 110 });
 }
 function makeFighter() {
@@ -709,8 +743,9 @@ async function answer(idx, timeout = false, typed) {
     await bolt(idx !== null ? btns[idx] : $('#wans'), $('#face'), wrote ? '✸' : '✦');
     SFX.play('hit');
     const face = $('#face');
-    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, (crit ? 'BLIXT! ' : '') + dmg, crit); }
+    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, (crit ? tx('crit', 'BLIXT! ') : '') + dmg, crit); burst(r.left + r.width / 2, r.top + r.height / 2, crit ? 18 : 10); if (crit && TH.juice) { shake($('#foe')); face.classList.add('crit'); setTimeout(() => face.classList.remove('crit'), 300); } }
     b.hp -= dmg;
+    if (TH.announce && TH.announce[b.streak]) callout(TH.announce[b.streak], 'streak');
     if (b.fx.healEvery && b.streak % b.fx.healEvery === 0 && b.hearts < b.maxHearts) { b.hearts++; toast('💚 Ditt väsen läkte ett hjärta!'); }
     updateHUD();
     if (b.boss) {
@@ -828,7 +863,7 @@ SCREENS.result = () => {
   const hasNext = r.win && r.i + 1 < W.levels.length;
   return `<section class="result">
     <div class="eyebrow">${W.n} · ${esc(W.levels[r.i].n)}</div>
-    <h1>${r.win ? (r.bossFirst ? `${W.boss.n} är besegrad!` : 'Seger!') : 'Du föll i striden'}</h1>
+    <h1>${r.win ? (r.bossFirst ? `${W.boss.n} är besegrad!` : tx('win', 'Seger!')) : tx('lose', 'Du föll i striden')}</h1>
     ${r.win ? `<div class="bigstars">${[0, 1, 2].map(k => `<span class="${k < r.stars ? 'on' : ''}" style="animation-delay:${.25 + k * .26}s">★</span>`).join('')}</div>` : `<p class="muted" style="max-width:46ch;margin:0">Varje fel är en ledtråd till vad du ska öva på. Du behåller guld och XP för dina rätta svar.</p>`}
     <div class="rewards">
       <div class="reward"><b>+${r.gold}</b><small>guld</small></div>
@@ -836,6 +871,7 @@ SCREENS.result = () => {
       <div class="reward"><b>${r.correct} / ${r.answered}</b><small>${r.label || 'rätt svar'}</small></div>
       ${r.best !== undefined && r.best !== null ? `<div class="reward"><b>${r.best}</b><small>bästa combo</small></div>` : ''}
     </div>
+    ${TH.rankOnResult ? `<div class="rankbar"><span class="badge" data-tier="${tierFor(S.level)}">${S.level}</span><div><b>${esc(titleFor(S.level))}</b><small>${S.xp} / ${xpFor(S.level)} XP till nästa nivå</small><div class="xp"><i style="width:${Math.round(S.xp / xpFor(S.level) * 100)}%"></i></div></div></div>` : ''}
     ${r.win && !r.prev ? '<p class="muted" style="margin:0">Första gången du klarar nivån: +40 guld extra.</p>' : ''}
     ${r.win && r.stars < 3 ? `<p class="muted" style="margin:0">${r.label ? 'Färre missar ger fler stjärnor.' : '90 % rätt ger tre stjärnor, 75 % ger två.'}</p>` : ''}
     ${r.unlocks.map(u => { const v = VB[u.id]; return `<div class="card c-${v.r} l" style="width:min(260px,80vw)"><span class="tag">NYTT VÄSEN</span><span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="rar">${RAR[v.r]}</span><span class="ab">${fxText(v.fx(1))}</span></div>
@@ -1166,7 +1202,7 @@ SCREENS.vasen = () => {
   return `<section class="stack">
     <button class="back" data-act="hub">← Byn</button>
     <div class="screenhead"><div><div class="eyebrow">${ownedCount(S)} av ${V.length} väsen</div><h2>Väsenboken</h2></div></div>
-    <div class="panel stack" style="gap:10px"><b>Ditt lag</b>
+    <div class="panel stack" style="gap:10px"><b>${tx('team', 'Ditt lag')}</b>
       <div class="slots">${[0, 1, 2].map(i => {
         if (i >= slots) return `<div class="slot">🔒<br>Låses upp på nivå ${i === 1 ? 3 : 6}</div>`;
         const id = S.team[i]; if (!id) return `<div class="slot">Tom plats<br>Välj ett väsen nedan</div>`;
@@ -1414,6 +1450,19 @@ ACT.ans = a => { if (G.screen === 'practice') return practiceAnswer(Number(a)); 
 /* ===== Bakgrund ===== */
 function drawBackdrop() {
   const sv = $('#forestsvg');
+  if (sv && TH.backdrop === 'peaks') {
+    // taggiga fjälltoppar i två lager + glödande gnistor som stiger
+    let s = '';
+    [['#0d1424', 120, 14], ['#070a12', 80, 9]].forEach(([col, hMax, steps]) => {
+      let pts = '0,160', x = 0;
+      while (x < 1200) { x += 40 + Math.random() * 70; pts += ` ${x},${160 - (hMax * .35 + Math.random() * hMax * .65)}`; x += 30 + Math.random() * 50; pts += ` ${x},${160 - Math.random() * steps * 3}`; }
+      s += `<polygon fill="${col}" points="${pts} 1200,160"/>`;
+    });
+    sv.innerHTML = s;
+    const sb = $('#starsbg');
+    if (sb && !reduceMotion) sb.innerHTML = Array.from({ length: 26 }, () => `<i class="ember" style="left:${Math.random() * 100}%;animation-duration:${7 + Math.random() * 9}s;animation-delay:${-Math.random() * 14}s;--drift:${(Math.random() - .5) * 120}px"></i>`).join('');
+    return;
+  }
   if (sv) {
     let s = '';
     for (let layer = 0; layer < 2; layer++) {
