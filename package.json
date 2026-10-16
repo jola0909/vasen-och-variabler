@@ -1,0 +1,11 @@
+{
+  "name": "vasen-och-variabler",
+  "version": "1.0.0",
+  "description": "Ett matematikäventyr för åk 7–9 med nordiska väsen att samla.",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "test": "node tests/test-gen.js"
+  },
+  "license": "UNLICENSED"
+}

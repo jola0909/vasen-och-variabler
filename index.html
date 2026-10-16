@@ -1,0 +1,2579 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Väsen &amp; Variabler</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Ett matematikäventyr för åk 7–9 med nordiska väsen att samla.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700;800&family=Lexend:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: en spelskärm i taget, centrerad kolumn (max 980px) under en fast toppbar; nordisk natt med norrsken. */
+:root {
+  --night: #0c1618;
+  --pine: #13252a;
+  --pine2: #1a3238;
+  --pine3: #234046;
+  --line: #2d4c50;
+  --birch: #ece6d6;
+  --mute: #9db2ac;
+  --aurora: #5fe3b3;
+  --aurora-ink: #072a1f;
+  --frost: #7cc7ff;
+  --ember: #f3b54a;
+  --berry: #ec5670;
+  --heath: #b48cff;
+  --r-c: #a9b8b2;
+  --r-r: #6fb8ff;
+  --r-e: #b48cff;
+  --r-l: #f3b54a;
+  --display: "Grenze Gotisch", "Palatino Linotype", Georgia, serif;
+  --body: "Lexend", "Segoe UI", system-ui, sans-serif;
+  --radius: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--birch);
+  background:
+    radial-gradient(120% 60% at 15% -10%, rgba(95, 227, 179, .16), transparent 60%),
+    radial-gradient(90% 50% at 95% -5%, rgba(124, 199, 255, .12), transparent 55%),
+    radial-gradient(80% 40% at 60% 0%, rgba(180, 140, 255, .08), transparent 60%),
+    var(--night);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--frost); outline-offset: 2px; }
+.forest { position: fixed; inset: auto 0 0 0; height: 160px; pointer-events: none; z-index: 0; opacity: .55; }
+.forest svg { width: 100%; height: 100%; display: block; }
+.stars-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+#app { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 120px; }
+
+/* ---------- Toppbar ---------- */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; gap: 12px; padding-block: 10px; margin-bottom: 14px; background: linear-gradient(var(--night) 70%, rgba(12, 22, 24, 0)); flex-wrap: wrap; }
+.brand { background: none; border: 0; padding: 0; font-family: var(--display); font-size: 28px; font-weight: 800; letter-spacing: .5px; color: var(--birch); line-height: 1; }
+.brand span { color: var(--aurora); }
+.stats { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: var(--pine); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chip.gold b { color: var(--ember); }
+.chip.star b { color: var(--ember); }
+.lvlchip { display: flex; align-items: center; gap: 8px; background: var(--pine); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px 3px 4px; }
+.lvlchip .badge { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--aurora); color: var(--aurora-ink); font-weight: 700; font-size: 14px; }
+.lvlchip .xp { width: 74px; height: 6px; background: var(--pine3); border-radius: 4px; overflow: hidden; }
+.lvlchip .xp i { display: block; height: 100%; background: linear-gradient(90deg, var(--aurora), var(--frost)); }
+.lvlchip small { color: var(--mute); font-size: 11px; letter-spacing: .3px; display: block; line-height: 1.1; }
+.iconbtn { background: var(--pine); border: 1px solid var(--line); border-radius: 50%; width: 34px; height: 34px; display: grid; place-items: center; padding: 0; font-size: 15px; }
+.cloud { font-size: 12px; color: var(--mute); }
+
+/* ---------- Typografi & knappar ---------- */
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: .3px; text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(34px, 7vw, 52px); }
+h2 { font-size: clamp(26px, 5vw, 34px); }
+h3 { font-size: 22px; }
+.eyebrow { text-transform: uppercase; letter-spacing: 1.6px; font-size: 11px; color: var(--mute); font-weight: 600; }
+.muted { color: var(--mute); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 12px; padding: 12px 20px; font-weight: 600; background: var(--pine3); color: var(--birch); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .25); transition: transform .08s, filter .15s; }
+.btn:hover { filter: brightness(1.12); }
+.btn:active { transform: translateY(2px); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25); }
+.btn.primary { background: var(--aurora); color: var(--aurora-ink); }
+.btn.gold { background: var(--ember); color: #2e1d00; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); box-shadow: none; }
+.btn.small { padding: 7px 12px; font-size: 13px; border-radius: 10px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; filter: none; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.panel { background: rgba(19, 37, 42, .86); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; backdrop-filter: blur(4px); }
+.stack { display: grid; gap: 16px; }
+.back { background: none; border: 0; color: var(--mute); padding: 4px 0; font-weight: 600; justify-self: start; }
+.back:hover { color: var(--birch); }
+.screenhead { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+
+/* ---------- Start / setup ---------- */
+.hero { text-align: center; padding-block: 24px 8px; }
+.hero h1 span { color: var(--aurora); }
+.hero p { max-width: 54ch; margin: 10px auto 0; color: var(--mute); }
+.grades { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grade { border: 2px solid var(--line); background: var(--pine); border-radius: 14px; padding: 14px 8px; text-align: center; }
+.grade b { display: block; font-family: var(--display); font-size: 30px; }
+.grade.sel { border-color: var(--aurora); background: var(--pine2); box-shadow: 0 0 0 4px rgba(95, 227, 179, .15); }
+.field { width: 100%; background: var(--night); border: 1px solid var(--line); color: var(--birch); border-radius: 10px; padding: 12px 14px; font: inherit; font-size: 16px; }
+.starters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+/* ---------- Hub ---------- */
+.hubgrid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+.continue { position: relative; overflow: hidden; display: grid; gap: 8px; padding: 22px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(135deg, rgba(95, 227, 179, .18), rgba(124, 199, 255, .06) 60%), var(--pine); }
+.continue .big { position: absolute; right: 14px; bottom: -10px; font-size: 110px; opacity: .9; filter: drop-shadow(0 8px 20px rgba(0, 0, 0, .5)); }
+.continue h2 { max-width: 14ch; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tile { position: relative; background: var(--pine); border: 1px solid var(--line); border-radius: 14px; padding: 14px 10px; text-align: center; display: grid; gap: 4px; justify-items: center; transition: transform .1s, border-color .15s; }
+.tile:hover { transform: translateY(-2px); border-color: var(--aurora); }
+.tile .ic { font-size: 30px; line-height: 1; }
+.tile b { font-weight: 600; font-size: 14px; }
+.tile small { color: var(--mute); font-size: 11px; line-height: 1.2; }
+.tile.locked { opacity: .5; }
+.dot { position: absolute; top: 6px; right: 8px; min-width: 20px; height: 20px; border-radius: 10px; background: var(--berry); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; padding: 0 5px; }
+.quest { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+.quest:first-of-type { border-top: 0; }
+.quest .bar { grid-column: 1 / -1; height: 6px; background: var(--pine3); border-radius: 4px; overflow: hidden; }
+.quest .bar i { display: block; height: 100%; background: var(--ember); }
+.quest.done .bar i { background: var(--aurora); }
+.teamrow { display: flex; gap: 8px; }
+.mini { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; font-size: 26px; background: var(--pine2); border: 2px solid var(--line); }
+.mini.empty { color: var(--mute); font-size: 14px; border-style: dashed; }
+
+/* ---------- Karta ---------- */
+.wtabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.wtab { border: 1px solid var(--line); background: var(--pine); border-radius: 999px; padding: 8px 14px; font-weight: 600; }
+.wtab.sel { background: var(--birch); color: var(--night); }
+.wtab.locked { opacity: .5; }
+.worldhead { border-radius: 18px; padding: 18px; border: 1px solid var(--line); display: grid; gap: 6px; }
+.map { position: relative; margin: 6px auto 0; max-width: 520px; }
+.map svg.path { position: absolute; inset: 0; width: 100%; height: 100%; }
+.node { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; background: none; border: 0; padding: 0; }
+.node .disc { width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font-size: 28px; background: var(--pine2); border: 3px solid var(--line); box-shadow: 0 6px 0 rgba(0, 0, 0, .35); transition: transform .12s; }
+.node:hover .disc { transform: scale(1.07); }
+.node.open .disc { border-color: var(--aurora); }
+.node.next .disc { animation: pulse 1.6s infinite; }
+.node.boss .disc { width: 78px; height: 78px; font-size: 38px; border-color: var(--ember); }
+.node.locked .disc { filter: grayscale(1) brightness(.6); }
+.node .nm { font-size: 12px; font-weight: 600; background: rgba(12, 22, 24, .85); padding: 1px 8px; border-radius: 8px; white-space: nowrap; }
+.node .st { font-size: 13px; letter-spacing: 1px; color: var(--ember); line-height: 1; }
+.node .st .off { color: var(--pine3); }
+@keyframes pulse { 0%, 100% { box-shadow: 0 6px 0 rgba(0, 0, 0, .35), 0 0 0 0 rgba(95, 227, 179, .55); } 50% { box-shadow: 0 6px 0 rgba(0, 0, 0, .35), 0 0 0 12px rgba(95, 227, 179, 0); } }
+.milestones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ms { background: var(--pine); border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; font-size: 13px; display: grid; gap: 4px; justify-items: center; }
+.ms .ic { font-size: 24px; }
+.ms.claimable { border-color: var(--ember); box-shadow: 0 0 0 3px rgba(243, 181, 74, .2); }
+.ms.claimed { opacity: .5; }
+
+/* ---------- Strid ---------- */
+.arena { display: grid; gap: 12px; }
+.foe { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--line); background: radial-gradient(120% 140% at 0% 50%, rgba(236, 86, 112, .14), transparent 60%), var(--pine); }
+.foe .face { font-size: 72px; line-height: 1; width: 92px; text-align: center; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .55)); animation: bob 2.4s ease-in-out infinite; }
+.foe.boss .face { font-size: 92px; width: 110px; }
+.foe .face.hit { animation: hit .35s; }
+.foe .face.lunge { animation: lunge .4s; }
+.foe .face.dead { animation: die .7s forwards; }
+@keyframes bob { 50% { transform: translateY(-6px); } }
+@keyframes hit { 20% { transform: translateX(10px) rotate(6deg); filter: brightness(2) drop-shadow(0 0 12px #fff); } 60% { transform: translateX(-6px); } }
+@keyframes lunge { 40% { transform: translateY(14px) scale(1.18); } }
+@keyframes die { to { transform: scale(.2) rotate(40deg); opacity: 0; } }
+.hpbar { height: 14px; background: var(--night); border-radius: 8px; overflow: hidden; border: 1px solid var(--line); position: relative; }
+.hpbar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--berry), #ff8a6a); transition: width .35s; }
+.hpbar .ghost { background: rgba(255, 255, 255, .35); transition: width .9s .25s; }
+.phases { display: flex; gap: 4px; }
+.phases span { width: 10px; height: 10px; border-radius: 50%; background: var(--pine3); }
+.phases span.on { background: var(--ember); }
+.me { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; }
+.hearts { font-size: 22px; letter-spacing: 2px; line-height: 1; white-space: nowrap; }
+.hearts .lost { filter: grayscale(1); opacity: .3; }
+.hearts .sh { font-size: 18px; }
+.combo { font-weight: 700; color: var(--ember); font-variant-numeric: tabular-nums; min-width: 92px; }
+.combo.hot { text-shadow: 0 0 12px rgba(243, 181, 74, .8); }
+.timer { height: 8px; border-radius: 6px; background: var(--pine3); overflow: hidden; }
+.timer i { display: block; height: 100%; background: var(--aurora); width: 100%; }
+.timer i.warn { background: var(--ember); }
+.timer i.crit { background: var(--berry); }
+.qcard { background: var(--birch); color: #13252a; border-radius: 18px; padding: 18px 20px; display: grid; gap: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, .35); }
+.qcard .topic { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #4e6a64; display: flex; justify-content: space-between; gap: 8px; }
+.qtext { font-size: clamp(19px, 3.6vw, 26px); font-weight: 600; line-height: 1.35; text-wrap: balance; }
+.qtext.long { font-size: clamp(16px, 2.8vw, 20px); }
+.fig { max-width: 100%; height: auto; justify-self: center; }
+.fig .shape { fill: rgba(95, 227, 179, .25); stroke: #13252a; stroke-width: 2; }
+.fig .shape.s2 { fill: rgba(95, 227, 179, .4); }
+.fig .shape.s3 { fill: rgba(95, 227, 179, .55); }
+.fig .ra { fill: none; stroke: #13252a; stroke-width: 1.5; }
+.fig .dash, .fig .edge { stroke: #13252a; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.fig .edge { stroke-dasharray: none; stroke-width: 2; }
+.fig .dot { fill: #13252a; }
+.fig text { font: 600 13px var(--body); fill: #13252a; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.05; font-size: .82em; margin: 0 .1em; }
+.fr i { font-style: normal; padding: 0 .15em; }
+.fr i:first-child { border-bottom: 2px solid currentColor; }
+.sys { display: inline-grid; gap: 2px; border-left: 3px solid currentColor; padding-left: 10px; margin-top: 6px; font-size: .95em; }
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ans { min-height: 64px; border-radius: 14px; border: 2px solid var(--line); background: var(--pine2); font-size: clamp(16px, 3.2vw, 21px); font-weight: 600; padding: 10px; box-shadow: 0 5px 0 rgba(0, 0, 0, .35); transition: transform .08s, border-color .12s; }
+.ans:hover { border-color: var(--aurora); }
+.ans:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+.ans.right { background: var(--aurora); color: var(--aurora-ink); border-color: var(--aurora); }
+.ans.wrong { background: var(--berry); color: #fff; border-color: var(--berry); }
+.ans.gone { opacity: .2; pointer-events: none; }
+.ans kbd { font: 600 11px var(--body); color: var(--mute); display: block; }
+.writebox { display: flex; gap: 10px; }
+.writebox .field { font-size: 22px; font-weight: 600; text-align: center; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+.toggle { border: 1px dashed var(--ember); background: rgba(243, 181, 74, .08); color: var(--ember); border-radius: 10px; padding: 7px 12px; font-weight: 600; font-size: 13px; }
+.toggle.on { background: var(--ember); color: #2e1d00; border-style: solid; }
+.explain { background: var(--pine); border: 1px solid var(--line); border-left: 4px solid var(--berry); border-radius: 14px; padding: 16px 18px; display: grid; gap: 8px; }
+.explain.good { border-left-color: var(--aurora); }
+.explain ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.explain .right { font-size: 20px; font-weight: 700; color: var(--aurora); }
+.float { position: fixed; pointer-events: none; z-index: 60; font-weight: 800; font-size: 30px; color: var(--ember); text-shadow: 0 3px 0 rgba(0, 0, 0, .6); animation: floatUp 1.1s forwards; }
+.float.crit { color: #fff; font-size: 38px; }
+@keyframes floatUp { 0% { transform: translate(-50%, 0) scale(.6); opacity: 0; } 15% { transform: translate(-50%, -10px) scale(1.15); opacity: 1; } 100% { transform: translate(-50%, -80px) scale(1); opacity: 0; } }
+.bolt { position: fixed; z-index: 55; pointer-events: none; font-size: 28px; transition: transform .38s cubic-bezier(.4, .1, .6, 1), opacity .38s; filter: drop-shadow(0 0 10px var(--aurora)); }
+.shake { animation: shake .4s; }
+@keyframes shake { 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(4px); } }
+.flash { position: fixed; inset: 0; pointer-events: none; z-index: 50; background: rgba(236, 86, 112, .25); animation: fade .45s forwards; }
+@keyframes fade { to { opacity: 0; } }
+.banner { position: fixed; left: 50%; top: 38%; transform: translate(-50%, -50%); z-index: 70; pointer-events: none; text-align: center; font-family: var(--display); font-size: clamp(34px, 8vw, 64px); font-weight: 800; color: var(--ember); text-shadow: 0 4px 0 rgba(0, 0, 0, .6), 0 0 30px rgba(243, 181, 74, .5); animation: bannerIn 1.8s forwards; white-space: nowrap; }
+.banner small { display: block; font-family: var(--body); font-size: 16px; color: var(--birch); font-weight: 600; text-shadow: 0 2px 0 rgba(0, 0, 0, .6); }
+@keyframes bannerIn { 0% { transform: translate(-50%, -50%) scale(.4); opacity: 0; } 15% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; } 75% { opacity: 1; } 100% { transform: translate(-50%, -60%) scale(1); opacity: 0; } }
+
+/* ---------- Våg ---------- */
+.scale { position: relative; height: 210px; margin-top: 4px; }
+.scale .post { position: absolute; left: 50%; bottom: 0; width: 14px; height: 150px; transform: translateX(-50%); background: linear-gradient(var(--ember), #a8762a); border-radius: 6px 6px 0 0; }
+.scale .base { position: absolute; left: 50%; bottom: 0; width: 140px; height: 16px; transform: translateX(-50%); background: #a8762a; border-radius: 8px 8px 0 0; }
+.scale .beam { position: absolute; left: 6%; right: 6%; top: 52px; height: 10px; background: var(--ember); border-radius: 6px; transition: transform .5s cubic-bezier(.3, 1.6, .5, 1); }
+.scale .pan { position: absolute; top: 62px; width: 42%; display: grid; justify-items: center; }
+.scale .pan.l { left: 0; }
+.scale .pan.r { right: 0; }
+.scale .pan .rope { width: 60%; height: 28px; border-left: 2px solid var(--mute); border-right: 2px solid var(--mute); }
+.scale .pan .dish { min-width: 80%; padding: 10px 10px 14px; background: var(--pine2); border: 2px solid var(--ember); border-radius: 0 0 50% 50% / 0 0 40% 40%; text-align: center; font-size: clamp(20px, 4.4vw, 30px); font-weight: 700; }
+.scale .pan.bump .dish { animation: bump .4s; }
+@keyframes bump { 40% { transform: translateY(8px); } }
+.ops { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.op { min-width: 74px; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--pine2); font-size: 18px; font-weight: 700; box-shadow: 0 4px 0 rgba(0, 0, 0, .35); }
+.op:hover { border-color: var(--ember); }
+.steps { display: grid; gap: 2px; font-variant-numeric: tabular-nums; color: var(--mute); font-size: 15px; }
+.steps div b { color: var(--birch); font-weight: 600; }
+.steps .opl { color: var(--ember); font-size: 13px; margin-left: 10px; }
+
+/* ---------- Kast (koordinatsystem) ---------- */
+.cannon { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; align-items: start; }
+.cannon canvas { width: 100%; height: auto; aspect-ratio: 1; max-width: 100%; background: var(--pine); border: 1px solid var(--line); border-radius: 16px; display: block; }
+.aim { display: grid; gap: 10px; }
+.stepper { display: grid; grid-template-columns: auto 48px 1fr 48px; gap: 8px; align-items: center; }
+.stepper label { font-weight: 700; font-size: 18px; min-width: 22px; }
+.stepper button { height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--pine2); font-size: 22px; font-weight: 700; }
+.stepper output { text-align: center; font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.formula { font-size: 24px; font-weight: 700; text-align: center; padding: 10px; border-radius: 12px; background: var(--night); border: 1px solid var(--line); }
+
+/* ---------- Väsen-kort ---------- */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.card { position: relative; border-radius: 16px; padding: 12px 12px 14px; background: linear-gradient(160deg, var(--pine2), var(--pine)); border: 2px solid var(--rc, var(--line)); display: grid; gap: 4px; justify-items: center; text-align: center; overflow: hidden; }
+.card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(100% 60% at 50% 0%, color-mix(in srgb, var(--rc) 30%, transparent), transparent 70%); pointer-events: none; }
+.card.l::after { content: ""; position: absolute; inset: -40%; background: conic-gradient(from 0deg, transparent, rgba(243, 181, 74, .25), transparent 30%); animation: spin 6s linear infinite; pointer-events: none; }
+@keyframes spin { to { transform: rotate(1turn); } }
+.card .em { font-size: 52px; line-height: 1.1; position: relative; z-index: 1; }
+.card .nm { font-weight: 700; position: relative; z-index: 1; }
+.card .rar { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--rc); font-weight: 700; position: relative; z-index: 1; }
+.card .ab { font-size: 12px; color: var(--mute); position: relative; z-index: 1; line-height: 1.3; }
+.card .lv { font-size: 12px; color: var(--ember); position: relative; z-index: 1; }
+.card .shard { width: 80%; height: 5px; background: var(--night); border-radius: 3px; overflow: hidden; position: relative; z-index: 1; }
+.card .shard i { display: block; height: 100%; background: var(--rc); }
+.card.unknown .em { filter: brightness(0) opacity(.5); }
+.card.unknown .nm { color: var(--mute); }
+.card.inteam { box-shadow: 0 0 0 3px var(--aurora); }
+.card .tag { position: absolute; top: 8px; right: 8px; z-index: 2; background: var(--aurora); color: var(--aurora-ink); font-size: 10px; font-weight: 700; border-radius: 6px; padding: 1px 6px; }
+.card button { position: relative; z-index: 1; margin-top: 4px; }
+.c-c { --rc: var(--r-c); } .c-r { --rc: var(--r-r); } .c-e { --rc: var(--r-e); } .c-l { --rc: var(--r-l); }
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.slot { border: 2px dashed var(--line); border-radius: 14px; min-height: 92px; display: grid; place-items: center; text-align: center; padding: 8px; color: var(--mute); font-size: 13px; }
+.slot.full { border-style: solid; border-color: var(--aurora); color: var(--birch); background: var(--pine); }
+.slot .em { font-size: 36px; }
+
+/* ---------- Kistor ---------- */
+.chests { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.chest { border-radius: 16px; padding: 16px 12px; text-align: center; background: var(--pine); border: 1px solid var(--line); display: grid; gap: 6px; justify-items: center; }
+.chest .ic { font-size: 54px; line-height: 1; }
+.chest .odds { font-size: 11px; color: var(--mute); line-height: 1.35; }
+.reveal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(6, 12, 13, .88); backdrop-filter: blur(6px); padding: 20px; }
+.reveal .box { font-size: 120px; line-height: 1; cursor: pointer; background: none; border: 0; animation: wobble 1.2s ease-in-out infinite; filter: drop-shadow(0 0 30px rgba(243, 181, 74, .45)); }
+.reveal .box.shake2 { animation: wobble .25s infinite; }
+@keyframes wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg) scale(1.03); } 75% { transform: rotate(6deg) scale(1.03); } }
+.reveal .card { width: min(280px, 80vw); padding: 26px 18px; animation: cardIn .7s cubic-bezier(.2, 1.4, .4, 1); }
+.reveal .card .em { font-size: 96px; }
+.reveal .card .nm { font-size: 22px; font-family: var(--display); }
+@keyframes cardIn { 0% { transform: rotateY(90deg) scale(.6); } 100% { transform: rotateY(0) scale(1); } }
+.rays { position: absolute; width: 520px; height: 520px; max-width: 120vw; max-height: 120vw; background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc, #f3b54a) 35%, transparent) 0 8deg, transparent 8deg 22deg); border-radius: 50%; mask: radial-gradient(circle, #000 20%, transparent 70%); -webkit-mask: radial-gradient(circle, #000 20%, transparent 70%); animation: spin 14s linear infinite; pointer-events: none; }
+.reveal .inner { position: relative; display: grid; gap: 14px; justify-items: center; text-align: center; }
+
+/* ---------- Resultat ---------- */
+.result { text-align: center; display: grid; gap: 14px; justify-items: center; padding-block: 10px; }
+.bigstars { font-size: 64px; letter-spacing: 6px; line-height: 1; }
+.bigstars span { display: inline-block; color: var(--pine3); }
+.bigstars span.on { color: var(--ember); animation: starPop .5s backwards; text-shadow: 0 0 24px rgba(243, 181, 74, .6); }
+@keyframes starPop { 0% { transform: scale(0) rotate(-90deg); } 70% { transform: scale(1.3); } }
+.rewards { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.reward { background: var(--pine); border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; min-width: 110px; display: grid; gap: 2px; }
+.reward b { font-size: 22px; color: var(--ember); font-variant-numeric: tabular-nums; }
+.reward small { color: var(--mute); }
+
+/* ---------- Medaljer & övning ---------- */
+.medals { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.medal { display: grid; grid-template-columns: 46px 1fr; gap: 10px; align-items: center; padding: 12px; border-radius: 14px; background: var(--pine); border: 1px solid var(--line); }
+.medal .ic { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; background: var(--pine3); filter: grayscale(1); opacity: .6; }
+.medal.on .ic { background: radial-gradient(circle at 35% 30%, #ffe2a3, var(--ember)); filter: none; opacity: 1; }
+.medal small { color: var(--mute); display: block; line-height: 1.3; }
+.topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.topicbtn { text-align: left; display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; padding: 12px; border-radius: 14px; background: var(--pine); border: 1px solid var(--line); }
+.topicbtn:hover { border-color: var(--aurora); }
+.topicbtn .ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--pine3); font-weight: 700; font-size: 15px; }
+.topicbtn small { color: var(--mute); display: block; font-size: 12px; }
+.mbar { height: 5px; border-radius: 3px; background: var(--pine3); overflow: hidden; margin-top: 4px; }
+.mbar i { display: block; height: 100%; background: var(--aurora); }
+.medalpip { font-size: 18px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { border: 0; background: var(--pine); padding: 7px 14px; font-weight: 600; }
+.seg button.sel { background: var(--birch); color: var(--night); }
+
+/* ---------- Toast & modal ---------- */
+#toasts { position: fixed; z-index: 90; top: calc(env(safe-area-inset-top, 0px) + 64px); right: max(12px, env(safe-area-inset-right, 0px)); display: grid; gap: 8px; width: min(320px, calc(100vw - 24px)); pointer-events: none; }
+.toast { background: var(--pine2); border: 1px solid var(--ember); border-radius: 12px; padding: 10px 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, .4); animation: toastIn .35s; font-size: 14px; }
+.toast b { color: var(--ember); }
+@keyframes toastIn { from { transform: translateY(-14px); opacity: 0; } }
+.modal { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; background: rgba(6, 12, 13, .8); padding: 20px; }
+.modal .panel { max-width: 440px; width: 100%; text-align: center; display: grid; gap: 12px; }
+.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.days span { border-radius: 8px; padding: 6px 0; font-size: 11px; background: var(--pine3); color: var(--mute); }
+.days span.on { background: var(--ember); color: #2e1d00; font-weight: 700; }
+.confetti { position: fixed; top: -12px; width: 9px; height: 14px; z-index: 75; pointer-events: none; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(105vh) rotate(720deg); } }
+
+@media (max-width: 760px) {
+  .hubgrid { grid-template-columns: 1fr; }
+  .cannon { grid-template-columns: 1fr; }
+  .continue .big { font-size: 80px; opacity: .5; }
+}
+@media (max-width: 480px) {
+  body { font-size: 14px; }
+  .brand { font-size: 23px; }
+  .lvlchip .xp { width: 48px; }
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .chests { grid-template-columns: 1fr; }
+  .ans { min-height: 56px; }
+  .foe .face { font-size: 56px; width: 64px; }
+  .foe.boss .face { font-size: 66px; width: 76px; }
+  .milestones { grid-template-columns: 1fr 1fr 1fr; }
+  .stats { gap: 6px; }
+  .chip { padding: 3px 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+<div class="stars-bg" id="starsbg" aria-hidden="true"></div>
+<div class="forest" aria-hidden="true"><svg viewBox="0 0 1200 160" preserveAspectRatio="none" id="forestsvg"></svg></div>
+<div id="app">
+  <header class="top" id="top"></header>
+  <main id="screen" aria-live="polite"></main>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+/* ===== Frågegeneratorer: Lgr22 matematik åk 7–9 ===== */
+const R = {
+  int(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); },
+  pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; },
+  nz(a, b) { let v; do { v = R.int(a, b); } while (v === 0); return v; },
+  shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; },
+  chance(p) { return Math.random() < p; }
+};
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; };
+const MINUS = '−';
+const round = (n, dec = 4) => { const f = Math.pow(10, dec); let r = Math.round(n * f) / f; if (Object.is(r, -0)) r = 0; return r; };
+
+/* Svenskt talformat: decimalkomma, riktigt minustecken, mellanslag i stora tal */
+function fmt(n, dec = 6) {
+  if (typeof n === 'string') return n;
+  const r = round(n, dec);
+  let s = Math.abs(r).toFixed(dec).replace(/0+$/, '').replace(/\.$/, '');
+  let [i, d] = s.split('.');
+  if (i.length > 4) i = i.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (r < 0 ? MINUS : '') + i + (d ? ',' + d : '');
+}
+const p = n => (n < 0 ? `(${fmt(n)})` : fmt(n));           // parentes runt negativa tal
+const sup = (b, e) => `${b}<sup>${typeof e === 'number' ? fmt(e) : e}</sup>`;
+function frac(n, d, simplify = true) {
+  if (typeof n === 'string' || typeof d === 'string') return `<span class="fr"><i>${n}</i><i>${d}</i></span>`;
+  if (simplify) { const g = gcd(n, d); n /= g; d /= g; }
+  if (d < 0) { n = -n; d = -d; }
+  if (d === 1) return fmt(n);
+  return (n < 0 ? MINUS : '') + `<span class="fr"><i>${Math.abs(n)}</i><i>${d}</i></span>`;
+}
+/* Linjärt uttryck ax + b */
+function lin(a, b, v = 'x') {
+  let s = '';
+  if (a !== 0) s = (a === 1 ? '' : a === -1 ? MINUS : fmt(a)) + v;
+  if (b !== 0) s += s ? (b > 0 ? ' + ' : ` ${MINUS} `) + fmt(Math.abs(b)) : fmt(b);
+  return s || '0';
+}
+function quad(a, b, c) { // ax² + bx + c
+  const parts = [];
+  if (a) parts.push([a, (Math.abs(a) === 1 ? '' : fmt(Math.abs(a))) + 'x<sup>2</sup>']);
+  if (b) parts.push([b, (Math.abs(b) === 1 ? '' : fmt(Math.abs(b))) + 'x']);
+  if (c) parts.push([c, fmt(Math.abs(c))]);
+  if (!parts.length) return '0';
+  return parts.map(([v, t], i) => (i === 0 ? (v < 0 ? MINUS : '') : (v < 0 ? ` ${MINUS} ` : ' + ')) + t).join('');
+}
+
+/* Bygger frågeobjekt. wrongs = felsvar (helst typiska missuppfattningar). */
+function mk({ q, ans, val = null, wrongs = [], expl = [], unit = '', fig = '', write = val !== null }) {
+  const show = v => (typeof v === 'number' ? fmt(v) + unit : v);
+  const a = show(ans);
+  // mall för utfyllnadssvar, t.ex. "x = §" eller "§ cm²"
+  const tpl = typeof ans === 'string' && val !== null && ans.split(fmt(val)).length === 2 ? ans.replace(fmt(val), '§') : null;
+  const fill = w => (tpl ? tpl.replace('§', fmt(w)) : show(w));
+  const seen = new Set([a]);
+  const seenVal = new Set(val !== null ? [round(val, 6)] : []);
+  const opts = [a];
+  for (const w of wrongs) {
+    if (w === null || w === undefined || (typeof w === 'number' && !isFinite(w))) continue;
+    const s = show(w);
+    if (seen.has(s)) continue;
+    if (typeof w === 'number' && seenVal.has(round(w, 6))) continue;
+    seen.add(s); if (typeof w === 'number') seenVal.add(round(w, 6));
+    opts.push(s);
+    if (opts.length === 4) break;
+  }
+  // fyll på med närliggande tal om det behövs
+  let guard = 0;
+  while (opts.length < 4 && typeof val === 'number' && guard++ < 60) {
+    const step = Number.isInteger(val) ? R.pick([1, 2, 3, 5, 10]) : R.pick([0.1, 0.5, 1, 2]);
+    const w = round(val + R.pick([-1, 1]) * step * R.int(1, 3), 4);
+    const s = fill(w);
+    if (seen.has(s)) continue;
+    seen.add(s); opts.push(s);
+  }
+  return { q, a, val, opts: R.shuffle(opts), expl, write: write && val !== null, fig };
+}
+
+/* ===== Små SVG-figurer ===== */
+const svgWrap = (w, h, inner) => `<svg class="fig" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${inner}</svg>`;
+const lab = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${t}</text>`;
+function figRect(a, b, u) { return svgWrap(200, 120, `<rect x="30" y="15" width="140" height="80" class="shape"/>${lab(100, 112, a + ' ' + u)}${lab(178, 60, b + ' ' + u, 'start')}`); }
+function figRightTri(a, b, c) { return svgWrap(240, 140, `<polygon points="70,110 200,110 70,20" class="shape"/><rect x="70" y="98" width="12" height="12" class="ra"/>${lab(135, 130, a)}${lab(62, 70, b, 'end')}${lab(145, 58, c, 'start')}`); }
+function figTri(b, h, u) { return svgWrap(210, 140, `<polygon points="25,110 185,110 120,20" class="shape"/><line x1="120" y1="20" x2="120" y2="110" class="dash"/>${lab(105, 130, b + ' ' + u)}${lab(126, 72, h + ' ' + u, 'start')}`); }
+function figTrap(a, b, h, u) { return svgWrap(220, 140, `<polygon points="20,110 200,110 150,30 60,30" class="shape"/><line x1="105" y1="30" x2="105" y2="110" class="dash"/>${lab(105, 22, a + ' ' + u)}${lab(105, 130, b + ' ' + u)}${lab(111, 75, h + ' ' + u, 'start')}`); }
+function figCircle(r, u, label = 'r') { return svgWrap(140, 130, `<circle cx="70" cy="62" r="50" class="shape"/><line x1="70" y1="62" x2="120" y2="62" class="dash"/><circle cx="70" cy="62" r="3" class="dot"/>${lab(95, 55, label + ' = ' + r + ' ' + u)}`); }
+function figBox(l, b, h, u) { return svgWrap(220, 140, `<polygon points="30,50 150,50 150,120 30,120" class="shape"/><polygon points="30,50 70,20 190,20 150,50" class="shape s2"/><polygon points="150,50 190,20 190,90 150,120" class="shape s3"/>${lab(90, 136, l + ' ' + u)}${lab(196, 60, h + ' ' + u, 'start')}${lab(178, 34, b + ' ' + u, 'start')}`); }
+function figCyl(r, h, u) { return svgWrap(170, 150, `<ellipse cx="70" cy="125" rx="50" ry="14" class="shape"/><rect x="20" y="30" width="100" height="95" class="shape s2" stroke="none"/><line x1="20" y1="30" x2="20" y2="125" class="edge"/><line x1="120" y1="30" x2="120" y2="125" class="edge"/><ellipse cx="70" cy="30" rx="50" ry="14" class="shape s3"/><line x1="70" y1="30" x2="120" y2="30" class="dash"/>${lab(95, 24, 'r = ' + r)}${lab(126, 82, 'h = ' + h + ' ' + u, 'start')}`); }
+
+/* ===== Ämnesregister ===== */
+const T = {};
+function topic(id, name, grade, icon, time, gen) { T[id] = { id, name, grade, icon, time, gen }; }
+
+/* ---------- ÅK 7 ---------- */
+topic('neg', 'Negativa tal', 7, '±', 20, d => {
+  if (d === 1) {
+    const a = R.nz(-12, 12), b = R.int(-12, -1);
+    if (R.chance(0.5)) {
+      const v = a + b;
+      return mk({ q: `${fmt(a)} + ${p(b)}`, ans: v, val: v, wrongs: [a - b, -v, Math.abs(a) + Math.abs(b)],
+        expl: [`Att lägga till ett negativt tal är samma sak som att dra bort: ${fmt(a)} ${MINUS} ${fmt(-b)}`, `= ${fmt(v)}`] });
+    }
+    const v = a - b;
+    return mk({ q: `${fmt(a)} ${MINUS} ${p(b)}`, ans: v, val: v, wrongs: [a + b, -v, -Math.abs(a) - Math.abs(b)],
+      expl: [`Minus minus blir plus: ${fmt(a)} + ${fmt(-b)}`, `= ${fmt(v)}`] });
+  }
+  if (d === 2) {
+    const a = R.pick([-1, 1]) * R.int(2, 9), b = R.nz(-9, 9);
+    if (R.chance(0.5)) {
+      const v = a * b;
+      return mk({ q: `${p(a)} · ${p(b)}`, ans: v, val: v, wrongs: [-v, a + b, -(Math.abs(a) + Math.abs(b))],
+        expl: [`Olika tecken ger negativt svar, lika tecken ger positivt.`, `${fmt(Math.abs(a))} · ${fmt(Math.abs(b))} = ${fmt(Math.abs(v))}`, `Svaret blir ${fmt(v)}`] });
+    }
+    const prod = a * b;
+    return mk({ q: `${p(prod)} / ${p(a)}`, ans: b, val: b, wrongs: [-b, prod - a, a],
+      expl: [`Division följer samma teckenregel som multiplikation.`, `${fmt(Math.abs(prod))} / ${fmt(Math.abs(a))} = ${fmt(Math.abs(b))}`, `Svaret blir ${fmt(b)}`] });
+  }
+  const a = R.int(2, 6), b = R.int(2, 6), c = R.int(2, 9);
+  if (R.chance(0.5)) {
+    const v = (-a) * (-b) - c;
+    return mk({ q: `${p(-a)} · ${p(-b)} ${MINUS} ${c}`, ans: v, val: v, wrongs: [-a * b - c, a * b + c, -(a * b) + c],
+      expl: [`Multiplikation först: ${p(-a)} · ${p(-b)} = ${a * b}`, `${a * b} ${MINUS} ${c} = ${fmt(v)}`] });
+  }
+  const v = a * a - 2 * (-b);
+  return mk({ q: `${p(-a)}<sup>2</sup> ${MINUS} 2 · ${p(-b)}`, ans: v, val: v, wrongs: [-a * a + 2 * b, a * a - 2 * b, -a * a - 2 * b],
+    expl: [`${p(-a)}<sup>2</sup> = ${p(-a)} · ${p(-a)} = ${a * a}`, `2 · ${p(-b)} = ${fmt(-2 * b)}`, `${a * a} ${MINUS} ${p(-2 * b)} = ${a * a} + ${2 * b} = ${fmt(v)}`] });
+});
+
+topic('prio', 'Prioriteringsregler', 7, '÷', 22, d => {
+  if (d === 1) {
+    const a = R.int(2, 15), b = R.int(2, 9), c = R.int(2, 9), v = a + b * c;
+    return mk({ q: `${a} + ${b} · ${c}`, ans: v, val: v, wrongs: [(a + b) * c, a + b + c, a * b + c],
+      expl: [`Multiplikation går före addition.`, `${b} · ${c} = ${b * c}`, `${a} + ${b * c} = ${v}`] });
+  }
+  if (d === 2) {
+    const a = R.int(2, 9), b = R.int(2, 9), c = R.int(2, 6), e = R.int(1, 9), v = (a + b) * c - e;
+    return mk({ q: `(${a} + ${b}) · ${c} ${MINUS} ${e}`, ans: v, val: v, wrongs: [a + b * c - e, (a + b) * (c - e), (a + b) * c + e],
+      expl: [`Parentesen först: ${a} + ${b} = ${a + b}`, `Sedan multiplikation: ${a + b} · ${c} = ${(a + b) * c}`, `Sist subtraktion: ${(a + b) * c} ${MINUS} ${e} = ${v}`] });
+  }
+  const a = R.int(10, 30), b = R.int(2, 5), c = R.int(2, 4), dd = R.int(2, 5), e = R.int(2, 6), f = dd * e;
+  const v = a - b * b * c + f / dd;
+  return mk({ q: `${a} ${MINUS} ${b}<sup>2</sup> · ${c} + ${f} / ${dd}`, ans: v, val: v,
+    wrongs: [(a - b * b) * c + f / dd, a - b * 2 * c + e, a - (b * c) * (b * c) + e, a - b * b * c - e],
+    expl: [`Potenser först: ${b}<sup>2</sup> = ${b * b}`, `Multiplikation och division: ${b * b} · ${c} = ${b * b * c} och ${f} / ${dd} = ${e}`, `Sist från vänster: ${a} ${MINUS} ${b * b * c} + ${e} = ${fmt(v)}`] });
+});
+
+topic('brak', 'Bråk', 7, '½', 25, d => {
+  if (d === 1) {
+    if (R.chance(0.5)) {
+      const n = R.int(1, 4), dn = R.int(n + 1, 7), k = R.int(2, 6);
+      if (gcd(n, dn) !== 1) return T.brak.gen(1);
+      const N = n * k, D = dn * k;
+      const half = gcd(N, D) > k ? null : (k % 2 === 0 ? frac(N / 2, D / 2, false) : null);
+      return mk({ q: `Förkorta så långt som möjligt: ${frac(N, D, false)}`, ans: frac(n, dn), val: n / dn, write: false,
+        wrongs: [half, frac(dn, n), frac(n + 1, dn + 1), frac(n, dn + 1), frac(N - n, D - dn, false)],
+        expl: [`Hitta största tal som delar både ${N} och ${D}: ${k}`, `${N} / ${k} = ${n} och ${D} / ${k} = ${dn}`, `Svar: ${frac(n, dn)}`] });
+    }
+    const dn = R.pick([2, 3, 4, 5, 6, 8, 10]), n = R.int(1, dn - 1), X = dn * R.int(2, 12), v = X / dn * n;
+    return mk({ q: `Hur mycket är ${frac(n, dn, false)} av ${X}?`, ans: v, val: v, wrongs: [X / dn, X * n, X - v, X / n],
+      expl: [`${frac(1, dn)} av ${X} är ${X} / ${dn} = ${X / dn}`, `${frac(n, dn, false)} är ${n} gånger så mycket: ${n} · ${X / dn} = ${v}`] });
+  }
+  if (d === 2) {
+    const b = R.pick([2, 3, 4, 5]), m = R.pick([2, 3]), dd = b * m;
+    const a = R.int(1, b - 1), c = R.int(1, dd - 1);
+    const num = a * m + c;
+    return mk({ q: `${frac(a, b, false)} + ${frac(c, dd, false)}`, ans: frac(num, dd), val: num / dd,
+      wrongs: [frac(a + c, b + dd), frac(a + c, dd), frac(a * c, b * dd), frac(num + 1, dd)],
+      expl: [`Gör nämnarna lika: ${frac(a, b, false)} = ${frac(a * m, dd, false)}`, `${frac(a * m, dd, false)} + ${frac(c, dd, false)} = ${frac(num, dd, false)}`, `Förkortat: ${frac(num, dd)}`] });
+  }
+  const a = R.int(1, 5), b = R.int(a + 1, 8), c = R.int(1, 5), dd = R.int(c + 1, 9);
+  if (R.chance(0.5)) {
+    return mk({ q: `${frac(a, b, false)} · ${frac(c, dd, false)}`, ans: frac(a * c, b * dd), val: a * c / (b * dd),
+      wrongs: [frac(a * dd, b * c), frac(a + c, b + dd), frac(a * c, b + dd), frac(a * c + 1, b * dd)],
+      expl: [`Täljare gånger täljare och nämnare gånger nämnare.`, `${frac(a + ' · ' + c, b + ' · ' + dd)} = ${frac(a * c, b * dd, false)}`, `Förkortat: ${frac(a * c, b * dd)}`] });
+  }
+  return mk({ q: `${frac(a, b, false)} / ${frac(c, dd, false)}`, ans: frac(a * dd, b * c), val: a * dd / (b * c),
+    wrongs: [frac(a * c, b * dd), frac(b * c, a * dd), frac(a + dd, b + c), frac(a * dd + 1, b * c)],
+    expl: [`Att dela med ett bråk är samma sak som att multiplicera med det inverterade bråket.`, `${frac(a, b, false)} · ${frac(dd, c, false)} = ${frac(a * dd, b * c, false)}`, `Förkortat: ${frac(a * dd, b * c)}`] });
+});
+
+topic('deci', 'Decimaltal', 7, ',', 20, d => {
+  if (d === 1) {
+    const x = R.int(12, 999) / R.pick([10, 100]), f = R.pick([10, 100, 1000]);
+    if (R.chance(0.5)) {
+      const v = round(x * f);
+      return mk({ q: `${fmt(x)} · ${fmt(f)}`, ans: v, val: v, wrongs: [x / f, x * f * 10, x * f / 10],
+        expl: [`Vid multiplikation med ${fmt(f)} flyttas decimaltecknet ${String(f).length - 1} steg åt höger.`, `${fmt(x)} · ${fmt(f)} = ${fmt(v)}`] });
+    }
+    const v = round(x / f, 6);
+    return mk({ q: `${fmt(x)} / ${fmt(f)}`, ans: v, val: v, wrongs: [x * f, v * 10, v / 10],
+      expl: [`Vid division med ${fmt(f)} flyttas decimaltecknet ${String(f).length - 1} steg åt vänster.`, `${fmt(x)} / ${fmt(f)} = ${fmt(v, 6)}`] });
+  }
+  if (d === 2) {
+    if (R.chance(0.5)) {
+      const a = R.int(2, 9), b = R.int(2, 9), v = round(a * b / 100);
+      return mk({ q: `0,${a} · 0,${b}`, ans: v, val: v, wrongs: [a * b / 10, a * b / 1000, (a + b) / 10],
+        expl: [`Räkna först ${a} · ${b} = ${a * b}`, `Faktorerna har tillsammans två decimaler, så svaret får två decimaler.`, `0,${a} · 0,${b} = ${fmt(v)}`] });
+    }
+    const x = round(R.int(1000, 9999) / 1000, 3), v = Math.round(x * 10) / 10;
+    if (Math.abs(x * 100 % 10 - 5) < 0.0001) return T.deci.gen(2);
+    return mk({ q: `Avrunda ${fmt(x)} till en decimal`, ans: v, val: v, wrongs: [Math.floor(x * 10) / 10 === v ? v + 0.1 : Math.floor(x * 10) / 10, Math.round(x * 100) / 100, Math.round(x)],
+      expl: [`Titta på andra decimalen: ${fmt(x)} har ${String(Math.floor(round(x * 100)) % 10)} där.`, `0–4 avrundas nedåt, 5–9 uppåt.`, `${fmt(x)} ≈ ${fmt(v)}`] });
+  }
+  const div = R.pick([0.5, 0.2, 0.25, 0.1]), x = R.int(2, 20) * (div === 0.25 ? 1 : 1), v = round(x / div);
+  return mk({ q: `${fmt(x)} / ${fmt(div)}`, ans: v, val: v, wrongs: [x * div, v / 10, v * 10],
+    expl: [`Hur många ${fmt(div)} får plats i ${fmt(x)}?`, `I 1 får ${fmt(1 / div)} st plats, alltså ${fmt(x)} · ${fmt(1 / div)} = ${fmt(v)}`] });
+});
+
+topic('proc1', 'Procent', 7, '%', 25, d => {
+  if (d === 1) {
+    const pc = R.pick([10, 25, 50, 20, 5, 75]), X = R.pick([20, 40, 60, 80, 120, 200, 240, 400, 360]);
+    const v = X * pc / 100;
+    if (!Number.isInteger(v)) return T.proc1.gen(1);
+    return mk({ q: `Hur mycket är ${pc} % av ${X} kr?`, ans: v, val: v, unit: ' kr', wrongs: [X / pc, X - v, v * 10, X * pc / 10],
+      expl: [`${pc} % = ${fmt(pc / 100)}`, `${fmt(pc / 100)} · ${X} = ${fmt(v)} kr`] });
+  }
+  if (d === 2) {
+    if (R.chance(0.5)) {
+      const b = R.pick([20, 25, 40, 50, 80, 200, 300]), pc = R.pick([5, 10, 15, 20, 25, 30, 40, 60, 75]);
+      const a = b * pc / 100;
+      if (!Number.isInteger(a)) return T.proc1.gen(2);
+      return mk({ q: `${a} elever av ${b} cyklar till skolan. Hur många procent är det?`, ans: pc, val: pc, unit: ' %', wrongs: [100 - pc, a, round(b / a, 1), pc / 10],
+        expl: [`Andelen är delen / det hela = ${a} / ${b}`, `${a} / ${b} = ${fmt(pc / 100)} = ${pc} %`] });
+    }
+    const pc = R.pick([12, 15, 35, 45, 8]), X = R.pick([20, 40, 60, 80, 200, 300, 500]), v = round(X * pc / 100);
+    return mk({ q: `Hur mycket är ${pc} % av ${X}?`, ans: v, val: v, wrongs: [X * pc / 10, X - v, v * 10, pc + X / 100],
+      expl: [`${pc} % = ${fmt(pc / 100)}`, `${fmt(pc / 100)} · ${X} = ${fmt(v)}`] });
+  }
+  if (R.chance(0.5)) {
+    const P = R.pick([200, 250, 400, 500, 640, 800, 1200]), r = R.pick([10, 20, 25, 30, 40]), v = P * (1 - r / 100);
+    return mk({ q: `En jacka kostar ${P} kr. Den säljs med ${r} % rabatt. Vad blir det nya priset?`, ans: v, val: v, unit: ' kr', wrongs: [P * r / 100, P * (1 + r / 100), P - r],
+      expl: [`Rabatten är ${r} % av ${P} = ${P * r / 100} kr`, `${P} ${MINUS} ${P * r / 100} = ${v} kr`, `Snabbare: ${P} · ${fmt(1 - r / 100)} = ${v} kr`] });
+  }
+  const dec = R.int(1, 99) / 100;
+  return mk({ q: `Skriv ${fmt(dec)} i procent`, ans: round(dec * 100), val: round(dec * 100), unit: ' %', wrongs: [dec * 10, dec, dec * 1000],
+    expl: [`1 = 100 %, så multiplicera med 100.`, `${fmt(dec)} · 100 = ${fmt(dec * 100)} %`] });
+});
+
+topic('ekv1', 'Ekvationer', 7, 'x', 25, d => {
+  const x = R.int(1, 12);
+  if (d === 1) {
+    if (R.chance(0.5)) {
+      const a = R.int(2, 20), b = x + a;
+      return mk({ q: `x + ${a} = ${b}`, ans: `x = ${x}`, val: x, wrongs: [`x = ${b + a}`, `x = ${a}`, `x = ${b}`, `x = ${x + 1}`],
+        expl: [`Dra bort ${a} från båda sidor.`, `x = ${b} ${MINUS} ${a} = ${x}`] });
+    }
+    const a = R.int(2, 9), b = a * x;
+    return mk({ q: `${a}x = ${b}`, ans: `x = ${x}`, val: x, wrongs: [`x = ${b - a}`, `x = ${b * a}`, `x = ${b + a}`, `x = ${x + 1}`],
+      expl: [`Dela båda sidor med ${a}.`, `x = ${b} / ${a} = ${x}`] });
+  }
+  if (d === 2) {
+    const a = R.int(2, 6), b = R.int(1, 15), c = a * x + b;
+    return mk({ q: `${a}x + ${b} = ${c}`, ans: `x = ${x}`, val: x, wrongs: [`x = ${fmt(round((c + b) / a, 2))}`, `x = ${c - b}`, `x = ${fmt(round(c / a - b, 2))}`, `x = ${x + 1}`],
+      expl: [`Dra bort ${b} från båda sidor: ${a}x = ${c - b}`, `Dela med ${a}: x = ${x}`] });
+  }
+  if (R.chance(0.5)) {
+    const xx = R.int(-8, 8) || 3, a = R.int(2, 6), b = R.int(1, 15), c = a * xx - b;
+    return mk({ q: `${a}x ${MINUS} ${b} = ${fmt(c)}`, ans: `x = ${fmt(xx)}`, val: xx, wrongs: [`x = ${fmt(round((c - b) / a, 2))}`, `x = ${fmt(-xx)}`, `x = ${fmt(c + b)}`, `x = ${fmt(xx + 1)}`],
+      expl: [`Lägg till ${b} på båda sidor: ${a}x = ${fmt(c + b)}`, `Dela med ${a}: x = ${fmt(xx)}`] });
+  }
+  const a = R.int(2, 5), b = R.int(1, 9), c = R.int(1, 6), xx = a * c;
+  return mk({ q: `${frac('x', a, false)} + ${b} = ${c + b}`, ans: `x = ${xx}`, val: xx, wrongs: [`x = ${c}`, `x = ${fmt(round(c / a, 2))}`, `x = ${(c + b) * a}`, `x = ${xx + a}`],
+    expl: [`Dra bort ${b}: ${frac('x', a, false)} = ${c}`, `Multiplicera med ${a}: x = ${xx}`] });
+});
+
+topic('geo1', 'Area & omkrets', 7, '▭', 30, d => {
+  const u = R.pick(['cm', 'm']);
+  if (d === 1) {
+    const a = R.int(3, 15), b = R.int(2, 12);
+    if (R.chance(0.5)) {
+      return mk({ q: `Vad är rektangelns area?`, fig: figRect(a, b, u), ans: `${a * b} ${u}<sup>2</sup>`, val: a * b,
+        wrongs: [`${2 * a + 2 * b} ${u}<sup>2</sup>`, `${a + b} ${u}<sup>2</sup>`, `${a * b} ${u}`, `${a * b * 2} ${u}<sup>2</sup>`],
+        expl: [`Area = basen · höjden`, `${a} · ${b} = ${a * b} ${u}<sup>2</sup>`] });
+    }
+    return mk({ q: `Vad är rektangelns omkrets?`, fig: figRect(a, b, u), ans: `${2 * a + 2 * b} ${u}`, val: 2 * a + 2 * b,
+      wrongs: [`${a * b} ${u}`, `${a + b} ${u}`, `${2 * a + b} ${u}`, `${2 * a + 2 * b + 2} ${u}`],
+      expl: [`Omkretsen är summan av alla sidor.`, `${a} + ${b} + ${a} + ${b} = ${2 * a + 2 * b} ${u}`] });
+  }
+  if (d === 2) {
+    const b = R.int(2, 14) * 2, h = R.int(3, 12);
+    return mk({ q: `Vad är triangelns area?`, fig: figTri(b, h, u), ans: `${b * h / 2} ${u}<sup>2</sup>`, val: b * h / 2,
+      wrongs: [`${b * h} ${u}<sup>2</sup>`, `${b + h} ${u}<sup>2</sup>`, `${b * h / 4} ${u}<sup>2</sup>`, `${(b + h) * 2} ${u}<sup>2</sup>`],
+      expl: [`Area = ${frac('basen · höjden', 2, false)}`, `${frac(b + ' · ' + h, 2, false)} = ${frac(b * h, 2, false)} = ${b * h / 2} ${u}<sup>2</sup>`] });
+  }
+  const a = R.int(2, 8), b = a + R.int(2, 8), h = R.int(1, 5) * 2;
+  return mk({ q: `Vad är parallelltrapetsets area?`, fig: figTrap(a, b, h, u), ans: `${(a + b) * h / 2} ${u}<sup>2</sup>`, val: (a + b) * h / 2,
+    wrongs: [`${(a + b) * h} ${u}<sup>2</sup>`, `${a * b * h / 2} ${u}<sup>2</sup>`, `${b * h} ${u}<sup>2</sup>`, `${a * h} ${u}<sup>2</sup>`],
+    expl: [`Area = ${frac('(a + b) · h', 2, false)}`, `${frac(`(${a} + ${b}) · ${h}`, 2, false)} = ${frac((a + b) * h, 2, false)} = ${(a + b) * h / 2} ${u}<sup>2</sup>`] });
+});
+
+topic('stat', 'Lägesmått', 7, '📊', 30, d => {
+  const n = R.pick([5, 7]);
+  if (d === 3) {
+    const m = R.int(5, 12), k = 4, vals = [R.int(1, 15), R.int(1, 15), R.int(1, 15)];
+    const last = m * k - vals.reduce((s, v) => s + v, 0);
+    if (last < 0 || last > 30) return T.stat.gen(3);
+    return mk({ q: `Medelvärdet av fyra tal är ${m}. Tre av talen är ${vals.join(', ')}. Vilket är det fjärde talet?`, ans: last, val: last,
+      wrongs: [m, m * k - vals[0], Math.round(vals.reduce((s, v) => s + v, 0) / 3), last + m],
+      expl: [`Summan av de fyra talen är ${m} · ${k} = ${m * k}`, `${m * k} ${MINUS} (${vals.join(' + ')}) = ${last}`] });
+  }
+  let list = Array.from({ length: n }, () => R.int(1, 20));
+  const sorted = list.slice().sort((a, b) => a - b), sum = list.reduce((s, v) => s + v, 0);
+  const median = sorted[(n - 1) / 2];
+  if (d === 1) {
+    if (sum % n !== 0) return T.stat.gen(1);
+    const mean = sum / n;
+    return mk({ q: `Vad är medelvärdet av talen ${list.join(', ')}?`, ans: mean, val: mean, wrongs: [median, sum, list[(n - 1) / 2], mean + 1],
+      expl: [`Summan: ${list.join(' + ')} = ${sum}`, `Dela med antalet tal (${n}): ${sum} / ${n} = ${mean}`] });
+  }
+  if (R.chance(0.6)) {
+    if (list[(n - 1) / 2] === median) return T.stat.gen(2);
+    return mk({ q: `Vad är medianen av talen ${list.join(', ')}?`, ans: median, val: median, wrongs: [list[(n - 1) / 2], round(sum / n, 1), sorted[(n - 1) / 2 + 1], sorted[n - 1] - sorted[0]],
+      expl: [`Sortera talen: ${sorted.join(', ')}`, `Medianen är talet i mitten: ${median}`] });
+  }
+  const range = sorted[n - 1] - sorted[0];
+  return mk({ q: `Vad är variationsbredden för talen ${list.join(', ')}?`, ans: range, val: range, wrongs: [sorted[n - 1], median, Math.abs(list[n - 1] - list[0]), range + 1],
+    expl: [`Variationsbredd = största ${MINUS} minsta`, `${sorted[n - 1]} ${MINUS} ${sorted[0]} = ${range}`] });
+});
+
+topic('enh', 'Enheter', 7, '📏', 22, d => {
+  const pools = {
+    1: [
+      () => { const x = R.int(12, 95) / 10; return [`${fmt(x)} m = ? cm`, x * 100, ' cm', [x * 10, x * 1000, x / 100], `1 m = 100 cm, så ${fmt(x)} · 100`]; },
+      () => { const x = R.int(2, 9) + R.pick([0, 0.5, 0.25]); return [`${fmt(x)} kg = ? g`, x * 1000, ' g', [x * 100, x * 10, x * 10000], `1 kg = 1000 g, så ${fmt(x)} · 1000`]; },
+      () => { const x = R.int(120, 980); return [`${x} cm = ? m`, x / 100, ' m', [x / 10, x / 1000, x * 100], `100 cm = 1 m, så ${x} / 100`]; }
+    ],
+    2: [
+      () => { const x = R.int(3, 45) / 10; return [`${fmt(x)} liter = ? dl`, x * 10, ' dl', [x * 100, x / 10, x * 1000], `1 liter = 10 dl, så ${fmt(x)} · 10`]; },
+      () => { const x = R.int(1200, 9800); return [`${fmt(x)} m = ? km`, x / 1000, ' km', [x / 100, x / 10, x * 1000], `1000 m = 1 km, så ${fmt(x)} / 1000`]; },
+      () => { const x = R.pick([1.5, 2.5, 0.75, 1.25, 0.5, 3.5]); return [`${fmt(x)} timmar = ? minuter`, x * 60, ' min', [x * 100, x * 10, x * 60 + 10], `1 h = 60 min, så ${fmt(x)} · 60`]; }
+    ],
+    3: [
+      () => { const x = R.int(2, 9); return [`${x} m<sup>2</sup> = ? dm<sup>2</sup>`, x * 100, ' dm²', [x * 10, x * 1000, x / 100], `1 m = 10 dm, så 1 m² = 10 · 10 = 100 dm²`]; },
+      () => { const x = R.int(1, 9) * 100; return [`${x} cm<sup>3</sup> = ? dl`, x / 100, ' dl', [x / 10, x / 1000, x * 10], `1 dl = 100 cm³ (1 liter = 1 dm³ = 1000 cm³)`]; },
+      () => { const x = R.int(2, 6); return [`${x} m<sup>2</sup> = ? cm<sup>2</sup>`, x * 10000, ' cm²', [x * 100, x * 1000, x * 100000], `1 m² = 100 · 100 = 10 000 cm²`]; }
+    ]
+  };
+  const [q, v, unit, wrongs, why] = R.pick(pools[d])();
+  return mk({ q, ans: v, val: v, unit, wrongs, expl: [why, `= ${fmt(v)}${unit}`] });
+});
+
+/* ---------- ÅK 8 ---------- */
+topic('pot', 'Potenser', 8, 'xⁿ', 22, d => {
+  if (d === 1) {
+    const [b, e] = R.pick([[2, R.int(2, 6)], [3, R.int(2, 4)], [5, R.int(2, 3)], [10, R.int(2, 6)], [4, 3], [6, 2]]);
+    const v = Math.pow(b, e);
+    return mk({ q: `${sup(b, e)}`, ans: v, val: v, wrongs: [b * e, Math.pow(b, e - 1), Math.pow(e, b), Math.pow(b, e + 1)],
+      expl: [`${sup(b, e)} betyder ${b} multiplicerat med sig självt ${e} gånger.`, `${Array(e).fill(b).join(' · ')} = ${fmt(v)}`] });
+  }
+  if (d === 2) {
+    if (R.chance(0.5)) {
+      const m = R.int(2, 7), n = R.int(2, 7), v = R.pick(['a', 'x', 'y']);
+      return mk({ q: `Förenkla ${sup(v, m)} · ${sup(v, n)}`, ans: sup(v, m + n), wrongs: [sup(v, m * n), sup(v, Math.abs(m - n) || 1), `${2}${sup(v, m + n)}`, sup(2 * v === v ? v : v, m + n + 1)],
+        expl: [`Vid multiplikation med samma bas adderas exponenterna.`, `${sup(v, m)} · ${sup(v, n)} = ${sup(v, `${m}+${n}`)} = ${sup(v, m + n)}`] });
+    }
+    const b = R.int(2, 5), e = R.pick([2, 3]), v = Math.pow(-b, e);
+    return mk({ q: `${sup(`(${MINUS}${b})`, e)}`, ans: v, val: v, wrongs: [-v, -b * e, b * e],
+      expl: [`${sup(`(${MINUS}${b})`, e)} = ${Array(e).fill(`(${MINUS}${b})`).join(' · ')}`, e % 2 ? `Udda antal minustecken ger negativt svar: ${fmt(v)}` : `Jämnt antal minustecken ger positivt svar: ${fmt(v)}`] });
+  }
+  const kind = R.int(0, 2);
+  if (kind === 0) {
+    const e = R.int(1, 4), v = Math.pow(10, -e);
+    return mk({ q: `${sup(10, -e)} = ?`, ans: v, val: v, wrongs: [-Math.pow(10, e), v * 10, v / 10, -10 * e],
+      expl: [`Negativ exponent betyder 1 delat med potensen.`, `${sup(10, -e)} = ${frac(1, Math.pow(10, e), false)} = ${fmt(v)}`] });
+  }
+  if (kind === 1) {
+    const m = R.int(5, 10), n = R.int(2, m - 1);
+    return mk({ q: `Förenkla ${frac(sup('a', m), sup('a', n), false)}`, ans: sup('a', m - n), wrongs: [sup('a', m + n), sup('a', m), sup('a', m * n), sup('a', m - n + 1)],
+      expl: [`Vid division med samma bas subtraheras exponenterna.`, `${sup('a', `${m}${MINUS}${n}`)} = ${sup('a', m - n)}`] });
+  }
+  const b = R.int(2, 9);
+  return mk({ q: `${sup(b, 0)} = ?`, ans: 1, val: 1, wrongs: [0, b, 10],
+    expl: [`Alla tal (utom 0) upphöjt till 0 blir 1.`, `T.ex. ${sup(b, 2)} / ${sup(b, 2)} = ${sup(b, 0)} = 1`] });
+});
+
+topic('ff', 'Förändringsfaktor', 8, '×', 28, d => {
+  if (d === 1) {
+    const pc = R.pick([5, 10, 15, 20, 25, 30, 40, 50]);
+    if (R.chance(0.5)) {
+      const v = round(1 + pc / 100);
+      return mk({ q: `Vilken förändringsfaktor motsvarar en ökning med ${pc} %?`, ans: v, val: v, wrongs: [pc / 100, 1 - pc / 100, 1 + pc / 10],
+        expl: [`Ökning: 100 % + ${pc} % = ${100 + pc} %`, `${100 + pc} % = ${fmt(v)}`] });
+    }
+    const v = round(1 - pc / 100);
+    return mk({ q: `Vilken förändringsfaktor motsvarar en minskning med ${pc} %?`, ans: v, val: v, wrongs: [pc / 100, 1 + pc / 100, 100 - pc],
+      expl: [`Minskning: 100 % ${MINUS} ${pc} % = ${100 - pc} %`, `${100 - pc} % = ${fmt(v)}`] });
+  }
+  if (d === 2) {
+    const P = R.pick([200, 240, 400, 450, 600, 800, 1500]), pc = R.pick([5, 10, 15, 20, 25, 30]), up = R.chance(0.6);
+    const f = up ? 1 + pc / 100 : 1 - pc / 100, v = round(P * f, 2);
+    return mk({ q: `En vara kostar ${P} kr. Priset ${up ? 'höjs' : 'sänks'} med ${pc} %. Vad blir det nya priset?`, ans: v, val: v, unit: ' kr',
+      wrongs: [round(P * pc / 100), round(P * (up ? 1 - pc / 100 : 1 + pc / 100)), up ? P + pc : P - pc],
+      expl: [`Förändringsfaktorn är ${fmt(f)}`, `${P} · ${fmt(f)} = ${fmt(v)} kr`] });
+  }
+  const A = R.pick([40, 50, 80, 120, 200, 250, 400]), pc = R.pick([10, 20, 25, 30, 40, 50]) * (R.chance(0.6) ? 1 : -1), B = A * (1 + pc / 100);
+  if (!Number.isInteger(B)) return T.ff.gen(3);
+  const ans = (pc > 0 ? '+' : MINUS) + Math.abs(pc) + ' %';
+  const bad1 = round((B - A) / B * 100, 1), bad2 = B - A;
+  return mk({ q: `Ett pris ändras från ${A} kr till ${B} kr. Hur stor är förändringen i procent?`, ans, val: pc,
+    wrongs: [(bad1 > 0 ? '+' : MINUS) + fmt(Math.abs(bad1)) + ' %', (bad2 > 0 ? '+' : MINUS) + Math.abs(bad2) + ' %', (pc > 0 ? MINUS : '+') + Math.abs(pc) + ' %', '+' + fmt(round(B / A * 100)) + ' %'],
+    expl: [`Förändringsfaktor = nytt / gammalt = ${B} / ${A} = ${fmt(B / A)}`, `${fmt(B / A)} = ${fmt(100 + pc)} %, alltså ${pc > 0 ? 'en ökning' : 'en minskning'} med ${Math.abs(pc)} %`] });
+});
+
+topic('ekv2', 'Ekvationer med x på båda sidor', 8, '=', 35, d => {
+  const x = R.int(-6, 10) || 2;
+  if (d === 1) {
+    const b = R.int(1, 6), a = b + R.int(1, 5), c = (a - b) * x;
+    return mk({ q: `${a}x = ${lin(b, c)}`, ans: `x = ${fmt(x)}`, val: x,
+      wrongs: [`x = ${fmt(round(c / (a + b), 2))}`, `x = ${fmt(-x)}`, `x = ${fmt(c)}`, `x = ${fmt(x + 1)}`],
+      expl: [`Dra bort ${b}x från båda sidor: ${a - b}x = ${fmt(c)}`, `Dela med ${a - b}: x = ${fmt(x)}`] });
+  }
+  if (d === 2) {
+    const c = R.int(1, 5), a = c + R.int(1, 4), b = R.int(-9, 12), dd = a * x + b - c * x;
+    return mk({ q: `${lin(a, b)} = ${lin(c, dd)}`, ans: `x = ${fmt(x)}`, val: x,
+      wrongs: [`x = ${fmt(round((dd + b) / (a - c), 2))}`, `x = ${fmt(round((dd - b) / (a + c), 2))}`, `x = ${fmt(-x)}`, `x = ${fmt(x + 1)}`],
+      expl: [`Samla x på vänster sida: ${lin(a - c, b)} = ${fmt(dd)}`, `Flytta konstanten: ${a - c}x = ${fmt(dd - b)}`, `x = ${fmt(x)}`] });
+  }
+  const a = R.int(2, 5), b = R.int(-5, 5) || 1, c = R.pick([1, 2, 3, 4, 5, 6].filter(v => v !== a)), dd = a * (x + b) - c * x;
+  return mk({ q: `${a}(${lin(1, b)}) = ${lin(c, dd)}`, ans: `x = ${fmt(x)}`, val: x,
+    wrongs: [`x = ${fmt(round((dd - b) / (a - c), 2))}`, `x = ${fmt(round((dd - a * b) / (a + c), 2))}`, `x = ${fmt(-x)}`, `x = ${fmt(x + 2)}`],
+    expl: [`Multiplicera in: ${lin(a, a * b)} = ${lin(c, dd)}`, `Samla x: ${lin(a - c, a * b)} = ${fmt(dd)}`, `${a - c}x = ${fmt(dd - a * b)} ⇒ x = ${fmt(x)}`] });
+});
+
+topic('utt', 'Algebraiska uttryck', 8, 'ab', 30, d => {
+  if (d === 1) {
+    if (R.chance(0.5)) {
+      const a = R.int(2, 9), b = R.int(2, 9), c = R.int(1, a + b - 1);
+      return mk({ q: `Förenkla ${a}x + ${b}x ${MINUS} ${c}x`, ans: lin(a + b - c, 0), wrongs: [lin(a + b + c, 0), `${a + b - c}x<sup>2</sup>`, lin(a + b, -c), lin(a - b - c, 0)],
+        expl: [`Alla termer är x-termer, så räkna ihop koefficienterna.`, `${a} + ${b} ${MINUS} ${c} = ${a + b - c}, alltså ${lin(a + b - c, 0)}`] });
+    }
+    const a = R.int(2, 9), b = R.int(1, 12), x = R.int(2, 9), v = a * x + b;
+    return mk({ q: `Vad är värdet av ${lin(a, b)} om x = ${x}?`, ans: v, val: v, wrongs: [Number(`${a}${x}`) + b, a + x + b, a * (x + b)],
+      expl: [`Byt x mot ${x}: ${a} · ${x} + ${b}`, `= ${a * x} + ${b} = ${v}`] });
+  }
+  if (d === 2) {
+    if (R.chance(0.5)) {
+      const a = R.int(2, 7), b = R.nz(-8, 9);
+      return mk({ q: `Multiplicera in: ${a}(${lin(1, b)})`, ans: lin(a, a * b), wrongs: [lin(a, b), lin(1, a * b), lin(a, -a * b), lin(a + 1, a * b)],
+        expl: [`Multiplicera ${a} med varje term i parentesen.`, `${a} · x = ${a}x och ${a} · ${p(b)} = ${fmt(a * b)}`, `= ${lin(a, a * b)}`] });
+    }
+    const a = R.int(4, 9), b = R.int(1, a - 1), c = R.int(1, 9);
+    return mk({ q: `Förenkla ${a}x ${MINUS} (${b}x ${MINUS} ${c})`, ans: lin(a - b, c), wrongs: [lin(a - b, -c), lin(a + b, -c), lin(a - b + c, 0), lin(a - b, c + 1)],
+      expl: [`Minus framför parentes byter tecken på allt inuti: ${a}x ${MINUS} ${b}x + ${c}`, `= ${lin(a - b, c)}`] });
+  }
+  if (R.chance(0.5)) {
+    const a = R.nz(-6, 6);
+    return mk({ q: `Multiplicera in: x(${lin(1, a)})`, ans: quad(1, a, 0), wrongs: [quad(1, 0, a), quad(0, 1 + a, 0), quad(1, a, a), quad(2, a, 0)],
+      expl: [`x · x = x<sup>2</sup> och x · ${p(a)} = ${lin(a, 0)}`, `= ${quad(1, a, 0)}`] });
+  }
+  const a = R.int(2, 3), b = R.int(2, 5), x = -R.int(1, 4), v = a * x * x - b * x;
+  return mk({ q: `Vad är värdet av ${quad(a, -b, 0)} om x = ${fmt(x)}?`, ans: v, val: v, wrongs: [-a * x * x - b * x, a * x * x + b * x, (a * x) * (a * x) - b * x],
+    expl: [`${a} · ${p(x)}<sup>2</sup> = ${a} · ${x * x} = ${a * x * x}`, `${b} · ${p(x)} = ${fmt(b * x)}`, `${a * x * x} ${MINUS} ${p(b * x)} = ${fmt(v)}`] });
+});
+
+topic('pyth', 'Pythagoras sats', 8, '◺', 40, d => {
+  const triples = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15], [12, 16, 20], [7, 24, 25], [15, 20, 25]];
+  if (d === 1) {
+    const [a, b, c] = R.pick(triples);
+    return mk({ q: `Hur lång är hypotenusan c?`, fig: figRightTri(a + ' cm', b + ' cm', 'c'), ans: c, val: c, unit: ' cm', wrongs: [a + b, a * a + b * b, c + 1, Math.abs(b - a)],
+      expl: [`c<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> = ${a * a} + ${b * b} = ${c * c}`, `c = √${c * c} = ${c} cm`] });
+  }
+  if (d === 2) {
+    const [a, b, c] = R.pick(triples);
+    return mk({ q: `Hur lång är kateten x?`, fig: figRightTri(a + ' cm', 'x', c + ' cm'), ans: b, val: b, unit: ' cm', wrongs: [c - a, round(Math.sqrt(a * a + c * c), 1), c + a, b + 1],
+      expl: [`x<sup>2</sup> = c<sup>2</sup> ${MINUS} a<sup>2</sup> = ${c * c} ${MINUS} ${a * a} = ${b * b}`, `x = √${b * b} = ${b} cm`] });
+  }
+  const a = R.int(2, 9), b = R.int(2, 9);
+  const c = Math.sqrt(a * a + b * b);
+  if (Number.isInteger(c) || a === b) return T.pyth.gen(3);
+  const v = round(c, 1);
+  return mk({ q: `Hur lång är hypotenusan c? Avrunda till en decimal.`, fig: figRightTri(a + ' m', b + ' m', 'c'), ans: v, val: v, unit: ' m',
+    wrongs: [a + b, round(Math.sqrt(Math.abs(a * a - b * b)), 1), a * a + b * b, round(v + 0.3, 1)],
+    expl: [`c<sup>2</sup> = ${a}<sup>2</sup> + ${b}<sup>2</sup> = ${a * a + b * b}`, `c = √${a * a + b * b} ≈ ${fmt(v)} m`] });
+});
+
+topic('sann', 'Sannolikhet', 8, '🎲', 28, d => {
+  if (d === 1) {
+    const ev = R.pick([['en sexa', 1], ['ett jämnt tal', 3], ['ett tal större än 4', 2], ['en etta eller en tvåa', 2], ['ett udda tal', 3], ['ett tal mindre än 6', 5]]);
+    return mk({ q: `Du kastar en vanlig tärning. Hur stor är sannolikheten att få ${ev[0]}?`, ans: frac(ev[1], 6), val: ev[1] / 6,
+      wrongs: [frac(ev[1], 5), frac(1, ev[1] === 1 ? 2 : ev[1]), frac(6 - ev[1], 6), frac(ev[1] + 1, 6)],
+      expl: [`Gynnsamma utfall: ${ev[1]}, möjliga utfall: 6`, `P = ${frac(ev[1], 6, false)} ${gcd(ev[1], 6) > 1 ? '= ' + frac(ev[1], 6) : ''}`] });
+  }
+  const r = R.int(1, 6), b = R.int(1, 6), g = R.int(1, 6), t = r + b + g;
+  if (d === 2) {
+    if (R.chance(0.5)) {
+      return mk({ q: `I en påse finns ${r} röda, ${b} blå och ${g} gröna kulor. Du drar en kula. Hur stor är sannolikheten att den är blå?`, ans: frac(b, t), val: b / t,
+        wrongs: [frac(b, r + g), frac(1, 3), frac(r + g, t), frac(b + 1, t)],
+        expl: [`Det finns ${t} kulor totalt, varav ${b} blå.`, `P(blå) = ${frac(b, t, false)}${gcd(b, t) > 1 ? ' = ' + frac(b, t) : ''}`] });
+    }
+    return mk({ q: `I en påse finns ${r} röda, ${b} blå och ${g} gröna kulor. Hur stor är sannolikheten att du INTE drar en röd?`, ans: frac(b + g, t), val: (b + g) / t,
+      wrongs: [frac(r, t), frac(b + g, r), frac(2, 3), frac(b + g, t + 1)],
+      expl: [`Kulor som inte är röda: ${b} + ${g} = ${b + g}`, `P(inte röd) = ${frac(b + g, t, false)}${gcd(b + g, t) > 1 ? ' = ' + frac(b + g, t) : ''}`] });
+  }
+  if (R.chance(0.5)) {
+    const pc = R.int(5, 95);
+    return mk({ q: `Sannolikheten att det regnar i morgon är ${fmt(pc / 100)}. Hur stor är sannolikheten att det inte regnar, i procent?`, ans: 100 - pc, val: 100 - pc, unit: ' %',
+      wrongs: [pc, round(1 - pc / 100, 2), 100 - pc + 10],
+      expl: [`Det regnar eller inte, summan av sannolikheterna är 1 = 100 %.`, `${fmt(pc / 100)} = ${pc} %, så 100 % ${MINUS} ${pc} % = ${100 - pc} %`] });
+  }
+  const n = R.pick([60, 120, 180, 300, 600]);
+  return mk({ q: `Du kastar en tärning ${n} gånger. Ungefär hur många sexor kan du förvänta dig?`, ans: n / 6, val: n / 6, wrongs: [n / 2, n / 10, 6, n / 3],
+    expl: [`P(sexa) = ${frac(1, 6)}`, `${frac(1, 6)} · ${n} = ${n / 6}`] });
+});
+
+topic('skala', 'Skala', 8, '🗺', 30, d => {
+  if (d === 1) {
+    const s = R.pick([50, 100, 200, 500]), a = R.int(2, 12), v = a * s / 100;
+    return mk({ q: `En ritning har skalan 1:${s}. En vägg är ${a} cm på ritningen. Hur lång är den i verkligheten?`, ans: v, val: v, unit: ' m',
+      wrongs: [a * s, a * s / 10, a * s / 1000, a / s],
+      expl: [`Verkligheten är ${s} gånger större: ${a} · ${s} = ${a * s} cm`, `${a * s} cm = ${fmt(v)} m`] });
+  }
+  if (d === 2) {
+    const s = R.pick([10000, 25000, 50000, 100000]), a = R.int(2, 12), v = round(a * s / 100000, 2);
+    return mk({ q: `En karta har skalan 1:${fmt(s)}. Avståndet på kartan är ${a} cm. Hur långt är det i verkligheten?`, ans: v, val: v, unit: ' km',
+      wrongs: [v * 10, v / 10, a * s / 1000, v * 100],
+      expl: [`${a} cm · ${fmt(s)} = ${fmt(a * s)} cm`, `${fmt(a * s)} cm = ${fmt(a * s / 100)} m = ${fmt(v)} km`] });
+  }
+  if (R.chance(0.5)) {
+    const k = R.pick([2, 4, 5, 10, 20]), b = R.int(2, 9), v = k * b;
+    return mk({ q: `En insekt är ritad i skala ${k}:1. Insekten är ${b} mm i verkligheten. Hur lång är den på bilden?`, ans: v, val: v, unit: ' mm',
+      wrongs: [round(b / k, 2), b + k, v * 10],
+      expl: [`Skala ${k}:1 betyder att bilden är ${k} gånger större än verkligheten.`, `${b} · ${k} = ${v} mm`] });
+  }
+  const cm = R.int(2, 8), km = cm * R.pick([0.5, 1, 2, 5]), s = km * 100000 / cm;
+  return mk({ q: `${cm} cm på en karta motsvarar ${fmt(km)} km i verkligheten. Vilken skala har kartan?`, ans: `1:${fmt(s)}`,
+    wrongs: [`1:${fmt(s / 10)}`, `1:${fmt(s * 10)}`, `${fmt(s)}:1`, `1:${fmt(s / 100)}`],
+    expl: [`${fmt(km)} km = ${fmt(km * 100000)} cm`, `${fmt(km * 100000)} / ${cm} = ${fmt(s)}, alltså 1:${fmt(s)}`] });
+});
+
+topic('cirk', 'Cirklar & volym', 8, '◯', 40, d => {
+  if (d === 1) {
+    const l = R.int(2, 10), b = R.int(2, 8), h = R.int(2, 9), v = l * b * h;
+    return mk({ q: `Vad är rätblockets volym?`, fig: figBox(l, b, h, 'cm'), ans: `${v} cm<sup>3</sup>`, val: v,
+      wrongs: [`${l + b + h} cm<sup>3</sup>`, `${2 * (l * b + b * h + l * h)} cm<sup>3</sup>`, `${l * b} cm<sup>3</sup>`, `${v} cm<sup>2</sup>`],
+      expl: [`Volym = längd · bredd · höjd`, `${l} · ${b} · ${h} = ${v} cm<sup>3</sup>`] });
+  }
+  if (d === 2) {
+    const r = R.int(2, 10);
+    if (R.chance(0.5)) {
+      const v = round(3.14 * r * r, 1);
+      return mk({ q: `Beräkna cirkelns area. Använd π ≈ 3,14.`, fig: figCircle(r, 'cm'), ans: `${fmt(v)} cm<sup>2</sup>`, val: v,
+        wrongs: [`${fmt(round(2 * 3.14 * r, 1))} cm<sup>2</sup>`, `${fmt(round(3.14 * 2 * r * 2 * r, 1))} cm<sup>2</sup>`, `${fmt(round(3.14 * r, 1))} cm<sup>2</sup>`, `${fmt(r * r)} cm<sup>2</sup>`],
+        expl: [`A = π · r<sup>2</sup>`, `3,14 · ${r}<sup>2</sup> = 3,14 · ${r * r} ≈ ${fmt(v)} cm<sup>2</sup>`] });
+    }
+    const v = round(2 * 3.14 * r, 2);
+    return mk({ q: `Beräkna cirkelns omkrets. Använd π ≈ 3,14.`, fig: figCircle(r, 'cm'), ans: `${fmt(v)} cm`, val: v,
+      wrongs: [`${fmt(round(3.14 * r * r, 2))} cm`, `${fmt(round(3.14 * r, 2))} cm`, `${fmt(2 * r)} cm`, `${fmt(round(v + 3.14, 2))} cm`],
+      expl: [`O = 2 · π · r  (eller π · d)`, `2 · 3,14 · ${r} = ${fmt(v)} cm`] });
+  }
+  const r = R.int(1, 5), h = R.int(2, 10), v = Math.round(3.14 * r * r * h);
+  return mk({ q: `Beräkna cylinderns volym, avrunda till heltal. Använd π ≈ 3,14.`, fig: figCyl(r, h, 'cm'), ans: `${v} cm<sup>3</sup>`, val: v,
+    wrongs: [`${Math.round(2 * 3.14 * r * h)} cm<sup>3</sup>`, `${Math.round(3.14 * r * h)} cm<sup>3</sup>`, `${Math.round(3.14 * 4 * r * r * h)} cm<sup>3</sup>`, `${v + 10} cm<sup>3</sup>`],
+    expl: [`V = π · r<sup>2</sup> · h (basytan gånger höjden)`, `3,14 · ${r * r} · ${h} ≈ ${v} cm<sup>3</sup>`] });
+});
+
+/* ---------- ÅK 9 ---------- */
+topic('linje', 'Räta linjens ekvation', 9, '⟋', 35, d => {
+  if (d === 1) {
+    const k = R.nz(-5, 5), m = R.int(-8, 8);
+    if (R.chance(0.5)) {
+      const x = R.int(-4, 6), v = k * x + m;
+      return mk({ q: `y = ${lin(k, m)}. Vad är y när x = ${fmt(x)}?`, ans: v, val: v, wrongs: [k + x + m, k * x - m, k * (x + m), -v],
+        expl: [`Byt x mot ${fmt(x)}: y = ${fmt(k)} · ${p(x)} ${m >= 0 ? '+ ' + m : MINUS + ' ' + (-m)}`, `y = ${fmt(v)}`] });
+    }
+    return mk({ q: `Vilket k-värde har linjen y = ${lin(k, m)}?`, ans: k, val: k, wrongs: [m, -k, k + 1, m === 0 ? 1 : -m],
+      expl: [`I y = kx + m är k talet framför x.`, `k = ${fmt(k)}  (lutningen)`] });
+  }
+  if (d === 2) {
+    const k = R.nz(-4, 4), x1 = R.int(-4, 3), dx = R.int(1, 4), y1 = R.int(-5, 5);
+    const x2 = x1 + dx, y2 = y1 + k * dx;
+    return mk({ q: `En linje går genom punkterna (${fmt(x1)}, ${fmt(y1)}) och (${fmt(x2)}, ${fmt(y2)}). Vad är k-värdet?`, ans: k, val: k,
+      wrongs: [frac(dx, k * dx), -k, k * dx, y2 - x2].map(w => (typeof w === 'number' ? w : w)),
+      expl: [`k = ${frac('Δy', 'Δx', false)} = ${frac(`${fmt(y2)} ${MINUS} ${p(y1)}`, `${fmt(x2)} ${MINUS} ${p(x1)}`, false)}`, `= ${frac(y2 - y1, dx, false)} = ${fmt(k)}`] });
+  }
+  const k = R.nz(-3, 3), m = R.nz(-5, 5), x2 = R.int(1, 3), y2 = k * x2 + m;
+  return mk({ q: `Vilken linje går genom punkterna (0, ${fmt(m)}) och (${x2}, ${fmt(y2)})?`, ans: `y = ${lin(k, m)}`,
+    wrongs: [`y = ${lin(m, k)}`, `y = ${lin(-k, m)}`, `y = ${lin(k, -m)}`, `y = ${lin(k + 1, m)}`],
+    expl: [`Punkten (0, ${fmt(m)}) ger m = ${fmt(m)}`, `k = ${frac(`${fmt(y2)} ${MINUS} ${p(m)}`, `${x2} ${MINUS} 0`, false)} = ${fmt(k)}`, `y = ${lin(k, m)}`] });
+});
+
+topic('fun', 'Funktioner', 9, 'f', 30, d => {
+  if (d === 1) {
+    const a = R.nz(-5, 6), b = R.int(-9, 9), x = R.int(-3, 6), v = a * x + b;
+    return mk({ q: `f(x) = ${lin(a, b)}. Beräkna f(${fmt(x)}).`, ans: v, val: v, wrongs: [a + x + b, a * x - b, -v, Number(`${Math.abs(a)}${Math.abs(x)}`) + b],
+      expl: [`Byt x mot ${fmt(x)}: f(${fmt(x)}) = ${fmt(a)} · ${p(x)} ${b >= 0 ? '+ ' + b : MINUS + ' ' + (-b)}`, `= ${fmt(v)}`] });
+  }
+  if (d === 2) {
+    const a = R.int(1, 3), b = R.int(-6, 6), x = -R.int(1, 5), v = a * x * x + b;
+    return mk({ q: `f(x) = ${quad(a, 0, b)}. Beräkna f(${fmt(x)}).`, ans: v, val: v, wrongs: [-a * x * x + b, a * 2 * x + b, (a * x) * (a * x) + b],
+      expl: [`${p(x)}<sup>2</sup> = ${x * x} (minus gånger minus blir plus)`, `f(${fmt(x)}) = ${a === 1 ? '' : a + ' · '}${x * x} ${b >= 0 ? '+ ' + b : MINUS + ' ' + (-b)} = ${fmt(v)}`] });
+  }
+  const a = R.int(2, 6), b = R.int(-9, 9), x = R.int(-4, 8), v = a * x + b;
+  return mk({ q: `f(x) = ${lin(a, b)}. För vilket x är f(x) = ${fmt(v)}?`, ans: `x = ${fmt(x)}`, val: x,
+    wrongs: [`x = ${fmt(a * v + b)}`, `x = ${fmt(round((v + b) / a, 2))}`, `x = ${fmt(-x)}`, `x = ${fmt(x + 1)}`],
+    expl: [`Lös ekvationen ${lin(a, b)} = ${fmt(v)}`, `${a}x = ${fmt(v - b)}`, `x = ${fmt(x)}`] });
+});
+
+topic('ekvsys', 'Ekvationssystem', 9, '{', 45, d => {
+  const x = R.int(-3, 8), y = R.int(-3, 8);
+  const askX = R.chance(0.5), ans = askX ? x : y, nm = askX ? 'x' : 'y';
+  const sys = (e1, e2) => `<span class="sys"><span>${e1}</span><span>${e2}</span></span>`;
+  if (d === 1) {
+    const s = x + y, t = x - y;
+    return mk({ q: `Lös systemet. Vad är ${nm}?<br>${sys(`x + y = ${fmt(s)}`, `x ${MINUS} y = ${fmt(t)}`)}`, ans: `${nm} = ${fmt(ans)}`, val: ans,
+      wrongs: [`${nm} = ${fmt(askX ? y : x)}`, `${nm} = ${fmt(s)}`, `${nm} = ${fmt(t)}`, `${nm} = ${fmt(ans + 1)}`],
+      expl: [`Addera ekvationerna: 2x = ${fmt(s + t)} ⇒ x = ${fmt(x)}`, `Sätt in: ${fmt(x)} + y = ${fmt(s)} ⇒ y = ${fmt(y)}`] });
+  }
+  if (d === 2) {
+    const k = R.int(2, 4), yy = k * x, s = x + yy, a2 = askX ? x : yy;
+    return mk({ q: `Lös systemet. Vad är ${nm}?<br>${sys(`y = ${k}x`, `x + y = ${fmt(s)}`)}`, ans: `${nm} = ${fmt(a2)}`, val: a2,
+      wrongs: [`${nm} = ${fmt(askX ? yy : x)}`, `${nm} = ${fmt(round(s / k, 2))}`, `${nm} = ${fmt(s)}`, `${nm} = ${fmt(a2 + 1)}`],
+      expl: [`Sätt in y = ${k}x i andra ekvationen: x + ${k}x = ${fmt(s)}`, `${k + 1}x = ${fmt(s)} ⇒ x = ${fmt(x)}`, `y = ${k} · ${p(x)} = ${fmt(yy)}`] });
+  }
+  const a = R.int(1, 3), b = R.int(1, 3), c = a * x + b * y, e = x - y;
+  return mk({ q: `Lös systemet. Vad är ${nm}?<br>${sys(`${lin(a, 0)} + ${lin(b, 0, 'y')} = ${fmt(c)}`, `x ${MINUS} y = ${fmt(e)}`)}`, ans: `${nm} = ${fmt(ans)}`, val: ans,
+    wrongs: [`${nm} = ${fmt(askX ? y : x)}`, `${nm} = ${fmt(-ans)}`, `${nm} = ${fmt(e)}`, `${nm} = ${fmt(ans + 2)}`],
+    expl: [`Från andra ekvationen: x = y + ${p(e)}`, `Sätt in: ${a}(y + ${p(e)}) + ${b}y = ${fmt(c)} ⇒ ${a + b}y = ${fmt(c - a * e)}`, `y = ${fmt(y)} och x = ${fmt(x)}`] });
+});
+
+topic('rot', 'Kvadratrötter', 9, '√', 25, d => {
+  if (d === 1) {
+    const n = R.int(2, 15);
+    return mk({ q: `√${n * n}`, ans: n, val: n, wrongs: [n * n / 2, n * n, n + 1, n - 1],
+      expl: [`Vilket positivt tal gånger sig självt blir ${n * n}?`, `${n} · ${n} = ${n * n}, så √${n * n} = ${n}`] });
+  }
+  if (d === 2) {
+    const n = R.int(2, 12);
+    return mk({ q: `Lös ekvationen x<sup>2</sup> = ${n * n}`, ans: `x = ±${n}`, wrongs: [`x = ${n}`, `x = ±${fmt(n * n / 2)}`, `x = ${MINUS}${n}`, `x = ±${n * n}`],
+      expl: [`x<sup>2</sup> = ${n * n} har två lösningar eftersom både ${n} · ${n} och (${MINUS}${n}) · (${MINUS}${n}) = ${n * n}`, `x = ±${n}`] });
+  }
+  if (R.chance(0.5)) {
+    const n = R.int(2, 7), a = R.int(2, 4);
+    return mk({ q: `Lös ekvationen ${a}x<sup>2</sup> = ${a * n * n}`, ans: `x = ±${n}`, wrongs: [`x = ±${n * n}`, `x = ${n}`, `x = ±${fmt(round(Math.sqrt(a * n * n), 1))}`, `x = ±${n + 1}`],
+      expl: [`Dela med ${a}: x<sup>2</sup> = ${n * n}`, `x = ±√${n * n} = ±${n}`] });
+  }
+  const n = R.int(1, 9), sq = round(n * n / 100, 4), v = n / 10;
+  return mk({ q: `√${fmt(sq)}`, ans: v, val: v, wrongs: [round(sq / 2, 4), n / 100, n, round(v * 10, 2) / 1000],
+    expl: [`${fmt(v)} · ${fmt(v)} = ${fmt(sq)}`, `Alltså √${fmt(sq)} = ${fmt(v)}`] });
+});
+
+topic('tiop', 'Grundpotensform', 9, '10ⁿ', 30, d => {
+  const gp = (m, e) => `${fmt(m)} · ${sup(10, e)}`;
+  if (d === 1) {
+    const m = R.pick([2, 3, 4, 5, 7, 8, 9, 1.5, 2.5, 3.2, 4.8, 6.4]), e = R.int(3, 8), n = round(m * Math.pow(10, e));
+    return mk({ q: `Skriv ${fmt(n)} i grundpotensform`, ans: gp(m, e), wrongs: [gp(m, e - 1), gp(m * 10, e - 1), gp(m, e + 1), gp(m / 10, e + 1)],
+      expl: [`Grundpotensform: ett tal mellan 1 och 10 gånger en tiopotens.`, `Flytta decimaltecknet ${e} steg: ${fmt(n)} = ${gp(m, e)}`] });
+  }
+  if (d === 2) {
+    const m = R.pick([2, 4.5, 3.6, 7, 1.2, 8.1]), e = -R.int(2, 5), n = round(m * Math.pow(10, e), 8);
+    return mk({ q: `Skriv ${fmt(n, 8)} i grundpotensform`, ans: gp(m, e), wrongs: [gp(m, -e), gp(m, e - 1), gp(m * 10, e - 1), gp(m, e + 1)],
+      expl: [`Talet är mindre än 1, så exponenten blir negativ.`, `Flytta decimaltecknet ${-e} steg åt höger: ${gp(m, e)}`] });
+  }
+  const a = R.int(2, 4), b = R.int(2, 3), e1 = R.int(2, 6), e2 = R.int(2, 6);
+  if (R.chance(0.5)) {
+    return mk({ q: `Beräkna (${gp(a, e1)}) · (${gp(b, e2)})`, ans: gp(a * b, e1 + e2), wrongs: [gp(a * b, e1 * e2), gp(a + b, e1 + e2), gp(a * b, e1 + e2 - 1), gp(a * b * 10, e1 + e2), gp(a * b, e1 + e2 + 1), gp(a + b, e1 * e2 + 1)],
+      expl: [`Multiplicera talen: ${a} · ${b} = ${a * b}`, `Addera exponenterna: ${e1} + ${e2} = ${e1 + e2}`, `= ${gp(a * b, e1 + e2)}`] });
+  }
+  const A = a * b;
+  return mk({ q: `Beräkna (${gp(A, e1 + e2)}) / (${gp(b, e2)})`, ans: gp(a, e1), wrongs: [gp(a, e1 + 2 * e2), gp(A - b, e1), gp(a, round((e1 + e2) / e2, 1)), gp(a, e1 + 1), gp(a, e1 - 1), gp(A, e1)],
+    expl: [`Dela talen: ${A} / ${b} = ${a}`, `Subtrahera exponenterna: ${e1 + e2} ${MINUS} ${e2} = ${e1}`, `= ${gp(a, e1)}`] });
+});
+
+topic('proc3', 'Upprepad procentuell förändring', 9, '📈', 40, d => {
+  if (d === 1) {
+    const K = R.pick([1000, 2000, 5000, 10000]), pc = R.pick([5, 10, 20]), v = round(K * Math.pow(1 + pc / 100, 2), 2);
+    return mk({ q: `Du sätter in ${fmt(K)} kr på ett konto med ${pc} % ränta per år. Hur mycket finns efter 2 år?`, ans: v, val: v, unit: ' kr',
+      wrongs: [K * (1 + 2 * pc / 100), K * pc / 100 * 2, round(K * Math.pow(1 + pc / 100, 3), 2), K + pc * 2],
+      expl: [`Förändringsfaktor per år: ${fmt(1 + pc / 100)}`, `${fmt(K)} · ${sup(fmt(1 + pc / 100), 2)} = ${fmt(v)} kr`] });
+  }
+  if (d === 2) {
+    const V = R.pick([50000, 100000, 200000, 80000]), pc = R.pick([10, 20, 25]), n = R.pick([2, 3]), f = 1 - pc / 100, v = Math.round(V * Math.pow(f, n));
+    return mk({ q: `En bil värd ${fmt(V)} kr minskar i värde med ${pc} % per år. Vad är den värd efter ${n} år?`, ans: v, val: v, unit: ' kr',
+      wrongs: [V * (1 - n * pc / 100), Math.round(V * Math.pow(f, n + 1)), Math.round(V * Math.pow(1 + pc / 100, n))],
+      expl: [`Förändringsfaktor per år: ${fmt(f)}`, `${fmt(V)} · ${sup(fmt(f), n)} ≈ ${fmt(v)} kr`] });
+  }
+  if (R.chance(0.5)) {
+    const pc = R.pick([10, 20, 30]), v = round((Math.pow(1 + pc / 100, 2) - 1) * 100, 2);
+    return mk({ q: `Ett pris höjs med ${pc} % två år i rad. Hur många procent har det ökat totalt?`, ans: v, val: v, unit: ' %', wrongs: [2 * pc, pc, pc * pc],
+      expl: [`${sup(fmt(1 + pc / 100), 2)} = ${fmt(Math.pow(1 + pc / 100, 2))}`, `${fmt(Math.pow(1 + pc / 100, 2))} = ${fmt(100 + v)} %, alltså en ökning med ${fmt(v)} %`] });
+  }
+  const pc = R.pick([10, 20, 25, 50]), v = round((1 + pc / 100) * (1 - pc / 100) * 100, 2);
+  return mk({ q: `Ett pris höjs med ${pc} % och sänks sedan med ${pc} %. Hur många procent av ursprungspriset är det nya priset?`, ans: v, val: v, unit: ' %', wrongs: [100, 100 + pc, 100 - pc],
+    expl: [`${fmt(1 + pc / 100)} · ${fmt(1 - pc / 100)} = ${fmt(v / 100)}`, `= ${fmt(v)} %. Sänkningen räknas på det högre priset!`] });
+});
+
+topic('sann2', 'Sannolikhet i flera steg', 9, '🎯', 40, d => {
+  if (d === 1) {
+    const [q, n, dd, w, e] = R.pick([
+      ['Du singlar slant två gånger. Hur stor är sannolikheten att få krona båda gångerna?', 1, 4, [frac(1, 2), frac(1, 3), frac(2, 4, false)], `${frac(1, 2)} · ${frac(1, 2)} = ${frac(1, 4)}`],
+      ['Du singlar slant två gånger. Hur stor är sannolikheten att få minst en krona?', 3, 4, [frac(1, 2), frac(1, 4), frac(2, 3)], `1 ${MINUS} P(ingen krona) = 1 ${MINUS} ${frac(1, 4)} = ${frac(3, 4)}`],
+      ['Du singlar slant tre gånger. Hur stor är sannolikheten att få krona alla gånger?', 1, 8, [frac(1, 6), frac(1, 3), frac(3, 8)], `${frac(1, 2)} · ${frac(1, 2)} · ${frac(1, 2)} = ${frac(1, 8)}`]
+    ]);
+    return mk({ q, ans: frac(n, dd), val: n / dd, wrongs: w, expl: [`Multiplicera sannolikheterna för varje steg.`, e] });
+  }
+  if (d === 2) {
+    const sum = R.pick([2, 3, 4, 7, 10, 11, 12]);
+    let cnt = 0; for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) if (a + b === sum) cnt++;
+    return mk({ q: `Du kastar två tärningar. Hur stor är sannolikheten att summan blir ${sum}?`, ans: frac(cnt, 36), val: cnt / 36,
+      wrongs: [frac(1, 11), frac(1, 12), frac(cnt, 12), frac(cnt + 1, 36)],
+      expl: [`Det finns 6 · 6 = 36 lika troliga utfall.`, `Summan ${sum} kan fås på ${cnt} sätt.`, `P = ${frac(cnt, 36, false)}${gcd(cnt, 36) > 1 ? ' = ' + frac(cnt, 36) : ''}`] });
+  }
+  const r = R.int(2, 5), b = R.int(2, 5), t = r + b;
+  return mk({ q: `En påse har ${r} röda och ${b} blå kulor. Du drar två kulor utan att lägga tillbaka. Hur stor är sannolikheten att båda är röda?`,
+    ans: frac(r * (r - 1), t * (t - 1)), val: r * (r - 1) / (t * (t - 1)),
+    wrongs: [frac(r * r, t * t), frac(r * (r - 1), t * t), frac(2 * r, t), frac(r - 1, t - 1)],
+    expl: [`Första dragningen: ${frac(r, t, false)}. Sedan finns ${r - 1} röda av ${t - 1}: ${frac(r - 1, t - 1, false)}`, `${frac(r, t, false)} · ${frac(r - 1, t - 1, false)} = ${frac(r * (r - 1), t * (t - 1), false)} = ${frac(r * (r - 1), t * (t - 1))}`] });
+});
+
+topic('kvad', 'Kvadrerings- & konjugatregeln', 9, '(²)', 35, d => {
+  const a = R.int(2, 9);
+  if (d === 1) {
+    return mk({ q: `Utveckla (x + ${a})<sup>2</sup>`, ans: quad(1, 2 * a, a * a), wrongs: [quad(1, 0, a * a), quad(1, a, a * a), quad(1, 2 * a, 2 * a), quad(2, 2 * a, a * a)],
+      expl: [`Kvadreringsregeln: (a + b)<sup>2</sup> = a<sup>2</sup> + 2ab + b<sup>2</sup>`, `x<sup>2</sup> + 2 · ${a} · x + ${a}<sup>2</sup> = ${quad(1, 2 * a, a * a)}`] });
+  }
+  if (d === 2) {
+    if (R.chance(0.5)) {
+      return mk({ q: `Utveckla (x ${MINUS} ${a})<sup>2</sup>`, ans: quad(1, -2 * a, a * a), wrongs: [quad(1, 0, -a * a), quad(1, -2 * a, -a * a), quad(1, 2 * a, a * a), quad(1, -a, a * a)],
+        expl: [`(a ${MINUS} b)<sup>2</sup> = a<sup>2</sup> ${MINUS} 2ab + b<sup>2</sup>`, `= ${quad(1, -2 * a, a * a)}`] });
+    }
+    return mk({ q: `Utveckla (x + ${a})(x ${MINUS} ${a})`, ans: quad(1, 0, -a * a), wrongs: [quad(1, 0, a * a), quad(1, -2 * a, -a * a), quad(1, 2 * a, -a * a), quad(1, 0, -2 * a)],
+      expl: [`Konjugatregeln: (a + b)(a ${MINUS} b) = a<sup>2</sup> ${MINUS} b<sup>2</sup>`, `= x<sup>2</sup> ${MINUS} ${a * a}`] });
+  }
+  if (R.chance(0.5)) {
+    return mk({ q: `Faktorisera x<sup>2</sup> ${MINUS} ${a * a}`, ans: `(x + ${a})(x ${MINUS} ${a})`, wrongs: [`(x ${MINUS} ${a})<sup>2</sup>`, `(x + ${a})<sup>2</sup>`, `(x + ${a * a})(x ${MINUS} 1)`, `x(x ${MINUS} ${a * a})`],
+      expl: [`${a * a} = ${a}<sup>2</sup>, så använd konjugatregeln baklänges.`, `x<sup>2</sup> ${MINUS} ${a}<sup>2</sup> = (x + ${a})(x ${MINUS} ${a})`] });
+  }
+  const base = R.pick([20, 30, 40, 50, 60, 70]), t = R.pick([1, 2]), n = base + t, v = n * n;
+  return mk({ q: `Beräkna ${n}<sup>2</sup> med kvadreringsregeln`, ans: v, val: v, wrongs: [base * base + t * t, base * base + base * t + t * t, v + 10],
+    expl: [`${n}<sup>2</sup> = (${base} + ${t})<sup>2</sup> = ${base}<sup>2</sup> + 2 · ${base} · ${t} + ${t}<sup>2</sup>`, `= ${base * base} + ${2 * base * t} + ${t * t} = ${fmt(v)}`] });
+});
+
+topic('likf', 'Likformighet', 9, '△', 40, d => {
+  if (d === 1) {
+    const [a, b, c] = R.pick([[3, 4, 5], [2, 3, 4], [4, 5, 6], [5, 6, 8]]), k = R.pick([2, 3, 1.5, 2.5]);
+    const v = round(c * k, 2);
+    return mk({ q: `Två trianglar är likformiga. Den lilla har sidorna ${a}, ${b} och ${c} cm. I den stora är sidan som motsvarar ${a} cm lång ${fmt(a * k)} cm. Hur lång är sidan som motsvarar ${c} cm?`,
+      ans: v, val: v, unit: ' cm', wrongs: [c + (a * k - a), c * 2 === v ? c * 3 : c * 2, round(c / k, 2), round(v + 1, 2)],
+      expl: [`Skalfaktor: ${fmt(a * k)} / ${a} = ${fmt(k)}`, `${c} · ${fmt(k)} = ${fmt(v)} cm`] });
+  }
+  if (d === 2) {
+    const h1 = R.pick([1, 1.5, 2]), s1 = R.pick([2, 3, 0.5, 1.5]), k = R.int(3, 10), s2 = round(s1 * k, 2), v = round(h1 * k, 2);
+    return mk({ q: `En pinne som är ${fmt(h1)} m hög ger en skugga på ${fmt(s1)} m. Samtidigt ger ett träd en skugga på ${fmt(s2)} m. Hur högt är trädet?`,
+      ans: v, val: v, unit: ' m', wrongs: [round(s2 * s1 / h1, 2), round(s2 - s1 + h1, 2), round(s2 / h1, 2), round(v + h1, 2)],
+      expl: [`Trianglarna är likformiga. Skuggan är ${fmt(k)} gånger längre (${fmt(s2)} / ${fmt(s1)}).`, `Trädet: ${fmt(h1)} · ${k} = ${fmt(v)} m`] });
+  }
+  const k = R.int(2, 4), A = R.int(2, 12), v = k * k * A;
+  return mk({ q: `En figur förstoras så att alla längder blir ${k} gånger större. Den lilla figuren har arean ${A} cm<sup>2</sup>. Vilken area får den stora?`,
+    ans: v, val: v, unit: ' cm²', wrongs: [k * A, 2 * k * A, k * k * k * A, A + k * k],
+    expl: [`Längdskala ${k} ger areaskala ${k}<sup>2</sup> = ${k * k}`, `${A} · ${k * k} = ${v} cm<sup>2</sup>`] });
+});
+
+/* Parsning av skrivna svar: 0,75  3/4  −2  x = 5  45 kr */
+function parseAnswer(s) {
+  if (s === null || s === undefined) return null;
+  s = String(s).toLowerCase().replace(/[−–]/g, '-').replace(/\s+/g, '').replace(/^[a-z]=/, '').replace(/(kr|%|cm²|cm2|cm³|cm3|dm²|m²|cm|mm|km|dl|m|g|kg|l|min|h)$/, '').replace(',', '.');
+  if (!s) return null;
+  if (/^-?\d+(\.\d+)?\/-?\d+(\.\d+)?$/.test(s)) { const [a, b] = s.split('/').map(Number); return b ? a / b : null; }
+  if (/^[+-]?\d*\.?\d+$/.test(s)) return Number(s);
+  return null;
+}
+
+
+'use strict';
+/* ===== Väsen & Variabler – spelmotor ===== */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const pad2 = n => String(n).padStart(2, '0');
+const dateStr = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+const today = () => dateStr(new Date());
+const yesterday = () => { const d = new Date(); d.setDate(d.getDate() - 1); return dateStr(d); };
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait = ms => new Promise(r => setTimeout(r, reduceMotion ? Math.min(ms, 60) : ms));
+
+/* ===== Väsen (samlarobjekten) ===== */
+const RAR = { c: 'Vanlig', r: 'Sällsynt', e: 'Episk', l: 'Legendarisk' };
+const V = [
+  { id: 'tomte', n: 'Gårdstomten', e: '🎅', r: 'c', lore: 'Vaktar gården om nätterna. Glöm inte grötfatet på julafton.', fx: l => ({ hp: 1 + (l >= 3) + (l >= 5) }) },
+  { id: 'pyssling', n: 'Pysslingen', e: '🧚', r: 'c', lore: 'Småfolket som bor under golvplankorna och lånar dina strumpor.', fx: l => ({ time: 1 + l }) },
+  { id: 'mus', n: 'Mossmusen', e: '🐭', r: 'c', lore: 'Samlar allt som glittrar i sitt bo under granroten.', fx: l => ({ gold: .08 + .04 * l }) },
+  { id: 'korp', n: 'Korpen Hugin', e: '🐦', r: 'c', lore: 'Flyger över världen varje dag och kommer hem med nyheter.', fx: l => ({ xp: .08 + .04 * l }) },
+  { id: 'lykt', n: 'Lyktgubben', e: '🏮', r: 'c', lore: 'Ett ljus i mossen. Följ det bara om du vet vart du ska.', fx: l => ({ hints: 1 + (l >= 4) }) },
+  { id: 'ekorre', n: 'Ekorren Rask', e: '🐿️', r: 'c', lore: 'Springer upp och ner längs världsträdet med budskap.', fx: l => ({ dmg: .06 + .03 * l }) },
+  { id: 'uggla', n: 'Ugglan Visa', e: '🦉', r: 'c', lore: 'Ser i mörker och svarar alltid med en motfråga.', fx: l => ({ crit: .15 + .05 * l }) },
+  { id: 'groda', n: 'Grodan Kväk', e: '🐸', r: 'c', lore: 'Kväker kraftigare ju fler rätt du får i rad.', fx: l => ({ healEvery: Math.max(3, 7 - l) }) },
+  { id: 'vittra', n: 'Vittran', e: '🧝', r: 'r', lore: 'Bor under jorden och lever precis som vi, fast upp och ner.', fx: l => ({ comboGuard: 1 + (l >= 4) }) },
+  { id: 'backahast', n: 'Bäckahästen', e: '🐴', r: 'r', lore: 'En vit häst vid bäcken. Sitt inte upp på den.', fx: l => ({ dmg: .12 + .04 * l }) },
+  { id: 'gloson', n: 'Gloson', e: '🐗', r: 'r', lore: 'Spöksuggan med glödande ögon som springer mellan benen på folk.', fx: l => ({ shield: 1 + (l >= 4) }) },
+  { id: 'myling', n: 'Mylingen', e: '👻', r: 'r', lore: 'Ett litet spöke som ber om att bli buren till kyrkogården.', fx: l => ({ time: 3 + l }) },
+  { id: 'trollkatt', n: 'Trollkatten', e: '🐈', r: 'r', lore: 'Häxans katt som stjäl mjölk från grannens kor.', fx: l => ({ gold: .2 + .05 * l }) },
+  { id: 'mara', n: 'Maran', e: '🌙', r: 'r', lore: 'Sätter sig på bröstet på sovande. Hon ger drömmar som lär dig saker.', fx: l => ({ xp: .2 + .05 * l }) },
+  { id: 'lindormunge', n: 'Lindormsungen', e: '🦎', r: 'r', lore: 'En liten orm som en dag blir en drake. Om den äter ordentligt.', fx: l => ({ healEvery: Math.max(3, 6 - l) }) },
+  { id: 'irrbloss', n: 'Irrblosset', e: '🔥', r: 'r', lore: 'Dansande lågor som visar var skatten är gömd.', fx: l => ({ hints: 2 + (l >= 4) }) },
+  { id: 'huldran', n: 'Huldran', e: '🌿', r: 'e', lore: 'Vacker framifrån, ihålig som en murken stubbe bakifrån.', fx: l => ({ hp: 1, healEvery: Math.max(3, 6 - l) }) },
+  { id: 'havsfrun', n: 'Havsfrun', e: '🧜‍♀️', r: 'e', lore: 'Styr vind och fiske. Hälsa artigt när du ror förbi.', fx: l => ({ shield: 2 + (l >= 4) }) },
+  { id: 'jatten', n: 'Jätten Finn', e: '🗿', r: 'e', lore: 'Byggde Lunds domkyrka och ville ha solen och månen som lön.', fx: l => ({ hp: 2 + (l >= 4) }) },
+  { id: 'draugen', n: 'Draugen', e: '💀', r: 'e', lore: 'Sjöns vålnad som seglar ett halvt båtskrov i stormen.', fx: l => ({ crit: .4 + .1 * l }) },
+  { id: 'norrsken', n: 'Norrskensräven', e: '🦊', r: 'e', lore: 'Svansen sveper över fjällen och lämnar gnistor på himlen.', fx: l => ({ comboRate: .25 * l }) },
+  { id: 'skogsra', n: 'Skogsrået', e: '🧝‍♀️', r: 'l', boss: 1, lore: 'Skogens härskarinna. Nu kämpar hon på din sida.', fx: l => ({ revive: 1, dmg: .1 + .05 * l }) },
+  { id: 'bergakung', n: 'Bergakungen', e: '👑', r: 'l', boss: 2, lore: 'Kungen i berget med salar fulla av silver.', fx: l => ({ dmg: .2 + .05 * l, gold: .2 + .05 * l }) },
+  { id: 'nacken', n: 'Näcken', e: '🎻', r: 'l', boss: 3, lore: 'Spelar fiol i forsen så vackert att ingen kan sluta lyssna.', fx: l => ({ time: 4 + l, healEvery: Math.max(3, 6 - l) }) },
+  { id: 'lindorm', n: 'Lindormen', e: '🐉', r: 'l', lore: 'Den fullvuxna draken. Bara de modigaste öppnar kistan där den sover.', fx: l => ({ dmg: .25 + .05 * l, crit: .25 + .1 * l }) }
+];
+const VB = Object.fromEntries(V.map(v => [v.id, v]));
+const STARTERS = ['tomte', 'pyssling', 'ekorre'];
+function fxText(fx) {
+  const pc = v => Math.round(v * 100) + ' %';
+  const out = [];
+  if (fx.hp) out.push(`+${fx.hp} ${fx.hp > 1 ? 'hjärtan' : 'hjärta'}`);
+  if (fx.time) out.push(`+${fx.time} s betänketid`);
+  if (fx.gold) out.push(`+${pc(fx.gold)} guld`);
+  if (fx.xp) out.push(`+${pc(fx.xp)} XP`);
+  if (fx.dmg) out.push(`+${pc(fx.dmg)} skada`);
+  if (fx.crit) out.push(`+${pc(fx.crit)} blixtskada`);
+  if (fx.hints) out.push(`+${fx.hints} ${fx.hints > 1 ? 'ledtrådar' : 'ledtråd'}`);
+  if (fx.healEvery) out.push(`Läker ♥ var ${fx.healEvery}:e rätt i rad`);
+  if (fx.comboGuard) out.push(`${fx.comboGuard} fel bryter inte combon`);
+  if (fx.shield) out.push(`Sköld mot ${fx.shield} ${fx.shield > 1 ? 'träffar' : 'träff'}`);
+  if (fx.comboRate) out.push(`Combon växer ${pc(fx.comboRate)} snabbare`);
+  if (fx.revive) out.push('Räddar dig en gång per strid');
+  return out.join(' · ');
+}
+
+/* ===== Världar & nivåer ===== */
+const WORLDS = [
+  { id: 1, n: 'Mörkskogen', grade: 7, col: '#5fe3b3', boss: { n: 'Skogsrået', e: '🧝‍♀️', v: 'skogsra' }, troll: 'Mosstrollet',
+    intro: 'Granarna står tätt och något viskar mellan stammarna. Här tränar du taluppfattning, bråk, procent och dina första ekvationer.',
+    foes: [['Gråvargen', '🐺'], ['Skuggfladdermusen', '🦇'], ['Flugsvampen', '🍄'], ['Mossspindeln', '🕷️'], ['Vildgalten', '🐗'], ['Grävlingen', '🦡']],
+    levels: [
+      { n: 'Stigen in', t: 'battle', topics: ['neg', 'prio'], d: 1 },
+      { n: 'Mossiga stenar', t: 'battle', topics: ['brak', 'deci'], d: 1 },
+      { n: 'Svampringen', t: 'battle', topics: ['proc1', 'deci', 'neg'], d: 1 },
+      { n: 'Trollets bro', t: 'balance' },
+      { n: 'Spindelsnåret', t: 'battle', topics: ['ekv1', 'prio', 'neg'], d: 2 },
+      { n: 'Ängsgläntan', t: 'battle', topics: ['geo1', 'enh'], d: 2 },
+      { n: 'Runkastet', t: 'cannon' },
+      { n: 'Myrens mitt', t: 'battle', topics: ['stat', 'proc1', 'brak'], d: 2 },
+      { n: 'Vargflocken', t: 'battle', elite: true, topics: ['neg', 'brak', 'ekv1', 'geo1', 'proc1', 'deci'], d: 3 },
+      { n: 'Skogsråets glänta', t: 'boss', topics: ['neg', 'prio', 'brak', 'deci', 'proc1', 'ekv1', 'geo1', 'stat', 'enh'], d: 3 }
+    ] },
+  { id: 2, n: 'Fjällvidderna', grade: 8, col: '#7cc7ff', boss: { n: 'Bergakungen', e: '👑', v: 'bergakung' }, troll: 'Istrollet',
+    intro: 'Kalla vindar sveper över kalfjället. Potenser, förändringsfaktor, Pythagoras och sannolikhet väntar.',
+    foes: [['Fjällörnen', '🦅'], ['Grottbjörnen', '🐻'], ['Myskoxen', '🐂'], ['Bergsväduren', '🐏'], ['Isvätten', '🧊'], ['Järven', '🦡']],
+    levels: [
+      { n: 'Snöfältet', t: 'battle', topics: ['pot', 'ff'], d: 1 },
+      { n: 'Isgrottan', t: 'battle', topics: ['ekv2', 'utt'], d: 1 },
+      { n: 'Kartstugan', t: 'battle', topics: ['pyth', 'skala'], d: 1 },
+      { n: 'Isvågen', t: 'balance' },
+      { n: 'Tärningsklippan', t: 'battle', topics: ['sann', 'cirk'], d: 2 },
+      { n: 'Renvaktarns läger', t: 'battle', topics: ['ff', 'pyth', 'pot'], d: 2 },
+      { n: 'Lavinkastet', t: 'cannon' },
+      { n: 'Glaciärkanten', t: 'battle', topics: ['utt', 'skala', 'ekv2'], d: 2 },
+      { n: 'Stormtoppen', t: 'battle', elite: true, topics: ['pot', 'ff', 'ekv2', 'pyth', 'sann', 'cirk'], d: 3 },
+      { n: 'Bergakungens sal', t: 'boss', topics: ['pot', 'ff', 'ekv2', 'utt', 'pyth', 'sann', 'skala', 'cirk'], d: 3 }
+    ] },
+  { id: 3, n: 'Dimsjön', grade: 9, col: '#b48cff', boss: { n: 'Näcken', e: '🎻', v: 'nacken' }, troll: 'Dimtrollet',
+    intro: 'Dimman ligger tung över vattnet och någon spelar fiol i forsen. Funktioner, ekvationssystem och sannolikhet i flera steg.',
+    foes: [['Träskpaddan', '🐸'], ['Djupbläckfisken', '🦑'], ['Sjöormen', '🐍'], ['Gäddkungen', '🐟'], ['Klokräftan', '🦀'], ['Dimslöjan', '🌫️']],
+    levels: [
+      { n: 'Strandkanten', t: 'battle', topics: ['linje', 'fun'], d: 1 },
+      { n: 'Vassen', t: 'battle', topics: ['ekvsys', 'rot'], d: 1 },
+      { n: 'Fiskeläget', t: 'battle', topics: ['tiop', 'proc3'], d: 1 },
+      { n: 'Dimvågen', t: 'balance' },
+      { n: 'Näckrosbladen', t: 'battle', topics: ['sann2', 'kvad'], d: 2 },
+      { n: 'Speglingen', t: 'battle', topics: ['likf', 'linje', 'rot'], d: 2 },
+      { n: 'Ljuskastet', t: 'cannon' },
+      { n: 'Djupet', t: 'battle', topics: ['fun', 'proc3', 'ekvsys'], d: 2 },
+      { n: 'Virvelströmmen', t: 'battle', elite: true, topics: ['linje', 'ekvsys', 'kvad', 'sann2', 'tiop', 'likf'], d: 3 },
+      { n: 'Forsen', t: 'boss', topics: ['linje', 'fun', 'ekvsys', 'rot', 'tiop', 'proc3', 'sann2', 'kvad', 'likf'], d: 3 }
+    ] }
+];
+const lvlKey = (w, i) => `${w}-${i}`;
+
+/* ===== Kistor ===== */
+const CHESTS = {
+  tra: { n: 'Träkista', e: '📦', cost: 120, odds: { c: 75, r: 22, e: 3, l: 0 } },
+  silver: { n: 'Silverkista', e: '🧰', cost: 350, odds: { c: 35, r: 45, e: 18, l: 2 } },
+  guld: { n: 'Guldkista', e: '💰', cost: 900, odds: { c: 0, r: 50, e: 42, l: 8 } }
+};
+
+/* ===== Uppdrag, medaljer, titlar ===== */
+const QUESTS = {
+  correct: { t: 'Svara rätt på 25 frågor', g: 25, gold: 80 },
+  streak: { t: 'Få 8 rätt i rad', g: 8, gold: 80 },
+  win: { t: 'Vinn 3 strider', g: 3, gold: 70 },
+  write: { t: 'Skriv in 5 rätta svar själv', g: 5, gold: 90 },
+  three: { t: 'Ta tre stjärnor på en nivå', g: 1, gold: 100 },
+  chest: { t: 'Öppna en kista', g: 1, gold: 50 },
+  practice: { t: 'Svara rätt på 10 frågor i Övningsgläntan', g: 10, gold: 60 },
+  tower: { t: 'Klättra 5 våningar i Runtornet', g: 5, gold: 90 },
+  topic: { t: 'Svara rätt på 8 frågor om {t}', g: 8, gold: 80 }
+};
+const ownedCount = s => Object.keys(s.vasen).length;
+const totalStars = s => Object.values(s.stars).reduce((a, b) => a + b, 0);
+const ACH = [
+  { id: 'first', ic: '⚔️', n: 'Första segern', d: 'Vinn din första strid', test: s => s.stats.wins >= 1 },
+  { id: 's10', ic: '🔥', n: 'Glödande', d: 'Få 10 rätt i rad', test: s => s.stats.bestStreak >= 10 },
+  { id: 's25', ic: '☄️', n: 'Eldstorm', d: 'Få 25 rätt i rad', test: s => s.stats.bestStreak >= 25 },
+  { id: 'b1', ic: '🌲', n: 'Skogens befriare', d: 'Besegra Skogsrået', test: s => !!s.boss[1] },
+  { id: 'b2', ic: '🏔️', n: 'Fjällens hjälte', d: 'Besegra Bergakungen', test: s => !!s.boss[2] },
+  { id: 'b3', ic: '🌊', n: 'Sjöns mästare', d: 'Besegra Näcken', test: s => !!s.boss[3] },
+  { id: 'c8', ic: '📖', n: 'Samlare', d: 'Samla 8 olika väsen', test: s => ownedCount(s) >= 8 },
+  { id: 'c16', ic: '📚', n: 'Väsenkännare', d: 'Samla 16 olika väsen', test: s => ownedCount(s) >= 16 },
+  { id: 'call', ic: '🐉', n: 'Väsenmästare', d: `Samla alla ${V.length} väsen`, test: s => ownedCount(s) >= V.length },
+  { id: 'k10', ic: '🗝️', n: 'Kistknäckare', d: 'Öppna 10 kistor', test: s => s.stats.chests >= 10 },
+  { id: 'st30', ic: '⭐', n: 'Stjärnfångare', d: 'Samla 30 stjärnor', test: s => totalStars(s) >= 30 },
+  { id: 'st90', ic: '🌟', n: 'Stjärnregn', d: 'Samla alla 90 stjärnor', test: s => totalStars(s) >= 90 },
+  { id: 'r500', ic: '🧮', n: 'Räknekämpe', d: 'Svara rätt 500 gånger', test: s => s.stats.correct >= 500 },
+  { id: 'w50', ic: '✍️', n: 'Runristare', d: 'Skriv in 50 rätta svar själv', test: s => s.stats.writes >= 50 },
+  { id: 'bal', ic: '⚖️', n: 'Vågmästare', d: 'Klara en våg utan ett enda onödigt drag', test: s => !!s.flags.bal },
+  { id: 'snipe', ic: '🎯', n: 'Prickskytt', d: 'Träffa 3 mål med ett enda kast', test: s => !!s.flags.snipe },
+  { id: 't10', ic: '🗼', n: 'Tornklättrare', d: 'Nå våning 10 i Runtornet', test: s => s.tower.best >= 10 },
+  { id: 't25', ic: '🏰', n: 'Tornets topp', d: 'Nå våning 25 i Runtornet', test: s => s.tower.best >= 25 },
+  { id: 'd7', ic: '📅', n: 'Trogen', d: 'Spela 7 dagar i rad', test: s => s.login.best >= 7 },
+  { id: 'master', ic: '🥇', n: 'Guldfärdighet', d: 'Nå guldnivå i en färdighet', test: s => Object.keys(s.mastery).some(t => masteryMedal(s, t) === 3) }
+];
+const TITLES = [[1, 'Lärling'], [3, 'Runläsare'], [5, 'Talväktare'], [8, 'Ekvationsjägare'], [12, 'Runmästare'], [16, 'Väsenviskare'], [20, 'Matemagiker']];
+const titleFor = l => TITLES.filter(t => l >= t[0]).pop()[1];
+const xpFor = l => 60 + l * 40;
+const teamSlots = () => (S.level >= 6 ? 3 : S.level >= 3 ? 2 : 1);
+
+/* ===== Spelläge ===== */
+const SAVE_KEY = 'vasen-variabler-v1';
+let S = null;           // sparat läge
+const G = { screen: 'setup', arg: null, b: null, bal: null, can: null, result: null, prac: null, setup: { grade: 7, starter: null, name: '' }, mapWorld: 1 };
+
+function newState(name, grade, starter) {
+  const s = {
+    v: 1, name: name || 'Runjägare', grade, gold: 100, xp: 0, level: 1, sound: true,
+    stars: {}, boss: {}, vasen: {}, team: [starter], chests: { tra: 1, silver: 0, guld: 0 }, claimedMs: {},
+    stats: { correct: 0, answered: 0, bestStreak: 0, wins: 0, chests: 0, writes: 0 },
+    mastery: {}, ach: {}, flags: {}, tower: { best: 0 },
+    daily: null, login: { last: null, streak: 0, best: 0 }, savedAt: 0
+  };
+  s.vasen[starter] = { l: 1, s: 0 };
+  return s;
+}
+function migrate(s) {
+  const base = newState(s.name, s.grade || 7, (s.team && s.team[0]) || 'tomte');
+  for (const k in base) if (s[k] === undefined) s[k] = base[k];
+  for (const k in base.stats) if (s.stats[k] === undefined) s.stats[k] = 0;
+  return s;
+}
+
+/* ===== Spara: lokalt + molnet när det finns ===== */
+function loadLocal() { try { const raw = localStorage.getItem(SAVE_KEY); return raw ? migrate(JSON.parse(raw)) : null; } catch (e) { return null; } }
+function saveLocal() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { /* privat läge */ } }
+const cloud = { doc: null, busy: false, pending: false, timer: null, on: false };
+function save() { if (!S) return; S.savedAt = Date.now(); saveLocal(); if (cloud.doc) { clearTimeout(cloud.timer); cloud.timer = setTimeout(pushCloud, 2500); } }
+async function pushCloud() {
+  if (!cloud.doc || !S) return;
+  if (cloud.busy) { cloud.pending = true; return; }
+  cloud.busy = true;
+  try { await cloud.doc.set({ state: JSON.parse(JSON.stringify(S)), savedAt: S.savedAt }); cloud.on = true; }
+  catch (e) { if (e && (e.code === 'invalid_argument' || e.code === 'revoked' || e.code === 'not_granted')) { cloud.doc = null; cloud.on = false; } }
+  cloud.busy = false;
+  if (cloud.pending) { cloud.pending = false; pushCloud(); }
+  renderTop();
+}
+async function initCloud() {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!db || !user) return;
+    const id = await user.id();
+    if (!id) return;
+    cloud.doc = db.doc('data/users/' + id + '/save');
+    const snap = await cloud.doc.get();
+    cloud.on = true;
+    if (snap.exists) {
+      const d = snap.data();
+      if (d && d.state && (d.savedAt || 0) > ((S && S.savedAt) || 0) && !(G.b || G.bal || G.can)) {
+        S = migrate(JSON.parse(JSON.stringify(d.state)));
+        saveLocal();
+        if (G.screen === 'setup') G.screen = 'hub';
+        dailyCheck();
+        render();
+        toast('☁ Din sparning hämtades från molnet.');
+        return;
+      }
+    }
+    if (S) pushCloud();
+    renderTop();
+  } catch (e) { cloud.doc = null; }
+}
+
+/* ===== Ljud ===== */
+const SFX = {
+  ctx: null,
+  play(kind) {
+    if (!S || !S.sound) return;
+    try {
+      this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)();
+      const c = this.ctx;
+      const seq = { right: [[660, .07], [990, .12]], wrong: [[220, .16], [160, .24]], hit: [[180, .08]], coin: [[988, .05], [1319, .12]], chest: [[523, .09], [659, .09], [784, .09], [1047, .32]],
+        win: [[523, .11], [659, .11], [784, .11], [1047, .45]], lose: [[392, .2], [330, .2], [262, .4]], click: [[620, .03]], star: [[1175, .08], [1568, .14]], shot: [[880, .05], [440, .1]] }[kind];
+      if (!seq) return;
+      let t = c.currentTime;
+      for (const [f, d] of seq) {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = kind === 'wrong' || kind === 'lose' ? 'sawtooth' : 'triangle';
+        o.frequency.value = f;
+        g.gain.setValueAtTime(.0001, t);
+        g.gain.exponentialRampToValueAtTime(kind === 'wrong' ? .07 : .13, t + .01);
+        g.gain.exponentialRampToValueAtTime(.0001, t + d);
+        o.connect(g).connect(c.destination);
+        o.start(t); o.stop(t + d + .03);
+        t += d * .85;
+      }
+    } catch (e) { /* inget ljud */ }
+  }
+};
+
+/* ===== Små effekter ===== */
+function toast(html, ms = 3200) {
+  const el = document.createElement('div');
+  el.className = 'toast'; el.innerHTML = html;
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+function banner(text, sub = '') {
+  const el = document.createElement('div');
+  el.className = 'banner'; el.innerHTML = esc(text) + (sub ? `<small>${esc(sub)}</small>` : '');
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1900);
+}
+function confetti(n = 60) {
+  if (reduceMotion) return;
+  const cols = ['#5fe3b3', '#f3b54a', '#7cc7ff', '#b48cff', '#ec5670', '#ece6d6'];
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('i');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = cols[i % cols.length];
+    c.style.animationDuration = (1.6 + Math.random() * 1.8) + 's';
+    c.style.animationDelay = Math.random() * .4 + 's';
+    c.style.borderRadius = Math.random() < .5 ? '50%' : '2px';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+function floatText(x, y, text, crit) {
+  const el = document.createElement('div');
+  el.className = 'float' + (crit ? ' crit' : '');
+  el.style.left = x + 'px'; el.style.top = y + 'px'; el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+function flash() { const f = document.createElement('div'); f.className = 'flash'; document.body.appendChild(f); setTimeout(() => f.remove(), 500); }
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+function bolt(fromEl, toEl, glyph = '✦') {
+  return new Promise(res => {
+    if (!fromEl || !toEl || reduceMotion) return res();
+    const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'bolt'; el.textContent = glyph;
+    el.style.left = (a.left + a.width / 2 - 14) + 'px'; el.style.top = (a.top + a.height / 2 - 14) + 'px';
+    document.body.appendChild(el);
+    requestAnimationFrame(() => { el.style.transform = `translate(${b.left + b.width / 2 - a.left - a.width / 2}px, ${b.top + b.height / 2 - a.top - a.height / 2}px) scale(1.5)`; });
+    setTimeout(() => { el.remove(); res(); }, 400);
+  });
+}
+
+/* ===== Progression ===== */
+function teamFx() {
+  const fx = {};
+  for (const id of S.team.slice(0, teamSlots())) {
+    const v = VB[id], o = S.vasen[id]; if (!v || !o) continue;
+    const f = v.fx(o.l);
+    for (const k in f) {
+      if (k === 'healEvery') fx[k] = fx[k] ? Math.min(fx[k], f[k]) : f[k];
+      else fx[k] = (fx[k] || 0) + Number(f[k]);
+    }
+  }
+  return fx;
+}
+function addGold(n) { n = Math.round(n); S.gold += n; return n; }
+function addXP(n) {
+  n = Math.round(n); S.xp += n;
+  const ups = [];
+  while (S.xp >= xpFor(S.level)) {
+    S.xp -= xpFor(S.level); S.level++;
+    const g = addGold(40 + S.level * 10);
+    let extra = '';
+    if (S.level % 5 === 0) { S.chests.silver++; extra = ' + Silverkista'; }
+    else if (S.level % 3 === 0) { S.chests.tra++; extra = ' + Träkista'; }
+    ups.push(S.level);
+    setTimeout(() => {
+      banner(`Nivå ${S.level}!`, titleFor(S.level));
+      SFX.play('win');
+      toast(`<b>Ny nivå ${S.level}</b> · +${g} guld${extra}${S.level === 3 || S.level === 6 ? '<br>En ny plats i ditt lag har öppnats!' : ''}${S.level === 2 ? '<br>Runtornet är upplåst!' : ''}`, 5000);
+    }, 600);
+  }
+  return { n, ups };
+}
+function grantVasen(id) {
+  const o = S.vasen[id];
+  if (!o) { S.vasen[id] = { l: 1, s: 0 }; return { id, isNew: true }; }
+  if (o.l >= 5) { const g = addGold(VB[id].r === 'l' ? 200 : VB[id].r === 'e' ? 90 : 35); return { id, isNew: false, maxed: true, gold: g }; }
+  o.s++;
+  let leveled = false;
+  if (o.s >= o.l) { o.s -= o.l; o.l++; leveled = true; }
+  return { id, isNew: false, leveled, l: o.l };
+}
+function rollChest(type) {
+  const odds = CHESTS[type].odds;
+  let r = Math.random() * 100, rar = 'c';
+  for (const k of ['c', 'r', 'e', 'l']) { if (r < odds[k]) { rar = k; break; } r -= odds[k]; }
+  let pool = V.filter(v => v.r === rar && !v.boss);
+  if (!pool.length) pool = V.filter(v => v.r === 'e');
+  // lite medlut mot väsen man saknar
+  const missing = pool.filter(v => !S.vasen[v.id]);
+  const pickFrom = missing.length && Math.random() < .55 ? missing : pool;
+  return R.pick(pickFrom).id;
+}
+function masteryMedal(s, t) {
+  const m = s.mastery[t]; if (!m) return 0;
+  const rec = m.rec || [], acc = rec.length ? rec.reduce((a, b) => a + b, 0) / rec.length : 0;
+  if (m.n >= 30 && rec.length >= 15 && acc >= .9) return 3;
+  if (m.n >= 20 && acc >= .8) return 2;
+  if (m.n >= 10 && acc >= .6) return 1;
+  return 0;
+}
+function masteryAcc(t) { const m = S.mastery[t]; if (!m || !m.rec.length) return null; return m.rec.reduce((a, b) => a + b, 0) / m.rec.length; }
+function recordAnswer(t, ok) {
+  const m = S.mastery[t] || (S.mastery[t] = { n: 0, c: 0, rec: [] });
+  const before = masteryMedal(S, t);
+  m.n++; if (ok) m.c++;
+  m.rec.push(ok ? 1 : 0); if (m.rec.length > 20) m.rec.shift();
+  const after = masteryMedal(S, t);
+  if (after > before) setTimeout(() => toast(`${['', '🥉', '🥈', '🥇'][after]} <b>${['', 'Brons', 'Silver', 'Guld'][after]}</b> i ${esc(T[t].name)}!`), 300);
+}
+function pickTopic(list, last) {
+  const w = list.map(t => { const a = masteryAcc(t); return (t === last && list.length > 1 ? .25 : 1) * (1 + (a === null ? .6 : (1 - a) * 2)); });
+  let r = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < list.length; i++) { if (r < w[i]) return list[i]; r -= w[i]; }
+  return list[0];
+}
+
+/* Dagliga uppdrag & inloggningsbonus */
+function seeded(seed) { let x = 0; for (const ch of seed) x = (x * 31 + ch.charCodeAt(0)) >>> 0; return () => { x = (x * 1664525 + 1013904223) >>> 0; return x / 4294967296; }; }
+function dailyCheck() {
+  if (!S) return;
+  const t = today();
+  if (!S.daily || S.daily.date !== t) {
+    const rnd = seeded(t + S.name);
+    let ids = Object.keys(QUESTS).filter(id => id !== 'tower' || S.level >= 2);
+    const picked = [];
+    while (picked.length < 3) { const id = ids[Math.floor(rnd() * ids.length)]; if (!picked.includes(id)) picked.push(id); }
+    const topics = Object.values(T).filter(x => x.grade <= S.grade);
+    S.daily = { date: t, bonus: false, q: picked.map(id => ({ id, p: 0, g: QUESTS[id].g, done: false, claimed: false, t: id === 'topic' ? topics[Math.floor(rnd() * topics.length)].id : null })) };
+  }
+  if (S.login.last !== t) {
+    S.login.streak = S.login.last === yesterday() ? S.login.streak + 1 : 1;
+    S.login.best = Math.max(S.login.best, S.login.streak);
+    S.login.last = t;
+    G.loginBonus = true;
+  }
+  save();
+}
+function quest(id, amount = 1, topicId = null) {
+  if (!S || !S.daily) return;
+  for (const q of S.daily.q) {
+    if (q.done || q.id !== id) continue;
+    if (id === 'topic' && q.t !== topicId) continue;
+    q.p = id === 'streak' ? Math.max(q.p, amount) : q.p + amount;
+    if (q.p >= q.g) { q.p = q.g; q.done = true; toast(`📜 Uppdrag klart: <b>${esc(questText(q))}</b>. Hämta belöningen i byn!`); }
+  }
+}
+const questText = q => QUESTS[q.id].t.replace('{t}', q.t ? T[q.t].name.toLowerCase() : '');
+function checkAch() {
+  for (const a of ACH) {
+    if (S.ach[a.id]) continue;
+    if (a.test(S)) {
+      S.ach[a.id] = today();
+      addGold(50);
+      setTimeout(() => { toast(`🏅 Medalj: <b>${esc(a.n)}</b> · +50 guld`, 4500); SFX.play('star'); }, 900);
+    }
+  }
+}
+
+/* ===== Nivålåsning ===== */
+function worldOpen(w) { return w <= S.grade - 6 || !!S.boss[w - 1]; }
+function levelOpen(w, i) { if (!worldOpen(w)) return false; return i === 0 || (S.stars[lvlKey(w, i - 1)] || 0) > 0; }
+function nextLevel() {
+  for (const W of [...WORLDS].sort((a, b) => (a.id === S.grade - 6 ? -1 : b.id === S.grade - 6 ? 1 : a.id - b.id))) {
+    if (!worldOpen(W.id)) continue;
+    for (let i = 0; i < W.levels.length; i++) if (levelOpen(W.id, i) && !S.stars[lvlKey(W.id, i)]) return { w: W.id, i };
+  }
+  return null;
+}
+function foeFor(W, i) { const f = W.foes[i % W.foes.length]; return { n: f[0], e: f[1] }; }
+function levelIcon(W, i) {
+  const L = W.levels[i];
+  if (L.t === 'boss') return W.boss.e;
+  if (L.t === 'balance') return '⚖️';
+  if (L.t === 'cannon') return '🎯';
+  return foeFor(W, i).e;
+}
+
+/* ===== Rendering ===== */
+function render() {
+  renderTop();
+  const fn = SCREENS[G.screen] || SCREENS.hub;
+  $('#screen').innerHTML = fn();
+  (AFTER[G.screen] || (() => { }))();
+  if (G.loginBonus && G.screen === 'hub') showLoginBonus();
+}
+function go(screen, arg) { stopTimer(); G.screen = screen; G.arg = arg; render(); window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); }
+function renderTop() {
+  const top = $('#top');
+  if (!S) { top.innerHTML = `<span class="brand">Väsen <span>&amp;</span> Variabler</span>`; return; }
+  const pct = Math.round(S.xp / xpFor(S.level) * 100);
+  top.innerHTML = `
+    <button class="brand" data-act="hub" aria-label="Till byn">Väsen <span>&amp;</span> Variabler</button>
+    <div class="stats">
+      <div class="lvlchip" title="${S.xp} / ${xpFor(S.level)} XP"><span class="badge">${S.level}</span><div><small>${esc(titleFor(S.level))}</small><div class="xp"><i style="width:${pct}%"></i></div></div></div>
+      <span class="chip gold" title="Guld">🪙 <b>${S.gold}</b></span>
+      <span class="chip star" title="Stjärnor">★ <b>${totalStars(S)}</b></span>
+      <button class="iconbtn" data-act="sound" aria-label="${S.sound ? 'Stäng av ljud' : 'Slå på ljud'}">${S.sound ? '🔊' : '🔇'}</button>
+      ${cloud.on ? '<span class="cloud" title="Sparas i molnet">☁</span>' : ''}
+    </div>`;
+}
+const starsHTML = (n, max = 3) => Array.from({ length: max }, (_, i) => `<span class="${i < n ? '' : 'off'}">★</span>`).join('');
+
+const SCREENS = {};
+const AFTER = {};
+
+/* ---------- Start ---------- */
+SCREENS.setup = () => {
+  const st = G.setup;
+  return `<section class="stack">
+    <div class="hero">
+      <div class="eyebrow">Ett matteäventyr för åk 7–9</div>
+      <h1>Väsen <span>&amp;</span> Variabler</h1>
+      <p>Mörkskogen, fjällen och Dimsjön har tagits över av vilda väsen. Med matematik som magi besegrar du dem, löser trollens vågar och samlar väsen från den nordiska folktron till ditt lag.</p>
+    </div>
+    <div class="panel stack">
+      <div><label class="eyebrow" for="pname">Vad heter du?</label>
+      <input class="field" id="pname" maxlength="18" placeholder="Runjägare" value="${esc(st.name)}" autocomplete="off"></div>
+      <div><div class="eyebrow" style="margin-bottom:6px">Vilken årskurs går du i?</div>
+        <div class="grades">${[7, 8, 9].map(g => `<button class="grade ${st.grade === g ? 'sel' : ''}" data-act="pickgrade" data-arg="${g}"><b>Åk ${g}</b><small class="muted">${WORLDS[g - 7].n}</small></button>`).join('')}</div>
+        <p class="muted" style="margin:8px 0 0;font-size:13px">Du får tillgång till alla världar upp till din årskurs. Tidigare världar finns kvar för repetition, stjärnor och väsen.</p>
+      </div>
+      <div><div class="eyebrow" style="margin-bottom:6px">Välj ditt första väsen</div>
+        <div class="starters">${STARTERS.map(id => { const v = VB[id]; return `<button class="card c-${v.r} ${st.starter === id ? 'inteam' : ''}" data-act="pickstarter" data-arg="${id}"><span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="ab">${fxText(v.fx(1))}</span></button>`; }).join('')}</div>
+      </div>
+      <button class="btn primary" data-act="begin" ${st.starter ? '' : 'disabled'}>Börja äventyret</button>
+    </div>
+  </section>`;
+};
+
+/* ---------- Byn (hub) ---------- */
+SCREENS.hub = () => {
+  const nx = nextLevel();
+  const W = nx ? WORLDS[nx.w - 1] : null;
+  const chestN = S.chests.tra + S.chests.silver + S.chests.guld;
+  const qs = S.daily ? S.daily.q : [];
+  const claimable = qs.filter(q => q.done && !q.claimed).length;
+  const team = Array.from({ length: 3 }, (_, i) => {
+    if (i >= teamSlots()) return `<span class="mini empty" title="Låses upp på nivå ${i === 1 ? 3 : 6}">🔒</span>`;
+    const id = S.team[i]; return id ? `<span class="mini" title="${esc(VB[id].n)}">${VB[id].e}</span>` : `<span class="mini empty">+</span>`;
+  }).join('');
+  return `<section class="stack">
+    <div class="hubgrid">
+      <div class="stack">
+        ${nx ? `<div class="continue" style="background:linear-gradient(135deg, ${W.col}33, transparent 65%), var(--pine)">
+          <span class="big" aria-hidden="true">${levelIcon(W, nx.i)}</span>
+          <div class="eyebrow">Fortsätt · ${W.n} · nivå ${nx.i + 1}</div>
+          <h2>${esc(W.levels[nx.i].n)}</h2>
+          <p class="muted" style="margin:0;max-width:36ch">${levelBlurb(W, nx.i)}</p>
+          <div class="row"><button class="btn primary" data-act="play" data-arg="${nx.w}-${nx.i}">Spela</button><button class="btn ghost" data-act="map" data-arg="${nx.w}">Kartan</button></div>
+        </div>` : `<div class="continue"><div class="eyebrow">Alla nivåer klara</div><h2>Du har besegrat alla väsen!</h2><p class="muted">Jaga tre stjärnor, klättra i Runtornet och samla resten av väsendena.</p><div class="row"><button class="btn primary" data-act="tower">Runtornet</button></div></div>`}
+        <div class="tiles">
+          <button class="tile" data-act="map"><span class="ic">🗺️</span><b>Kartan</b><small>${totalStars(S)} / 90 ★</small></button>
+          <button class="tile" data-act="vasen"><span class="ic">📖</span><b>Väsenboken</b><small>${ownedCount(S)} / ${V.length} väsen</small></button>
+          <button class="tile" data-act="chests">${chestN ? `<span class="dot">${chestN}</span>` : ''}<span class="ic">🧰</span><b>Kistor</b><small>Öppna &amp; köp</small></button>
+          <button class="tile ${S.level >= 2 ? '' : 'locked'}" data-act="tower"><span class="ic">🗼</span><b>Runtornet</b><small>${S.level >= 2 ? `Rekord: våning ${S.tower.best}` : 'Låses upp på nivå 2'}</small></button>
+          <button class="tile" data-act="practice"><span class="ic">🌿</span><b>Övningsgläntan</b><small>Träna utan tidspress</small></button>
+          <button class="tile" data-act="medals"><span class="ic">🏅</span><b>Medaljer</b><small>${Object.keys(S.ach).length} / ${ACH.length}</small></button>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <div class="screenhead"><h3>Dagens uppdrag</h3>${claimable ? `<span class="chip" style="border-color:var(--ember)">${claimable} att hämta</span>` : ''}</div>
+          ${qs.map((q, i) => `<div class="quest ${q.done ? 'done' : ''}"><span>${esc(questText(q))}</span>
+            ${q.claimed ? '<span class="muted">✓</span>' : q.done ? `<button class="btn gold small" data-act="claimq" data-arg="${i}">+${QUESTS[q.id].gold} 🪙</button>` : `<span class="muted" style="font-variant-numeric:tabular-nums">${q.p}/${q.g}</span>`}
+            <div class="bar"><i style="width:${q.p / q.g * 100}%"></i></div></div>`).join('')}
+          <p class="muted" style="font-size:12px;margin:8px 0 0">Klara alla tre för en extra Träkista. Nya uppdrag varje dag. 🔥 ${S.login.streak} ${S.login.streak === 1 ? 'dag' : 'dagar'} i rad.</p>
+        </div>
+        <div class="panel stack" style="gap:10px">
+          <div class="screenhead"><h3>Ditt lag</h3><button class="btn small ghost" data-act="vasen">Byt väsen</button></div>
+          <div class="teamrow">${team}</div>
+          <p class="muted" style="margin:0;font-size:13px">${fxText(teamFx()) || 'Välj väsen till laget i Väsenboken.'}</p>
+        </div>
+      </div>
+    </div>
+    <details class="panel"><summary><b>För lärare och föräldrar: vad tränas?</b></summary>
+      <div class="stack" style="margin-top:10px;gap:10px">
+        <p class="muted" style="margin:0">Uppgifterna genereras slumpmässigt inom det centrala innehållet i Lgr22 för matematik åk 7–9. Varje felsvar visar en lösning steg för steg. Spelet anpassar sig och visar oftare de områden där eleven har svårast. Framsteg per område syns i Övningsgläntan.</p>
+        ${[7, 8, 9].map(g => `<div><b>Åk ${g}:</b> <span class="muted">${Object.values(T).filter(t => t.grade === g).map(t => t.name).join(', ')}${g === 7 ? ', koordinatsystem' : g === 8 ? ', proportionalitet y = kx' : ', grafer till räta linjer'}.</span></div>`).join('')}
+      </div>
+    </details>
+    <div class="row" style="justify-content:flex-end"><button class="btn small ghost" data-act="resetask">Byt spelare</button></div>
+  </section>`;
+};
+function levelBlurb(W, i) {
+  const L = W.levels[i];
+  if (L.t === 'balance') return `${W.troll} vaktar bron med en våg. Gör samma sak på båda sidor tills x står ensamt.`;
+  if (L.t === 'cannon') return W.id === 1 ? 'Väsen gömmer sig i koordinatsystemet. Ange rätt koordinater för att träffa dem.' : W.id === 2 ? 'Rikta runstrålen genom origo med rätt lutning k.' : 'Hitta linjen y = kx + m som träffar flera väsen på en gång.';
+  const names = L.topics.slice(0, 3).map(t => T[t].name.toLowerCase()).join(', ');
+  if (L.t === 'boss') return `${W.boss.n} väntar. Tre faser, allt du lärt dig i ${W.n}.`;
+  return `${foeFor(W, i).n}${L.elite ? ' leder en flock' : ''}. Frågor om ${names}.`;
+}
+
+/* ---------- Karta ---------- */
+SCREENS.map = () => {
+  const w = Number(G.arg) || G.mapWorld || nextLevel()?.w || 1;
+  G.mapWorld = w;
+  const W = WORLDS[w - 1];
+  const open = worldOpen(w);
+  const n = W.levels.length, rowH = 96, H = n * rowH + 40;
+  const pos = i => ({ x: 50 + Math.sin(i * 1.15) * 30, y: H - 50 - i * rowH });
+  const pts = W.levels.map((_, i) => pos(i));
+  const worldStars = W.levels.reduce((a, _, i) => a + (S.stars[lvlKey(w, i)] || 0), 0);
+  const nx = nextLevel();
+  return `<section class="stack">
+    <button class="back" data-act="hub">← Byn</button>
+    <div class="wtabs">${WORLDS.map(x => `<button class="wtab ${x.id === w ? 'sel' : ''} ${worldOpen(x.id) ? '' : 'locked'}" data-act="map" data-arg="${x.id}">${worldOpen(x.id) ? '' : '🔒 '}${x.n} · åk ${x.grade}</button>`).join('')}</div>
+    <div class="worldhead" style="background:linear-gradient(135deg, ${W.col}2e, transparent 70%), var(--pine)">
+      <div class="eyebrow">Värld ${w} · Åk ${W.grade} · ${worldStars} / 30 ★</div>
+      <h2>${W.n}</h2>
+      <p class="muted" style="margin:0;max-width:60ch">${open ? W.intro : `Besegra ${WORLDS[w - 2].boss.n} i ${WORLDS[w - 2].n} för att ta dig hit.`}</p>
+    </div>
+    <div class="milestones">${[[10, 'tra'], [20, 'silver'], [30, 'guld']].map(([need, type]) => {
+      const key = `${w}-${need}`, claimed = S.claimedMs[key], can = worldStars >= need && !claimed;
+      return `<div class="ms ${can ? 'claimable' : ''} ${claimed ? 'claimed' : ''}"><span class="ic">${CHESTS[type].e}</span><span>${need} ★ · ${CHESTS[type].n}</span>${can ? `<button class="btn gold small" data-act="claimms" data-arg="${key}|${type}">Hämta</button>` : `<small class="muted">${claimed ? 'Hämtad' : Math.min(worldStars, need) + ' / ' + need}</small>`}</div>`;
+    }).join('')}</div>
+    <div class="map" style="height:${H}px">
+      <svg class="path" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="${W.col}" stroke-opacity=".35" stroke-width="1.6" stroke-dasharray="2 2" vector-effect="non-scaling-stroke" style="stroke-width:5px"/></svg>
+      ${W.levels.map((L, i) => {
+        const p = pos(i), st = S.stars[lvlKey(w, i)] || 0, op = levelOpen(w, i);
+        const isNext = nx && nx.w === w && nx.i === i;
+        return `<button class="node ${op ? 'open' : 'locked'} ${L.t === 'boss' ? 'boss' : ''} ${isNext ? 'next' : ''}" style="left:${p.x}%;top:${p.y}px" data-act="${op ? 'play' : 'lockedlvl'}" data-arg="${w}-${i}" aria-label="${esc(L.n)}${op ? '' : ' (låst)'}">
+          <span class="disc">${op ? levelIcon(W, i) : '🔒'}</span><span class="nm">${i + 1}. ${esc(L.n)}</span><span class="st">${starsHTML(st)}</span></button>`;
+      }).join('')}
+    </div>
+  </section>`;
+};
+
+/* ---------- Strid ---------- */
+function startLevel(w, i) {
+  const W = WORLDS[w - 1], L = W.levels[i];
+  if (L.t === 'balance') return startBalance(w, i);
+  if (L.t === 'cannon') return startCannon(w, i);
+  const boss = L.t === 'boss';
+  const foe = boss ? { n: W.boss.n, e: W.boss.e } : L.elite ? { n: foeFor(W, i).n + 'flocken', e: foeFor(W, i).e } : foeFor(W, i);
+  startBattle({ kind: 'level', w, i, topics: L.topics, d: L.d, boss, elite: !!L.elite, foe, hp: boss ? 330 : L.elite ? 160 : 110 });
+}
+function makeFighter() {
+  const fx = teamFx();
+  const hearts = 3 + (fx.hp || 0);
+  return { fx, hearts, maxHearts: hearts, shield: fx.shield || 0, guard: fx.comboGuard || 0, revive: fx.revive || 0, hints: 1 + (fx.hints || 0) };
+}
+function startBattle(cfg) {
+  G.b = Object.assign({ streak: 0, best: 0, correct: 0, answered: 0, writes: 0, phase: 0, write: false, wrongTopics: {}, floor: 1, towerGold: 0 }, makeFighter(), cfg, { max: cfg.hp });
+  G.screen = 'battle'; render(); nextQuestion();
+}
+SCREENS.battle = () => {
+  const b = G.b;
+  return `<section class="arena" id="arena">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Fly</button>
+      <span class="muted" style="font-size:13px">${b.kind === 'tower' ? `Runtornet · våning ${b.floor}` : `${WORLDS[b.w - 1].n} · nivå ${b.i + 1}`}</span></div>
+    <div class="foe ${b.boss ? 'boss' : ''}" id="foe">
+      <div class="face" id="face">${b.foe.e}</div>
+      <div class="stack" style="gap:6px">
+        <div class="row" style="justify-content:space-between"><b id="foename">${esc(b.foe.n)}</b>${b.boss ? `<span class="phases" id="phases">${[0, 1, 2].map(p => `<span class="${p <= b.phase ? 'on' : ''}"></span>`).join('')}</span>` : ''}</div>
+        <div class="hpbar"><i class="ghost" id="hpghost" style="width:${b.hp / b.max * 100}%"></i><i id="hp" style="width:${b.hp / b.max * 100}%"></i></div>
+        <small class="muted" id="hptext">${Math.max(0, Math.ceil(b.hp))} / ${b.max}</small>
+      </div>
+    </div>
+    <div class="me"><span class="hearts" id="hearts"></span><span class="combo" id="combo"></span>
+      <span class="row" style="gap:6px">${S.team.slice(0, teamSlots()).map(id => `<span class="mini" style="width:36px;height:36px;font-size:20px" title="${esc(VB[id].n)}: ${esc(fxText(VB[id].fx(S.vasen[id].l)))}">${VB[id].e}</span>`).join('')}</span></div>
+    <div class="timer"><i id="tbar"></i></div>
+    <div id="qzone"></div>
+  </section>`;
+};
+function updateHUD() {
+  const b = G.b; if (!b) return;
+  const h = $('#hearts');
+  if (h) h.innerHTML = Array.from({ length: b.maxHearts }, (_, i) => `<span class="${i < b.hearts ? '' : 'lost'}">❤️</span>`).join('') + (b.shield ? ` <span class="sh" title="Sköld">🛡️×${b.shield}</span>` : '');
+  const c = $('#combo');
+  if (c) { c.textContent = b.streak >= 2 ? `🔥 ${b.streak} i rad · ×${comboMult(b).toFixed(1).replace('.', ',')}` : ''; c.classList.toggle('hot', b.streak >= 5); }
+  const pct = Math.max(0, b.hp / b.max * 100);
+  if ($('#hp')) { $('#hp').style.width = pct + '%'; $('#hpghost').style.width = pct + '%'; $('#hptext').textContent = `${Math.max(0, Math.ceil(b.hp))} / ${b.max}`; }
+}
+const comboMult = b => 1 + Math.min(1, Math.max(0, b.streak - 1) * .1 * (1 + (b.fx.comboRate || 0)));
+function nextQuestion() {
+  const b = G.b; if (!b) return;
+  const topic = pickTopic(b.topics, b.lastTopic);
+  b.lastTopic = topic;
+  let d = b.d;
+  if (b.kind === 'tower') d = b.floor < 5 ? 1 : b.floor < 12 ? (Math.random() < .5 ? 1 : 2) : b.floor < 20 ? (Math.random() < .5 ? 2 : 3) : 3;
+  else if (d > 1 && Math.random() < .25) d--;
+  const q = T[topic].gen(d); q.topic = topic; q.d = d;
+  b.q = q; b.locked = false; b.removed = [];
+  const tm = (T[topic].time * (d === 3 ? 1.15 : d === 1 ? .9 : 1) + (b.fx.time || 0)) * (1 - .12 * b.phase);
+  b.tMax = tm * 1000; b.tStart = performance.now();
+  renderQ();
+  startTimer();
+}
+function qcardHTML(q, extra = '') {
+  const long = q.q.replace(/<[^>]+>/g, '').length > 70;
+  return `<div class="qcard"><div class="topic"><span>${esc(T[q.topic].name)}</span><span>${'◆'.repeat(q.d)}${'◇'.repeat(3 - q.d)}</span></div>
+    <div class="qtext ${long ? 'long' : ''}">${q.q}</div>${q.fig || ''}${extra}</div>`;
+}
+function answersHTML(q, removed = [], write = false) {
+  if (write) return `<form class="writebox" data-form="write" autocomplete="off"><input class="field" id="wans" inputmode="decimal" placeholder="Ditt svar" aria-label="Skriv ditt svar"><button class="btn primary" type="submit">Svara</button></form>
+    <p class="muted" style="margin:0;font-size:12px">Skriv decimaltal med komma, t.ex. 0,75. Bråk som 3/4 och minustecken fungerar också.</p>`;
+  return `<div class="answers">${q.opts.map((o, i) => `<button class="ans ${removed.includes(i) ? 'gone' : ''}" data-act="ans" data-arg="${i}"><kbd>${i + 1}</kbd>${o}</button>`).join('')}</div>`;
+}
+function renderQ() {
+  const b = G.b, q = b.q, z = $('#qzone'); if (!z) return;
+  if (!q.write) b.write = false;
+  z.innerHTML = `<div class="stack" style="gap:12px">${qcardHTML(q)}${answersHTML(q, b.removed, b.write)}
+    <div class="tools">${q.write ? `<button class="toggle ${b.write ? 'on' : ''}" data-act="writemode">✍ ${b.write ? 'Skriver själv · dubbel skada' : 'Skriv svaret själv · dubbel skada'}</button>` : '<span></span>'}
+    <button class="btn small ghost" data-act="hint" ${b.hints > 0 && !b.write ? '' : 'disabled'}>🏮 Ledtråd (${b.hints})</button></div></div>`;
+  updateHUD();
+  if (b.write) setTimeout(() => $('#wans')?.focus(), 30);
+}
+let timerRAF = null, hiddenAt = 0;
+function startTimer() { stopTimer(); timerRAF = requestAnimationFrame(tick); }
+function stopTimer() { if (timerRAF) cancelAnimationFrame(timerRAF); timerRAF = null; }
+function tick() {
+  const b = G.b; if (!b || b.locked || G.screen !== 'battle') return;
+  const left = 1 - (performance.now() - b.tStart) / b.tMax;
+  const bar = $('#tbar');
+  if (bar) { bar.style.width = Math.max(0, left * 100) + '%'; bar.className = left < .2 ? 'crit' : left < .45 ? 'warn' : ''; }
+  if (left <= 0) { answer(null, true); return; }
+  timerRAF = requestAnimationFrame(tick);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) hiddenAt = performance.now();
+  else if (hiddenAt && G.b && !G.b.locked) { G.b.tStart += performance.now() - hiddenAt; hiddenAt = 0; }
+});
+function isRight(q, choice, typed) {
+  if (typed !== undefined) { const v = parseAnswer(typed); return v !== null && q.val !== null && Math.abs(v - q.val) <= 1e-6 * Math.max(1, Math.abs(q.val)); }
+  return choice === q.a;
+}
+async function answer(idx, timeout = false, typed) {
+  const b = G.b; if (!b || b.locked) return;
+  b.locked = true; stopTimer();
+  const q = b.q;
+  const ratio = (performance.now() - b.tStart) / b.tMax;
+  const wrote = typed !== undefined;
+  const ok = !timeout && isRight(q, idx !== null ? q.opts[idx] : null, typed);
+  recordAnswer(q.topic, ok);
+  b.answered++; S.stats.answered++;
+  const btns = $$('.ans');
+  if (ok) {
+    b.correct++; b.streak++; b.best = Math.max(b.best, b.streak);
+    S.stats.correct++; S.stats.bestStreak = Math.max(S.stats.bestStreak, b.streak);
+    quest('correct'); quest('streak', b.streak); quest('topic', 1, q.topic);
+    if (wrote) { b.writes++; S.stats.writes++; quest('write'); }
+    if (idx !== null && btns[idx]) btns[idx].classList.add('right');
+    if (wrote) $('#wans')?.classList.add('right');
+    const crit = ratio < .35;
+    const dmg = Math.round(24 * (1 + (b.fx.dmg || 0)) * comboMult(b) * (crit ? 1.5 + (b.fx.crit || 0) : 1) * (wrote ? 2 : 1));
+    SFX.play('right');
+    await bolt(idx !== null ? btns[idx] : $('#wans'), $('#face'), wrote ? '✸' : '✦');
+    SFX.play('hit');
+    const face = $('#face');
+    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, (crit ? 'BLIXT! ' : '') + dmg, crit); }
+    b.hp -= dmg;
+    if (b.fx.healEvery && b.streak % b.fx.healEvery === 0 && b.hearts < b.maxHearts) { b.hearts++; toast('💚 Ditt väsen läkte ett hjärta!'); }
+    updateHUD();
+    if (b.boss) {
+      const ph = b.hp <= b.max / 3 ? 2 : b.hp <= b.max * 2 / 3 ? 1 : 0;
+      if (ph > b.phase && b.hp > 0) { b.phase = ph; $$('#phases span').forEach((s, i) => s.classList.toggle('on', i <= ph)); await wait(350); banner(`${b.foe.n} rasar!`, `Fas ${ph + 1} · snabbare frågor`); SFX.play('lose'); }
+    }
+    await wait(550);
+    if (b.hp <= 0) return foeDefeated();
+    if (G.b === b) nextQuestion();
+    return;
+  }
+  // fel svar
+  b.wrongTopics[q.topic] = (b.wrongTopics[q.topic] || 0) + 1;
+  if (b.guard > 0 && b.streak > 0) { b.guard--; toast('🧝 Vittran skyddade din combo!'); }
+  else b.streak = 0;
+  btns.forEach((el, i) => { if (q.opts[i] === q.a) el.classList.add('right'); });
+  if (idx !== null && btns[idx]) btns[idx].classList.add('wrong');
+  SFX.play('wrong');
+  const face = $('#face'); if (face) { face.classList.remove('lunge'); void face.offsetWidth; face.classList.add('lunge'); }
+  if (b.shield > 0) { b.shield--; toast('🛡️ Skölden tog smällen!'); }
+  else { b.hearts--; flash(); shake($('#arena')); }
+  if (b.hearts <= 0 && b.revive > 0) { b.revive--; b.hearts = 1; setTimeout(() => banner('Skogsrået räddar dig!', 'Ett hjärta kvar'), 200); }
+  updateHUD();
+  showExplain(q, timeout, typed);
+}
+function explainHTML(q, timeout, typed, good = false) {
+  return `<div class="explain ${good ? 'good' : ''}">
+    <div class="eyebrow">${good ? 'Rätt!' : timeout ? 'Tiden tog slut' : typed !== undefined ? `Du skrev ${esc(typed || '–')}` : 'Inte riktigt'}</div>
+    <div>Rätt svar: <span class="right">${q.a}</span></div>
+    <div><b>Så här tänker du</b><ol>${q.expl.map(s => `<li>${s}</li>`).join('')}</ol></div>
+  </div>`;
+}
+function showExplain(q, timeout, typed) {
+  const z = $('#qzone'); if (!z) return;
+  const dead = G.b.hearts <= 0;
+  z.querySelector('.tools')?.remove();
+  z.querySelector('.writebox')?.remove();
+  z.firstElementChild.insertAdjacentHTML('beforeend', explainHTML(q, timeout, typed) + `<button class="btn ${dead ? '' : 'primary'}" data-act="cont" id="contbtn">${dead ? 'Se resultat' : 'Jag fattar, fortsätt'}</button>`);
+  setTimeout(() => { $('#contbtn')?.focus({ preventScroll: true }); $('#contbtn')?.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); }, 50);
+}
+async function foeDefeated() {
+  const b = G.b;
+  const face = $('#face'); if (face) face.classList.add('dead');
+  SFX.play('win');
+  if (b.kind === 'tower') {
+    const g = 6 + b.floor * 2; b.towerGold += g;
+    b.floor++;
+    quest('tower');
+    if (b.floor - 1 > S.tower.best) S.tower.best = b.floor - 1;
+    await wait(700);
+    if ((b.floor - 1) % 5 === 0) { if (b.hearts < b.maxHearts) b.hearts++; banner(`Våning ${b.floor}`, 'Vilostopp: +1 hjärta'); }
+    const pool = WORLDS.flatMap(W => W.foes.map(f => ({ n: f[0], e: f[1] })));
+    b.foe = b.floor % 10 === 0 ? (() => { const W = R.pick(WORLDS); return { n: W.boss.n, e: W.boss.e }; })() : R.pick(pool);
+    b.max = b.hp = 70 + b.floor * 7 + (b.floor % 10 === 0 ? 80 : 0);
+    checkAch(); save();
+    render(); nextQuestion();
+    return;
+  }
+  await wait(800);
+  finishLevel(true);
+}
+function rewardFor(kind, correct, win, extra = 0) {
+  const fx = teamFx();
+  const gold = (correct * 4 + (win ? ({ boss: 120, elite: 60, normal: 30 })[kind] : 5) + extra) * (1 + (fx.gold || 0));
+  const xp = (correct * 10 + (win ? 30 : 8)) * (1 + (fx.xp || 0));
+  return { gold: Math.round(gold), xp: Math.round(xp) };
+}
+function finishLevel(win, special) {
+  // special: {stars, correct, answered, best, label} för våg/kast
+  const b = G.b || {};
+  const w = special ? special.w : b.w, i = special ? special.i : b.i;
+  const W = WORLDS[w - 1], L = W.levels[i];
+  const correct = special ? special.correct : b.correct, answered = special ? special.answered : b.answered;
+  const acc = answered ? correct / answered : 0;
+  const stars = !win ? 0 : special ? special.stars : acc >= .9 ? 3 : acc >= .75 ? 2 : 1;
+  const key = lvlKey(w, i), prev = S.stars[key] || 0;
+  const kind = L.t === 'boss' ? 'boss' : L.elite ? 'elite' : 'normal';
+  const firstClear = win && !prev;
+  const rw = rewardFor(kind, correct, win, firstClear ? 40 : 0);
+  addGold(rw.gold);
+  const xpRes = addXP(rw.xp);
+  const res = { win, stars, prev, gold: rw.gold, xp: rw.xp, correct, answered, best: special ? special.best : b.best, w, i, unlocks: [], weak: null, label: special && special.label };
+  if (win) {
+    S.stars[key] = Math.max(prev, stars);
+    S.stats.wins++; quest('win'); if (stars === 3) quest('three');
+    if (L.t === 'boss' && !S.boss[w]) {
+      S.boss[w] = today();
+      const g = grantVasen(W.boss.v); res.unlocks.push(g);
+      S.chests.silver++;
+      res.bossFirst = true;
+    }
+    if (firstClear && i + 1 < W.levels.length) res.nextOpen = true;
+  } else {
+    const wt = Object.entries(b.wrongTopics || {}).sort((a, c) => c[1] - a[1])[0];
+    res.weak = wt ? wt[0] : null;
+  }
+  res.levelUps = xpRes.ups;
+  checkAch();
+  save();
+  G.b = null; G.bal = null; G.can = null;
+  G.result = res;
+  go('result');
+  if (win) { setTimeout(() => confetti(res.bossFirst ? 140 : 60), 150); for (let k = 0; k < stars; k++) setTimeout(() => SFX.play('star'), 300 + k * 260); }
+  else SFX.play('lose');
+}
+SCREENS.result = () => {
+  const r = G.result;
+  if (r.tower) {
+    return `<section class="result"><div class="eyebrow">Runtornet</div><h1>Våning ${r.floor}</h1>
+      <p class="muted">${r.floor > r.prevBest ? 'Nytt rekord!' : `Ditt rekord är våning ${S.tower.best}.`}</p>
+      <div class="rewards"><div class="reward"><b>+${r.gold}</b><small>guld</small></div><div class="reward"><b>+${r.xp}</b><small>XP</small></div><div class="reward"><b>${r.correct}</b><small>rätt svar</small></div><div class="reward"><b>${r.best}</b><small>bästa combo</small></div></div>
+      <div class="row" style="justify-content:center"><button class="btn primary" data-act="tower">Klättra igen</button><button class="btn ghost" data-act="hub">Till byn</button></div></section>`;
+  }
+  const W = WORLDS[r.w - 1];
+  const hasNext = r.win && r.i + 1 < W.levels.length;
+  return `<section class="result">
+    <div class="eyebrow">${W.n} · ${esc(W.levels[r.i].n)}</div>
+    <h1>${r.win ? (r.bossFirst ? `${W.boss.n} är besegrad!` : 'Seger!') : 'Du föll i striden'}</h1>
+    ${r.win ? `<div class="bigstars">${[0, 1, 2].map(k => `<span class="${k < r.stars ? 'on' : ''}" style="animation-delay:${.25 + k * .26}s">★</span>`).join('')}</div>` : `<p class="muted" style="max-width:46ch;margin:0">Varje fel är en ledtråd till vad du ska öva på. Du behåller guld och XP för dina rätta svar.</p>`}
+    <div class="rewards">
+      <div class="reward"><b>+${r.gold}</b><small>guld</small></div>
+      <div class="reward"><b>+${r.xp}</b><small>XP</small></div>
+      <div class="reward"><b>${r.correct} / ${r.answered}</b><small>${r.label || 'rätt svar'}</small></div>
+      ${r.best !== undefined && r.best !== null ? `<div class="reward"><b>${r.best}</b><small>bästa combo</small></div>` : ''}
+    </div>
+    ${r.win && !r.prev ? '<p class="muted" style="margin:0">Första gången du klarar nivån: +40 guld extra.</p>' : ''}
+    ${r.win && r.stars < 3 ? `<p class="muted" style="margin:0">${r.label ? 'Färre missar ger fler stjärnor.' : '90 % rätt ger tre stjärnor, 75 % ger två.'}</p>` : ''}
+    ${r.unlocks.map(u => { const v = VB[u.id]; return `<div class="card c-${v.r} l" style="width:min(260px,80vw)"><span class="tag">NYTT VÄSEN</span><span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="rar">${RAR[v.r]}</span><span class="ab">${fxText(v.fx(1))}</span></div>
+      <p class="muted" style="margin:0">Du fick också en Silverkista!${r.w < 3 ? ` ${WORLDS[r.w].n} är upplåst.` : ''}</p>`; }).join('')}
+    <div class="row" style="justify-content:center">
+      ${hasNext ? `<button class="btn primary" data-act="play" data-arg="${r.w}-${r.i + 1}">Nästa nivå →</button>` : ''}
+      ${r.win && r.bossFirst && r.w < 3 ? `<button class="btn primary" data-act="map" data-arg="${r.w + 1}">Vidare till ${WORLDS[r.w].n} →</button>` : ''}
+      ${!r.win && r.weak ? `<button class="btn primary" data-act="practopic" data-arg="${r.weak}">Öva på ${esc(T[r.weak].name.toLowerCase())}</button>` : ''}
+      <button class="btn ${hasNext || (!r.win && r.weak) ? 'ghost' : 'primary'}" data-act="play" data-arg="${r.w}-${r.i}">${r.win ? 'Spela igen' : 'Försök igen'}</button>
+      <button class="btn ghost" data-act="map" data-arg="${r.w}">Kartan</button>
+    </div>
+  </section>`;
+};
+
+/* ---------- Runtornet ---------- */
+function startTower() {
+  const topics = Object.values(T).filter(t => t.grade <= Math.max(S.grade, 7) || worldOpen(t.grade - 6)).map(t => t.id);
+  const pool = WORLDS.flatMap(W => W.foes.map(f => ({ n: f[0], e: f[1] })));
+  startBattle({ kind: 'tower', topics, d: 1, foe: R.pick(pool), hp: 77, boss: false, startBest: S.tower.best });
+}
+function finishTower() {
+  const b = G.b;
+  const floor = b.floor - 1;
+  const prevBest = b.startBest || 0;
+  S.tower.best = Math.max(S.tower.best, floor);
+  const fx = teamFx();
+  const gold = addGold((b.towerGold + b.correct * 3) * (1 + (fx.gold || 0)));
+  const xpr = addXP((b.correct * 10 + floor * 6) * (1 + (fx.xp || 0)));
+  checkAch(); save();
+  G.result = { tower: true, floor, prevBest, gold, xp: xpr.n, correct: b.correct, best: b.best };
+  G.b = null;
+  go('result');
+  if (floor > prevBest) confetti(80);
+}
+
+/* ---------- Vågen (ekvationer som balans) ---------- */
+function genEq(g) {
+  for (let tries = 0; tries < 200; tries++) {
+    let a, b, c, d, x;
+    if (g === 7) {
+      x = R.int(1, 12);
+      if (Math.random() < .3) { a = 1; b = R.int(2, 15); } else { a = R.int(2, 6); b = R.int(1, 15); }
+      c = 0; d = a * x + b;
+    } else if (g === 8) {
+      x = R.int(-5, 10); a = R.int(2, 7); c = R.int(1, a - 1); b = R.int(-10, 12); d = a * x + b - c * x;
+      if (Math.random() < .4) { [a, b, c, d] = [c, d, a, b]; }
+    } else {
+      x = R.nz(-8, 8); a = R.nz(-6, 6); c = R.nz(-6, 6); if (a === c) continue; b = R.int(-14, 14); d = a * x + b - c * x;
+    }
+    const st = { a, b, c, d };
+    const par = solvePar(st);
+    if (par >= 2 && par <= 4 && Math.abs(d) <= 80) return { st, par, x };
+  }
+  return { st: { a: 2, b: 3, c: 0, d: 11 }, par: 2, x: 4 };
+}
+function coreOps(st) {
+  const o = [];
+  if (st.b !== 0) o.push({ k: 0, n: -st.b });
+  if (st.d !== 0) o.push({ k: 0, n: -st.d });
+  if (st.c !== 0 && st.a !== 0) { o.push({ k: -st.c, n: 0 }); o.push({ k: -st.a, n: 0 }); }
+  if (st.b === 0 && st.c === 0 && st.a !== 1 && st.a !== 0) o.push({ div: st.a });
+  if (st.d === 0 && st.a === 0 && st.c !== 1 && st.c !== 0) o.push({ div: st.c });
+  return o;
+}
+function applyOp(st, op) {
+  if (op.div) { if ([st.a, st.b, st.c, st.d].some(v => v % op.div !== 0)) return null; return { a: st.a / op.div, b: st.b / op.div, c: st.c / op.div, d: st.d / op.div }; }
+  return { a: st.a + op.k, b: st.b + op.n, c: st.c + op.k, d: st.d + op.n };
+}
+const solvedEq = st => (st.a === 1 && st.b === 0 && st.c === 0) || (st.c === 1 && st.d === 0 && st.a === 0);
+function solvePar(st0) {
+  let frontier = [st0], seen = new Set([JSON.stringify(st0)]);
+  for (let depth = 0; depth <= 6; depth++) {
+    if (frontier.some(solvedEq)) return depth;
+    const nextF = [];
+    for (const st of frontier) for (const op of coreOps(st)) { const n = applyOp(st, op); if (!n) continue; const k = JSON.stringify(n); if (!seen.has(k)) { seen.add(k); nextF.push(n); } }
+    frontier = nextF;
+  }
+  return 9;
+}
+function opLabel(op) {
+  if (op.div) return op.div < 0 ? `÷ (${MINUS}${-op.div})` : `÷ ${op.div}`;
+  if (op.k) return (op.k > 0 ? '+ ' : `${MINUS} `) + (Math.abs(op.k) === 1 ? '' : Math.abs(op.k)) + 'x';
+  return (op.n > 0 ? '+ ' : `${MINUS} `) + Math.abs(op.n);
+}
+function opsFor(st) {
+  const list = coreOps(st);
+  const extra = [{ k: 0, n: R.nz(-9, 9) }, { k: R.pick([1, -1, 2]), n: 0 }, { div: R.pick([2, 3]) }, { k: 0, n: R.nz(-5, 5) }];
+  for (const e of R.shuffle(extra)) { if (list.length >= 6) break; if (!list.some(o => opLabel(o) === opLabel(e))) list.push(e); }
+  return R.shuffle(list.filter((o, i, arr) => arr.findIndex(p => opLabel(p) === opLabel(o)) === i)).slice(0, 6);
+}
+function startBalance(w, i) {
+  const W = WORLDS[w - 1];
+  const eqs = [genEq(W.grade), genEq(W.grade), genEq(W.grade)];
+  G.bal = Object.assign({ w, i, eqs, k: 0, st: { ...eqs[0].st }, hist: [], moves: 0, extraTotal: 0, hp: 3, foe: { n: W.troll, e: '🧌' } }, makeFighter());
+  G.bal.ops = opsFor(G.bal.st);
+  G.screen = 'balance'; render();
+}
+SCREENS.balance = () => {
+  const B = G.bal, eq = B.eqs[B.k];
+  return `<section class="arena" id="arena">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Fly</button><span class="muted" style="font-size:13px">${WORLDS[B.w - 1].n} · nivå ${B.i + 1}</span></div>
+    <div class="foe" id="foe"><div class="face" id="face">${B.foe.e}</div>
+      <div class="stack" style="gap:6px"><b>${esc(B.foe.n)}</b><div class="hpbar"><i id="hp" style="width:${B.hp / 3 * 100}%"></i></div>
+      <small class="muted">Lös tre vågor. Vågen måste alltid vara i balans: gör samma sak på båda sidor.</small></div></div>
+    <div class="me"><span class="hearts" id="hearts"></span><span class="muted">Våg ${B.k + 1} av 3 · drag: <b style="color:var(--birch)">${B.moves}</b> · minsta möjliga: ${eq.par}</span></div>
+    <div class="panel stack" style="gap:8px">
+      <div class="scale" aria-label="Våg">
+        <div class="base"></div><div class="post"></div><div class="beam" id="beam"></div>
+        <div class="pan l" id="panl"><div class="rope"></div><div class="dish">${lin(B.st.a, B.st.b)}</div></div>
+        <div class="pan r" id="panr"><div class="rope"></div><div class="dish">${lin(B.st.c, B.st.d)}</div></div>
+      </div>
+      <div class="eyebrow" style="text-align:center">Gör detta på båda sidor</div>
+      <div class="ops">${B.ops.map((o, idx) => `<button class="op" data-act="balop" data-arg="${idx}">${opLabel(o)}</button>`).join('')}</div>
+      <div class="row" style="justify-content:center"><button class="btn small ghost" data-act="balundo" ${B.hist.length ? '' : 'disabled'}>↶ Ångra</button></div>
+    </div>
+    <div class="panel"><div class="eyebrow">Din uträkning</div><div class="steps">
+      <div><b>${lin(eq.st.a, eq.st.b)} = ${lin(eq.st.c, eq.st.d)}</b></div>
+      ${B.hist.map(h => `<div><b>${lin(h.st.a, h.st.b)} = ${lin(h.st.c, h.st.d)}</b><span class="opl">(${h.label} på båda sidor)</span></div>`).join('')}
+    </div></div>
+  </section>`;
+};
+AFTER.balance = () => updateBalHUD();
+AFTER.map = () => { const n = $('.node.next') || $('.node.open:last-of-type'); if (n) setTimeout(() => n.scrollIntoView({ block: 'center', behavior: 'auto' }), 30); };
+function updateBalHUD() {
+  const B = G.bal; if (!B) return;
+  const h = $('#hearts');
+  if (h) h.innerHTML = Array.from({ length: B.maxHearts }, (_, i) => `<span class="${i < B.hearts ? '' : 'lost'}">❤️</span>`).join('') + (B.shield ? ` <span class="sh">🛡️×${B.shield}</span>` : '');
+}
+async function balOp(idx) {
+  const B = G.bal; if (!B || B.busy) return;
+  const op = B.ops[idx]; if (!op) return;
+  const n = applyOp(B.st, op);
+  if (!n) { shake($('.scale')); toast('Det blir bråk. Prova att flytta termer först, och dela sist.'); SFX.play('wrong'); return; }
+  SFX.play('click');
+  B.hist.push({ st: n, prev: B.st, label: opLabel(op) });
+  B.st = n; B.moves++;
+  const eq = B.eqs[B.k];
+  if (B.moves > eq.par + 2) {
+    if (B.shield > 0) { B.shield--; toast('🛡️ Skölden skyddade dig när trollet tröttnade.'); }
+    else { B.hearts--; flash(); toast(`🧌 ${B.foe.n} tappar tålamodet! Försök hitta en kortare väg.`); }
+    if (B.hearts <= 0 && B.revive > 0) { B.revive--; B.hearts = 1; banner('Skogsrået räddar dig!'); }
+  }
+  B.ops = opsFor(B.st);
+  render();
+  $('#panl')?.classList.add('bump'); $('#panr')?.classList.add('bump');
+  if (B.hearts <= 0) { await wait(500); return finishLevel(false, { w: B.w, i: B.i, stars: 0, correct: B.k, answered: 3, best: null, label: 'vågor lösta' }); }
+  if (solvedEq(n)) {
+    B.busy = true;
+    const extra = Math.max(0, B.moves - eq.par);
+    B.extraTotal += extra;
+    const x = n.a === 1 ? n.d : n.b;
+    await wait(250);
+    banner(`x = ${fmt(x)}`, extra === 0 ? 'Perfekt! Minsta antal drag' : `${B.moves} drag (minst ${eq.par})`);
+    SFX.play('right');
+    const face = $('#face'); if (face) { face.classList.add('hit'); }
+    B.hp--; $('#hp') && ($('#hp').style.width = B.hp / 3 * 100 + '%');
+    S.stats.correct++; S.stats.answered++; quest('correct'); recordAnswer(['ekv1', 'ekv2', 'ekv2'][B.w - 1], true);
+    await wait(1200);
+    B.busy = false;
+    if (B.hp <= 0) {
+      if (B.extraTotal === 0) S.flags.bal = true;
+      return finishLevel(true, { w: B.w, i: B.i, stars: B.extraTotal === 0 ? 3 : B.extraTotal <= 3 ? 2 : 1, correct: 3, answered: 3, best: null, label: 'vågor lösta' });
+    }
+    B.k++; B.st = { ...B.eqs[B.k].st }; B.hist = []; B.moves = 0; B.ops = opsFor(B.st);
+    render();
+  }
+}
+function balUndo() {
+  const B = G.bal; if (!B || !B.hist.length || B.busy) return;
+  const h = B.hist.pop(); B.st = h.prev; B.ops = opsFor(B.st); render();
+}
+
+/* ---------- Runkastet (koordinatsystem) ---------- */
+const KSET = [-3, -2, -1.5, -1, -.5, .5, 1, 1.5, 2, 3];
+function genTargets(mode) {
+  const key = p => p.x + ',' + p.y;
+  const used = new Set(['0,0']);
+  const pts = [];
+  const add = (x, y, line) => { const k = key({ x, y }); if (used.has(k) || Math.abs(x) > 6 || Math.abs(y) > 6) return false; used.add(k); pts.push({ x, y, alive: true, line }); return true; };
+  if (mode === 'coord') {
+    while (pts.length < 5) add(R.int(-6, 6), R.int(-6, 6));
+    return { pts, lines: [] };
+  }
+  const lines = [];
+  const counts = mode === 'prop' ? [2, 2, 1] : [3, 2];
+  for (let li = 0; li < counts.length; li++) {
+    for (let tries = 0; tries < 100; tries++) {
+      const k = R.pick(KSET), m = mode === 'prop' ? 0 : R.int(-4, 4);
+      if (lines.some(L => L.k === k && L.m === m)) continue;
+      const xs = R.shuffle([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]).filter(x => Number.isInteger(k * x + m) && Math.abs(k * x + m) <= 6 && (mode !== 'line' || x !== 0));
+      if (xs.length < counts[li]) continue;
+      const before = pts.length;
+      for (const x of xs) { if (pts.length - before >= counts[li]) break; add(x, k * x + m, li); }
+      if (pts.length - before === counts[li]) { lines.push({ k, m }); break; }
+      while (pts.length > before) { const p = pts.pop(); used.delete(key(p)); }
+    }
+  }
+  return { pts, lines };
+}
+function startCannon(w, i) {
+  const W = WORLDS[w - 1];
+  const mode = ['coord', 'prop', 'line'][w - 1];
+  const t = genTargets(mode);
+  G.can = Object.assign({ w, i, mode, pts: t.pts, shots: [], x: 0, y: 0, k: 1, m: 0, misses: 0, hits: 0, foeE: W.foes[0][1], busy: false }, makeFighter());
+  G.screen = 'cannon'; render();
+}
+function canFormula(C) {
+  if (C.mode === 'coord') return `(${fmt(C.x)}, ${fmt(C.y)})`;
+  if (C.mode === 'prop') return `y = ${C.k === 1 ? '' : C.k === -1 ? MINUS : fmt(C.k)}x`;
+  return `y = ${lin(C.k, C.m)}`;
+}
+SCREENS.cannon = () => {
+  const C = G.can, W = WORLDS[C.w - 1];
+  const left = C.pts.filter(p => p.alive).length;
+  const stepper = (id, label, val) => `<div class="stepper"><label for="${id}">${label}</label><button data-act="step" data-arg="${id}|-1" aria-label="Minska ${label}">−</button><output id="${id}">${fmt(val)}</output><button data-act="step" data-arg="${id}|1" aria-label="Öka ${label}">+</button></div>`;
+  const tip = C.mode === 'coord' ? 'Första talet är x (åt höger), andra är y (uppåt). Negativa tal går åt vänster och nedåt.'
+    : C.mode === 'prop' ? 'Linjen går alltid genom origo. Välj ett väsen och räkna k = y / x.'
+    : 'm är där linjen skär y-axeln. Välj två väsen som ligger på rad och räkna k = Δy / Δx.';
+  return `<section class="arena" id="arena">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Fly</button><span class="muted" style="font-size:13px">${W.n} · nivå ${C.i + 1}</span></div>
+    <div class="me"><span class="hearts" id="hearts"></span><span class="muted">${left} väsen kvar · missar: ${C.misses}</span></div>
+    <div class="cannon">
+      <canvas id="cv" width="520" height="520" aria-label="Koordinatsystem med väsen att träffa"></canvas>
+      <div class="aim panel">
+        <div class="eyebrow">${C.mode === 'coord' ? 'Sikta på en punkt' : 'Rikta runstrålen'}</div>
+        <div class="formula" id="formula">${canFormula(C)}</div>
+        ${C.mode === 'coord' ? stepper('sx', 'x', C.x) + stepper('sy', 'y', C.y) : stepper('sk', 'k', C.k) + (C.mode === 'line' ? stepper('sm', 'm', C.m) : '')}
+        <button class="btn primary" data-act="fire" ${C.busy ? 'disabled' : ''}>${C.mode === 'coord' ? '✦ Kasta runan' : '✦ Skjut strålen'}</button>
+        <p class="muted" style="margin:0;font-size:13px">${tip}</p>
+        <p class="muted" style="margin:0;font-size:12px">Varje kast som missar kostar ett hjärta. Träffa flera på en gång för bonus!</p>
+      </div>
+    </div>
+  </section>`;
+};
+AFTER.cannon = () => { drawCannon(); updateCanHUD(); };
+function updateCanHUD() {
+  const C = G.can; const h = $('#hearts'); if (!C || !h) return;
+  h.innerHTML = Array.from({ length: C.maxHearts }, (_, i) => `<span class="${i < C.hearts ? '' : 'lost'}">❤️</span>`).join('') + (C.shield ? ` <span class="sh">🛡️×${C.shield}</span>` : '');
+}
+function drawCannon(anim) {
+  const C = G.can, cv = $('#cv'); if (!C || !cv) return;
+  const ctx = cv.getContext('2d'), S2 = 520, N = 7, u = S2 / (2 * N), cx = S2 / 2;
+  const X = x => cx + x * u, Y = y => cx - y * u;
+  ctx.clearRect(0, 0, S2, S2);
+  ctx.lineWidth = 1;
+  for (let i = -N; i <= N; i++) {
+    ctx.strokeStyle = 'rgba(157,178,172,.16)';
+    ctx.beginPath(); ctx.moveTo(X(i), 0); ctx.lineTo(X(i), S2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, Y(i)); ctx.lineTo(S2, Y(i)); ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(236,230,214,.7)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, cx); ctx.lineTo(S2, cx); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, S2); ctx.stroke();
+  ctx.fillStyle = 'rgba(236,230,214,.75)'; ctx.font = '600 13px Lexend, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (let i = -6; i <= 6; i++) { if (!i) continue; ctx.fillText(fmt(i), X(i), cx + 5); }
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (let i = -6; i <= 6; i++) { if (!i) continue; ctx.fillText(fmt(i), cx - 6, Y(i)); }
+  ctx.font = '700 15px Lexend, sans-serif'; ctx.fillText('y', cx - 8, 12); ctx.textAlign = 'left'; ctx.fillText('x', S2 - 14, cx - 12);
+  // tidigare skott
+  for (const s of C.shots) {
+    ctx.strokeStyle = s.hit ? 'rgba(95,227,179,.35)' : 'rgba(236,86,112,.35)'; ctx.lineWidth = 2;
+    if (s.mode === 'coord') { ctx.beginPath(); ctx.arc(X(s.x), Y(s.y), 10, 0, Math.PI * 2); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.moveTo(X(-N), Y(s.k * -N + s.m)); ctx.lineTo(X(N), Y(s.k * N + s.m)); ctx.stroke(); }
+  }
+  // väsen
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '28px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+  for (const p of C.pts) {
+    if (!p.alive) { ctx.fillStyle = 'rgba(95,227,179,.5)'; ctx.font = '16px sans-serif'; ctx.fillText('✦', X(p.x), Y(p.y)); ctx.font = '28px "Segoe UI Emoji", "Apple Color Emoji", sans-serif'; continue; }
+    ctx.fillStyle = 'rgba(12,22,24,.6)'; ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 17, 0, Math.PI * 2); ctx.fill();
+    ctx.fillText(C.foeE, X(p.x), Y(p.y) + 1);
+  }
+  // pågående skott
+  if (anim) {
+    ctx.strokeStyle = '#5fe3b3'; ctx.lineWidth = 5; ctx.shadowColor = '#5fe3b3'; ctx.shadowBlur = 18;
+    if (anim.mode === 'coord') { ctx.beginPath(); ctx.arc(X(anim.x), Y(anim.y), 8 + anim.t * 14, 0, Math.PI * 2); ctx.stroke(); }
+    else { const x1 = -N + anim.t * 2 * N; ctx.beginPath(); ctx.moveTo(X(-N), Y(anim.k * -N + anim.m)); ctx.lineTo(X(x1), Y(anim.k * x1 + anim.m)); ctx.stroke(); }
+    ctx.shadowBlur = 0;
+  }
+}
+function canStep(id, dir) {
+  const C = G.can; if (!C || C.busy) return;
+  if (id === 'sx') C.x = clamp(C.x + dir, -6, 6);
+  if (id === 'sy') C.y = clamp(C.y + dir, -6, 6);
+  if (id === 'sk') { let k = clamp(Math.round((C.k + dir * .5) * 2) / 2, -4, 4); if (k === 0) k = dir * .5; C.k = k; }
+  if (id === 'sm') C.m = clamp(C.m + dir, -6, 6);
+  SFX.play('click');
+  const out = $('#' + id); if (out) out.textContent = fmt({ sx: C.x, sy: C.y, sk: C.k, sm: C.m }[id]);
+  $('#formula').textContent = canFormula(C);
+}
+async function canFire() {
+  const C = G.can; if (!C || C.busy) return;
+  C.busy = true; $('[data-act="fire"]')?.setAttribute('disabled', '');
+  SFX.play('shot');
+  const shot = C.mode === 'coord' ? { mode: 'coord', x: C.x, y: C.y } : { mode: C.mode, k: C.k, m: C.mode === 'line' ? C.m : 0 };
+  const dur = reduceMotion ? 1 : 420, t0 = performance.now();
+  await new Promise(res => { const step = () => { const t = Math.min(1, (performance.now() - t0) / dur); drawCannon(Object.assign({ t }, shot)); if (t < 1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); });
+  const hits = C.pts.filter(p => p.alive && (shot.mode === 'coord' ? p.x === shot.x && p.y === shot.y : Math.abs(shot.k * p.x + shot.m - p.y) < 1e-9));
+  hits.forEach(p => { p.alive = false; });
+  shot.hit = hits.length > 0;
+  C.shots.push(shot);
+  if (hits.length) {
+    C.hits += hits.length; SFX.play('right');
+    S.stats.correct++; S.stats.answered++; quest('correct');
+    if (C.w === 3) recordAnswer('linje', true);
+    banner(hits.length >= 3 ? `${hits.length} på en gång!` : hits.length === 2 ? 'Dubbelträff!' : 'Träff!');
+    if (hits.length >= 3) S.flags.snipe = true;
+  } else {
+    C.misses++; SFX.play('wrong'); S.stats.answered++;
+    if (C.shield > 0) { C.shield--; toast('🛡️ Skölden tog smällen!'); }
+    else { C.hearts--; flash(); shake($('#arena')); }
+    if (C.hearts <= 0 && C.revive > 0) { C.revive--; C.hearts = 1; banner('Skogsrået räddar dig!'); }
+    toast(C.mode === 'coord' ? `Ingen där. Runan landade i (${fmt(shot.x)}, ${fmt(shot.y)}).` : `Strålen ${canFormula(C)} missade. Jämför med ett väsens koordinater.`);
+  }
+  await wait(500);
+  C.busy = false;
+  const left = C.pts.filter(p => p.alive).length;
+  if (C.hearts <= 0) return finishLevel(false, { w: C.w, i: C.i, stars: 0, correct: C.hits, answered: C.pts.length, best: null, label: 'väsen träffade' });
+  if (!left) {
+    await wait(300);
+    return finishLevel(true, { w: C.w, i: C.i, stars: C.misses === 0 ? 3 : C.misses === 1 ? 2 : 1, correct: C.hits, answered: C.pts.length, best: null, label: 'väsen träffade' });
+  }
+  render();
+}
+
+/* ---------- Väsenboken ---------- */
+SCREENS.vasen = () => {
+  const slots = teamSlots();
+  return `<section class="stack">
+    <button class="back" data-act="hub">← Byn</button>
+    <div class="screenhead"><div><div class="eyebrow">${ownedCount(S)} av ${V.length} väsen</div><h2>Väsenboken</h2></div></div>
+    <div class="panel stack" style="gap:10px"><b>Ditt lag</b>
+      <div class="slots">${[0, 1, 2].map(i => {
+        if (i >= slots) return `<div class="slot">🔒<br>Låses upp på nivå ${i === 1 ? 3 : 6}</div>`;
+        const id = S.team[i]; if (!id) return `<div class="slot">Tom plats<br>Välj ett väsen nedan</div>`;
+        return `<div class="slot full"><span><span class="em">${VB[id].e}</span><br><b>${VB[id].n}</b></span></div>`;
+      }).join('')}</div>
+      <small class="muted">Väsen i laget ger dig sina krafter i strid. Dubbletter från kistor gör dina väsen starkare (max nivå 5).</small>
+    </div>
+    ${['l', 'e', 'r', 'c'].map(r => `<div class="stack" style="gap:8px"><h3 style="color:var(--r-${r})">${RAR[r]}</h3><div class="cards">${V.filter(v => v.r === r).map(v => vasenCard(v)).join('')}</div></div>`).join('')}
+  </section>`;
+};
+function vasenCard(v) {
+  const o = S.vasen[v.id];
+  if (!o) {
+    const where = v.boss ? `Besegra ${v.n} i ${WORLDS[v.boss - 1].n}` : v.r === 'l' ? 'Sover i Silver- och Guldkistor' : v.r === 'e' ? 'Finns oftast i Guldkistor' : 'Finns i alla kistor';
+    return `<div class="card c-${v.r} unknown"><span class="em">${v.e}</span><span class="nm">???</span><span class="rar">${RAR[v.r]}</span><span class="ab">${where}</span></div>`;
+  }
+  const inTeam = S.team.includes(v.id);
+  return `<div class="card c-${v.r} ${v.r === 'l' ? 'l' : ''} ${inTeam ? 'inteam' : ''}">${inTeam ? '<span class="tag">I LAGET</span>' : ''}
+    <span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="rar">${RAR[v.r]}</span>
+    <span class="lv">${'★'.repeat(o.l)}${'☆'.repeat(5 - o.l)}</span>
+    ${o.l < 5 ? `<div class="shard" title="${o.s} / ${o.l} dubbletter till nästa nivå"><i style="width:${o.s / o.l * 100}%"></i></div>` : '<small class="muted">Maxnivå</small>'}
+    <span class="ab">${fxText(v.fx(o.l))}</span>
+    <span class="ab" style="font-style:italic">${esc(v.lore)}</span>
+    <button class="btn small ${inTeam ? 'ghost' : 'primary'}" data-act="team" data-arg="${v.id}">${inTeam ? 'Ta ur laget' : 'Till laget'}</button></div>`;
+}
+function toggleTeam(id) {
+  const i = S.team.indexOf(id);
+  if (i >= 0) { if (S.team.length === 1) { toast('Du behöver minst ett väsen i laget.'); return; } S.team.splice(i, 1); }
+  else { if (S.team.length >= teamSlots()) S.team[teamSlots() - 1] = id; else S.team.push(id); }
+  S.team = S.team.slice(0, teamSlots());
+  save(); render();
+}
+
+/* ---------- Kistor ---------- */
+SCREENS.chests = () => `<section class="stack">
+  <button class="back" data-act="hub">← Byn</button>
+  <div class="screenhead"><div><div class="eyebrow">Du har ${S.gold} guld</div><h2>Kistor</h2></div></div>
+  <div class="chests">${Object.entries(CHESTS).map(([k, c]) => `<div class="chest"><span class="ic">${c.e}</span><b>${c.n}</b>
+    <span class="odds">${Object.entries(c.odds).filter(([, p]) => p > 0).map(([r, p]) => `${RAR[r]} ${p} %`).join(' · ')}</span>
+    <span>Du har: <b>${S.chests[k]}</b></span>
+    <div class="row" style="justify-content:center"><button class="btn primary small" data-act="openchest" data-arg="${k}" ${S.chests[k] ? '' : 'disabled'}>Öppna</button>
+    <button class="btn gold small" data-act="buychest" data-arg="${k}" ${S.gold >= c.cost ? '' : 'disabled'}>Köp · ${c.cost} 🪙</button></div></div>`).join('')}</div>
+  <p class="muted" style="margin:0">Du får kistor när du går upp i nivå, samlar stjärnor i varje värld, klarar alla dagens uppdrag och besegrar bossar. Bossarnas legendariska väsen får du bara genom att besegra dem.</p>
+</section>`;
+function openChest(type) {
+  if (!S.chests[type]) return;
+  S.chests[type]--; S.stats.chests++; quest('chest');
+  const id = rollChest(type);
+  const res = grantVasen(id);
+  checkAch(); save();
+  const v = VB[id];
+  const ov = document.createElement('div');
+  ov.className = 'reveal';
+  ov.innerHTML = `<div class="inner"><button class="box" id="box" aria-label="Öppna kistan">${CHESTS[type].e}</button><p class="muted">Tryck på kistan!</p></div>`;
+  document.body.appendChild(ov);
+  let taps = 0;
+  const box = ov.querySelector('#box');
+  box.focus();
+  box.addEventListener('click', () => {
+    taps++; SFX.play('click'); box.classList.add('shake2');
+    if (taps < 3 && !reduceMotion) return;
+    SFX.play('chest');
+    if (v.r === 'l' || v.r === 'e') confetti(v.r === 'l' ? 160 : 80);
+    ov.innerHTML = `<div class="inner c-${v.r}"><div class="rays"></div>
+      <div class="card c-${v.r} ${v.r === 'l' ? 'l' : ''}">${res.isNew ? '<span class="tag">NY!</span>' : ''}<span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="rar">${RAR[v.r]}</span>
+      <span class="ab">${fxText(v.fx(S.vasen[id].l))}</span><span class="ab" style="font-style:italic">${esc(v.lore)}</span></div>
+      <p style="margin:0;font-weight:600">${res.isNew ? 'Ett nytt väsen till Väsenboken!' : res.maxed ? `Redan på maxnivå: +${res.gold} guld` : res.leveled ? `Dubblett! ${v.n} nådde nivå ${res.l}!` : `Dubblett! ${S.vasen[id].s} / ${S.vasen[id].l} mot nästa nivå`}</p>
+      <div class="row" style="justify-content:center">${res.isNew && !S.team.includes(id) ? `<button class="btn primary" data-close="team" data-id="${id}">Sätt i laget</button>` : ''}<button class="btn ${res.isNew && !S.team.includes(id) ? 'ghost' : 'primary'}" data-close="ok">Fortsätt</button></div></div>`;
+    ov.addEventListener('click', e => {
+      const btn = e.target.closest('[data-close]'); if (!btn) return;
+      if (btn.dataset.close === 'team') { if (S.team.length < teamSlots()) S.team.push(id); else S.team[teamSlots() - 1] = id; save(); }
+      ov.remove(); render();
+    });
+    ov.querySelector('[data-close]')?.focus();
+  });
+}
+
+/* ---------- Medaljer ---------- */
+SCREENS.medals = () => `<section class="stack">
+  <button class="back" data-act="hub">← Byn</button>
+  <div class="screenhead"><div><div class="eyebrow">${Object.keys(S.ach).length} av ${ACH.length}</div><h2>Medaljer</h2></div></div>
+  <div class="medals">${ACH.map(a => `<div class="medal ${S.ach[a.id] ? 'on' : ''}"><span class="ic">${a.ic}</span><div><b>${a.n}</b><small>${a.d}</small></div></div>`).join('')}</div>
+  <div class="panel"><b>Statistik</b><p class="muted" style="margin:6px 0 0">Rätta svar: ${S.stats.correct} · Besvarade: ${S.stats.answered} · Träffsäkerhet: ${S.stats.answered ? Math.round(S.stats.correct / S.stats.answered * 100) : 0} % · Bästa combo: ${S.stats.bestStreak} · Segrar: ${S.stats.wins} · Kistor: ${S.stats.chests} · Bästa våning: ${S.tower.best}</p></div>
+</section>`;
+
+/* ---------- Övningsgläntan ---------- */
+SCREENS.practice = () => {
+  if (G.prac && G.prac.q) return practiceQ();
+  return `<section class="stack">
+    <button class="back" data-act="hub">← Byn</button>
+    <div class="screenhead"><div><div class="eyebrow">Ingen tidspress · inga hjärtan</div><h2>Övningsgläntan</h2></div>
+      <div class="seg" role="group" aria-label="Svårighet">${[1, 2, 3].map(d => `<button class="${(G.pracD || 1) === d ? 'sel' : ''}" data-act="pracd" data-arg="${d}">${['Lätt', 'Mellan', 'Svår'][d - 1]}</button>`).join('')}</div></div>
+    <p class="muted" style="margin:0;max-width:62ch">Välj ett område. Medaljen visar hur säker du är: 🥉 brons, 🥈 silver och 🥇 guld bygger på dina senaste 20 svar, i strider och här.</p>
+    ${[7, 8, 9].map(g => `<div class="stack" style="gap:8px"><h3>Åk ${g}</h3><div class="topics">${Object.values(T).filter(t => t.grade === g).map(t => {
+      const m = S.mastery[t.id], acc = masteryAcc(t.id), med = masteryMedal(S, t.id);
+      return `<button class="topicbtn" data-act="practopic" data-arg="${t.id}"><span class="ic">${t.icon}</span><span><b>${t.name}</b><small>${m ? `${m.n} svar · ${Math.round(acc * 100)} % senaste` : 'Inte testat än'}</small><div class="mbar"><i style="width:${acc === null ? 0 : acc * 100}%"></i></div></span><span class="medalpip">${['', '🥉', '🥈', '🥇'][med]}</span></button>`;
+    }).join('')}</div></div>`).join('')}
+  </section>`;
+};
+function practiceNext() {
+  const P = G.prac;
+  const q = T[P.topic].gen(P.d); q.topic = P.topic; q.d = P.d;
+  P.q = q; P.done = false; P.write = P.write && q.write;
+  render();
+}
+function practiceQ() {
+  const P = G.prac, q = P.q;
+  return `<section class="stack">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="pracexit">← Alla områden</button><span class="muted">Rätt: ${P.right} / ${P.n}</span></div>
+    ${qcardHTML(q)}
+    ${P.done ? explainHTML(q, false, P.typed, P.ok) + `<button class="btn primary" data-act="pracnext" id="pracnext">Nästa fråga</button>`
+      : answersHTML(q, [], P.write) + (q.write ? `<div class="tools"><button class="toggle ${P.write ? 'on' : ''}" data-act="pracwrite">✍ Skriv svaret själv</button></div>` : '')}
+  </section>`;
+}
+AFTER.practice = () => { if (G.prac && G.prac.q && !G.prac.done && G.prac.write) $('#wans')?.focus(); if (G.prac && G.prac.done) $('#pracnext')?.focus({ preventScroll: true }); };
+function practiceAnswer(idx, typed) {
+  const P = G.prac; if (!P || P.done) return;
+  const q = P.q;
+  const ok = isRight(q, idx !== null ? q.opts[idx] : null, typed);
+  P.n++; if (ok) { P.right++; quest('practice'); quest('correct'); quest('topic', 1, q.topic); S.stats.correct++; addXP(4); }
+  S.stats.answered++;
+  recordAnswer(q.topic, ok);
+  P.ok = ok; P.typed = typed; P.done = true;
+  SFX.play(ok ? 'right' : 'wrong');
+  checkAch(); save();
+  render();
+}
+
+/* ---------- Dialoger ---------- */
+function modal(html) {
+  const m = document.createElement('div');
+  m.className = 'modal'; m.innerHTML = `<div class="panel">${html}</div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; const a = b.dataset.m; m.remove(); if (MODAL_ACT[a]) MODAL_ACT[a](); });
+  m.querySelector('[data-m]')?.focus();
+  return m;
+}
+const MODAL_ACT = {
+  quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; go('hub'); },
+  resume: () => { if (G.b && !G.b.locked) { G.b.tStart += performance.now() - (G.pausedAt || performance.now()); startTimer(); } },
+  reset: () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } S = null; G.setup = { grade: 7, starter: null, name: '' }; go('setup'); },
+  close: () => { }
+};
+function showLoginBonus() {
+  G.loginBonus = false;
+  const day = ((S.login.streak - 1) % 7) + 1;
+  const gold = 30 + day * 10;
+  addGold(gold);
+  let extra = '';
+  if (day === 7) { S.chests.silver++; extra = ' och en Silverkista'; }
+  checkAch(); save(); renderTop();
+  modal(`<div class="eyebrow">Dagsbonus</div><h2>Välkommen tillbaka${S.name ? ', ' + esc(S.name) : ''}!</h2>
+    <div class="days">${[1, 2, 3, 4, 5, 6, 7].map(d => `<span class="${d <= day ? 'on' : ''}">Dag ${d}</span>`).join('')}</div>
+    <p style="margin:0">Du spelar ${S.login.streak} ${S.login.streak === 1 ? 'dag' : 'dagar'} i rad och får <b style="color:var(--ember)">${gold} guld</b>${extra}.</p>
+    <p class="muted" style="margin:0;font-size:13px">Dag 7 i rad ger en Silverkista.</p>
+    <button class="btn primary" data-m="close">Tack!</button>`);
+  SFX.play('coin');
+}
+
+/* ===== Händelser ===== */
+const ACT = {
+  hub: () => { if (G.screen === 'setup') return; if (G.b || G.bal || G.can) return ACT.quitask(); go('hub'); },
+  sound: () => { S.sound = !S.sound; save(); renderTop(); SFX.play('click'); },
+  pickgrade: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.grade = Number(a); render(); },
+  pickstarter: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.starter = a; render(); },
+  begin: () => {
+    const st = G.setup; if (!st.starter) return;
+    const name = ($('#pname')?.value || '').trim().slice(0, 18);
+    S = newState(name, st.grade, st.starter);
+    G.mapWorld = st.grade - 6;
+    dailyCheck(); G.loginBonus = false;
+    save(); SFX.play('win');
+    go('hub');
+    toast(`Välkommen, <b>${esc(S.name)}</b>! Du har fått en Träkista. Öppna den under Kistor.`, 5000);
+    if (cloud.doc) pushCloud();
+  },
+  map: a => go('map', a),
+  lockedlvl: () => toast('Klara nivån innan för att låsa upp den här.'),
+  play: a => { const [w, i] = a.split('-').map(Number); if (!levelOpen(w, i)) return ACT.lockedlvl(); startLevel(w, i); },
+  cont: () => { const b = G.b; if (!b) return; if (b.hearts <= 0) return b.kind === 'tower' ? finishTower() : finishLevel(false); nextQuestion(); },
+  writemode: () => { const b = G.b; if (!b || b.locked) return; b.write = !b.write; renderQ(); },
+  hint: () => {
+    const b = G.b; if (!b || b.locked || b.hints <= 0 || b.write) return;
+    b.hints--;
+    const wrong = b.q.opts.map((o, i) => i).filter(i => b.q.opts[i] !== b.q.a && !b.removed.includes(i));
+    b.removed.push(...R.shuffle(wrong).slice(0, 2));
+    renderQ(); SFX.play('click');
+  },
+  quitask: () => {
+    G.pausedAt = performance.now(); stopTimer();
+    const tower = G.b && G.b.kind === 'tower';
+    modal(`<h3>${tower ? 'Lämna tornet?' : 'Fly från striden?'}</h3><p class="muted" style="margin:0">${tower ? 'Du får belöningen för våningarna du klarat.' : 'Du får ingen belöning för den här nivån.'}</p>
+      <div class="row" style="justify-content:center"><button class="btn primary" data-m="resume">Stanna kvar</button><button class="btn ghost" data-m="quit">${tower ? 'Lämna' : 'Fly'}</button></div>`);
+  },
+  claimq: a => {
+    const q = S.daily.q[Number(a)]; if (!q || !q.done || q.claimed) return;
+    q.claimed = true; const g = addGold(QUESTS[q.id].gold); SFX.play('coin'); toast(`+${g} guld`);
+    if (!S.daily.bonus && S.daily.q.every(x => x.claimed)) { S.daily.bonus = true; S.chests.tra++; toast('🎁 Alla dagens uppdrag klara: <b>Träkista</b>!', 4500); }
+    save(); render();
+  },
+  claimms: a => { const [key, type] = a.split('|'); if (S.claimedMs[key]) return; S.claimedMs[key] = true; S.chests[type]++; SFX.play('coin'); toast(`${CHESTS[type].e} <b>${CHESTS[type].n}</b> tillagd under Kistor.`); save(); render(); },
+  vasen: () => go('vasen'),
+  team: a => toggleTeam(a),
+  chests: () => go('chests'),
+  openchest: a => openChest(a),
+  buychest: a => { const c = CHESTS[a]; if (S.gold < c.cost) return; S.gold -= c.cost; S.chests[a]++; save(); SFX.play('coin'); render(); },
+  medals: () => go('medals'),
+  tower: () => { if (S.level < 2) return toast('Runtornet låses upp när du når nivå 2.'); startTower(); },
+  practice: () => { G.prac = null; go('practice'); },
+  pracd: a => { G.pracD = Number(a); render(); },
+  practopic: a => { G.prac = { topic: a, d: G.pracD || (masteryAcc(a) > .8 ? 2 : 1), n: 0, right: 0, write: false }; G.screen = 'practice'; practiceNext(); window.scrollTo({ top: 0 }); },
+  pracnext: () => practiceNext(),
+  pracexit: () => { G.prac = null; render(); },
+  pracwrite: () => { G.prac.write = !G.prac.write; render(); },
+  balop: a => balOp(Number(a)),
+  balundo: () => balUndo(),
+  step: a => { const [id, d] = a.split('|'); canStep(id, Number(d)); },
+  fire: () => canFire(),
+  resetask: () => modal(`<h3>Byta spelare?</h3><p class="muted" style="margin:0">All framgång för ${esc(S.name)} på den här enheten raderas och går inte att få tillbaka.</p>
+    <div class="row" style="justify-content:center"><button class="btn primary" data-m="close">Avbryt</button><button class="btn ghost" data-m="reset">Radera och börja om</button></div>`)
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
+  const fn = ACT[el.dataset.act]; if (fn) { e.preventDefault(); fn(el.dataset.arg, el); }
+});
+document.addEventListener('submit', e => {
+  const f = e.target.closest('[data-form="write"]'); if (!f) return;
+  e.preventDefault();
+  const val = ($('#wans')?.value || '').trim(); if (!val) return;
+  if (G.screen === 'battle') answer(null, false, val);
+  else if (G.screen === 'practice') practiceAnswer(null, val);
+});
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input')) return;
+  if (document.querySelector('.modal, .reveal')) return;
+  const n = Number(e.key);
+  if (n >= 1 && n <= 4) {
+    if (G.screen === 'battle' && G.b && !G.b.locked && !G.b.write) { const btn = $$('.ans')[n - 1]; if (btn && !btn.classList.contains('gone')) answer(n - 1); }
+    else if (G.screen === 'practice' && G.prac && G.prac.q && !G.prac.done && !G.prac.write) practiceAnswer(n - 1);
+  }
+});
+// svarsknappar i övningsläget går via egen handler
+ACT.ans = a => { if (G.screen === 'practice') return practiceAnswer(Number(a)); answer(Number(a)); };
+
+/* ===== Bakgrund ===== */
+function drawBackdrop() {
+  const sv = $('#forestsvg');
+  if (sv) {
+    let s = '';
+    for (let layer = 0; layer < 2; layer++) {
+      const col = layer ? '#0a1315' : '#11211f';
+      let x = -20;
+      while (x < 1220) {
+        const w = 26 + Math.random() * 30, h = (layer ? 70 : 100) + Math.random() * (layer ? 50 : 55);
+        s += `<polygon fill="${col}" points="${x},160 ${x + w / 2},${160 - h} ${x + w},160"/>`;
+        x += w * (.55 + Math.random() * .3);
+      }
+    }
+    sv.innerHTML = s;
+  }
+  const sb = $('#starsbg');
+  if (sb) sb.innerHTML = Array.from({ length: 50 }, () => `<i style="position:absolute;left:${Math.random() * 100}%;top:${Math.random() * 55}%;width:2px;height:2px;border-radius:50%;background:#ece6d6;opacity:${.15 + Math.random() * .45}"></i>`).join('');
+}
+
+/* ===== Start ===== */
+function boot() {
+  drawBackdrop();
+  S = loadLocal();
+  if (S) { dailyCheck(); G.screen = 'hub'; } else G.screen = 'setup';
+  render();
+  initCloud();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+</script>
+</body>
+</html>
