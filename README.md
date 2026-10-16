@@ -2,7 +2,9 @@
 
 Ett matematikäventyr för årskurs 7, 8 och 9, på svenska. Mörkskogen, fjällen och Dimsjön har tagits över av vilda väsen ur den nordiska folktron. Med matematik som magi besegrar eleven dem, löser trollens vågar och samlar väsen till sitt lag.
 
-Spelet är en enda HTML-fil utan beroenden. Öppna `index.html` i en webbläsare för att spela.
+**Spela här: https://jola0909.github.io/vasen-och-variabler/**
+
+Spelet är en enda HTML-fil utan beroenden. Du kan också öppna `index.html` direkt i en webbläsare.
 
 ## Spelet
 
