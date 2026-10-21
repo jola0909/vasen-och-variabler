@@ -276,6 +276,23 @@ h3 { font-size: 27px; }
 .ops { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .op { min-width: 82px; padding: 10px 16px 7px; border: 0; background: var(--deck3); font-family: var(--display); font-size: 28px; font-weight: 600; line-height: 1; box-shadow: inset 0 0 0 2px var(--edge); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
 .op:hover { box-shadow: inset 0 0 0 2px var(--gold); color: var(--gold); }
+.scale .pan .dish { position: relative; }
+.opfly { position: absolute; left: 50%; top: -8px; font-family: var(--display); font-size: 30px; line-height: 1; color: var(--gold); text-shadow: 0 0 12px rgba(255, 197, 49, .8), 0 2px 0 #000; pointer-events: none; animation: opfly 1s forwards; white-space: nowrap; }
+@keyframes opfly { 0% { transform: translate(-50%, -40px) scale(1.6); opacity: 0; } 30% { transform: translate(-50%, -16px) scale(1); opacity: 1; } 100% { transform: translate(-50%, -16px); opacity: 0; } }
+.coach { border-left: 4px solid var(--volt); background: linear-gradient(90deg, rgba(45, 226, 255, .12), var(--deck2) 50%); padding: 10px 14px; font-size: 15px; font-weight: 600; line-height: 1.45; clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
+.coach.hint { border-left-color: var(--gold); background: linear-gradient(90deg, rgba(255, 197, 49, .14), var(--deck2) 50%); }
+.coach.good { border-left-color: var(--toxic); background: linear-gradient(90deg, rgba(166, 255, 61, .14), var(--deck2) 50%); }
+.coach.bad { border-left-color: var(--blaze); background: linear-gradient(90deg, rgba(255, 61, 110, .16), var(--deck2) 50%); }
+.coach b { color: #fff; }
+.op.suggest { background: var(--gold); color: #241500; box-shadow: none; animation: suggest .9s ease-in-out infinite; }
+@keyframes suggest { 50% { transform: translateY(-4px) scale(1.06); } }
+.exsteps { display: grid; gap: 4px; background: var(--void); box-shadow: inset 0 0 0 1px var(--edge); padding: 10px 12px; }
+.exrow { display: grid; grid-template-columns: auto 1fr; gap: 0 12px; align-items: baseline; }
+.exrow b { font-size: 19px; font-variant-numeric: tabular-nums; }
+.exrow .exop { color: var(--gold); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.exrow small { grid-column: 1 / -1; color: var(--dim); font-size: 12px; }
+.rules { margin: 0; padding-left: 20px; display: grid; gap: 3px; color: var(--dim); }
+.rules b { color: var(--text); }
 .steps { display: grid; gap: 2px; font-variant-numeric: tabular-nums; color: var(--dim); font-size: 16px; }
 .steps div b { color: var(--text); font-weight: 700; }
 .steps .opl { color: var(--gold); font-size: 13px; margin-left: 10px; }
@@ -2213,7 +2230,88 @@ function startBalance(w, i) {
   const eqs = [genEq(W.grade), genEq(W.grade), genEq(W.grade)];
   G.bal = Object.assign({ w, i, eqs, k: 0, st: { ...eqs[0].st }, hist: [], moves: 0, extraTotal: 0, hp: 3, foe: { n: W.troll, e: '🧌' } }, makeFighter());
   G.bal.ops = opsFor(G.bal.st);
+  balStartCoach();
   G.screen = 'balance'; render();
+  if (!S.flags.balIntro) balIntro();
+}
+/* ---- Hjälp till vågen: genomgång, tips och återkoppling ---- */
+const eqStr = st => `${lin(st.a, st.b)} = ${lin(st.c, st.d)}`;
+const balGuided = () => !S.flags.balTut && G.bal && G.bal.k === 0;
+function balBestOp(st) {
+  // kortaste vägen först; vid lika långa vägar undviks drag som lämnar x med negativ koefficient
+  const negX = n => (n.a < 0 && n.c === 0) || (n.c < 0 && n.a === 0) || (n.a < 0 && n.c < 0);
+  const ends = st0 => { let s = st0, guard = 0; while (!solvedEq(s) && guard++ < 6) { let nx = null, np = 99; for (const op of coreOps(s)) { const n = applyOp(s, op); if (n && solvePar(n) < np) { np = solvePar(n); nx = n; } } if (!nx) break; if (negX(nx)) return 1; s = nx; } return 0; };
+  let best = null, bs = 999;
+  for (const op of coreOps(st)) {
+    const n = applyOp(st, op); if (!n) continue;
+    const score = solvePar(n) * 10 + (negX(n) ? 2 : 0) + ends(n);
+    if (score < bs) { bs = score; best = op; }
+  }
+  return best;
+}
+function balHint(st) {
+  const op = balBestOp(st); if (!op) return null;
+  const L = `<b>${opLabel(op)}</b>`;
+  let why;
+  if (op.div) {
+    const coef = st.a !== 0 ? st.a : st.c;
+    why = `${lin(coef, 0)} betyder ${fmt(coef)} gånger x. Gör ${L} på båda sidor så står x ensamt.`;
+  } else if (op.k) {
+    why = `x finns på båda sidorna. Gör ${L} på båda sidor så försvinner x från den ena sidan.`;
+  } else {
+    const left = op.n === -st.b, t = left ? st.b : st.d;
+    const term = t > 0 ? `+ ${fmt(t)}` : `${MINUS} ${fmt(-t)}`;
+    const hasX = left ? st.a !== 0 : st.c !== 0;
+    why = `På ${left ? 'vänster' : 'höger'} sida står ${term}${hasX ? ' bredvid x' : ''}. Gör ${L} på båda sidor, så blir det 0 där och talet försvinner.`;
+  }
+  return { op, html: why };
+}
+function balSuggest() {
+  const B = G.bal, h = balHint(B.st); if (!h) return null;
+  B.suggest = opLabel(h.op);
+  if (!B.ops.some(o => opLabel(o) === B.suggest)) { B.ops[0] = h.op; B.ops = R.shuffle(B.ops); }
+  return h;
+}
+function balStartCoach() {
+  const B = G.bal;
+  B.suggest = null;
+  if (balGuided()) {
+    const h = balSuggest();
+    B.coach = { kind: 'hint', html: `<b>Mål:</b> få x helt ensamt, till exempel x = 4.<br>${h ? h.html : ''}` };
+  } else {
+    B.coach = { kind: 'info', html: `<b>Mål:</b> få x helt ensamt. Det går på ${B.eqs[B.k].par} drag. Kör du fast? Tryck 💡 Tips.` };
+  }
+}
+function balTip() {
+  const B = G.bal; if (!B || B.busy) return;
+  const h = balSuggest(); if (!h) return;
+  B.coach = { kind: 'hint', html: h.html };
+  SFX.play('click');
+  render();
+}
+function balIntro() {
+  const B = G.bal;
+  const ex = rows => `<div class="exsteps">${rows.map(([eq, op, note]) => `<div class="exrow"><b>${eq}</b>${op ? `<span class="exop">${op} på båda sidor</span>` : ''}${note ? `<small>${note}</small>` : ''}</div>`).join('')}</div>`;
+  const second = B && B.w > 1 ? `<p style="margin:0">Om x finns på <b>båda</b> sidor samlar du först x på en sida:</p>${ex([
+    ['5x + 1 = 2x + 7', '', 'Trollets våg'],
+    ['3x + 1 = 7', `${MINUS} 2x`, 'Nu finns x bara till vänster'],
+    ['3x = 6', `${MINUS} 1`, 'Talet bredvid x är borta'],
+    ['x = 2', '÷ 3', 'Klart!']])}` : '';
+  modal(`<div class="eyebrow">Så besegrar du trollet</div><h2>Vågen</h2>
+    <div class="stack" style="gap:10px;text-align:left">
+      <p style="margin:0">Ekvationen är en våg. Båda sidorna väger <b>exakt lika mycket</b>. Knapparna gör samma sak på båda sidor samtidigt, så vågen håller balansen.</p>
+      <p style="margin:0"><b>Ditt mål:</b> få x helt ensamt på ena sidan. Då ser du vad x är.</p>
+      <p style="margin:0">Exempel:</p>
+      ${ex([['2x + 3 = 11', '', 'Trollets våg'], ['2x = 8', `${MINUS} 3`, '+ 3 och − 3 tar ut varandra'], ['x = 4', '÷ 2', 'Klart! 2x delat med 2 är x']])}
+      ${second}
+      <ul class="rules">
+        <li>Ta bort det som står i vägen för x först. <b>Dela sist.</b></li>
+        <li>Om ett drag inte hjälpte: tryck <b>↶ Ångra</b>.</li>
+        <li>Fler än två onödiga drag och trollet slår till.</li>
+        <li>Kör du fast: tryck <b>💡 Tips</b>.</li>
+      </ul>
+    </div>
+    <button class="btn primary" data-m="balintro">Jag fattar, kör!</button>`);
 }
 SCREENS.balance = () => {
   const B = G.bal, eq = B.eqs[B.k];
@@ -2221,7 +2319,7 @@ SCREENS.balance = () => {
     <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Fly</button><span class="muted" style="font-size:13px">${WORLDS[B.w - 1].n} · nivå ${B.i + 1}</span></div>
     <div class="foe" id="foe"><div class="face" id="face">${B.foe.e}</div>
       <div class="stack" style="gap:6px"><b>${esc(B.foe.n)}</b><div class="hpbar"><i id="hp" style="width:${B.hp / 3 * 100}%"></i></div>
-      <small class="muted">Lös tre vågor. Vågen måste alltid vara i balans: gör samma sak på båda sidor.</small></div></div>
+      <small class="muted">Lös tre vågor genom att få x ensamt. Det du gör på ena sidan händer också på den andra.</small></div></div>
     <div class="me"><span class="hearts" id="hearts"></span><span class="muted">Våg ${B.k + 1} av 3 · drag: <b style="color:var(--birch)">${B.moves}</b> · minsta möjliga: ${eq.par}</span></div>
     <div class="panel stack" style="gap:8px">
       <div class="scale" aria-label="Våg">
@@ -2229,9 +2327,10 @@ SCREENS.balance = () => {
         <div class="pan l" id="panl"><div class="rope"></div><div class="dish">${lin(B.st.a, B.st.b)}</div></div>
         <div class="pan r" id="panr"><div class="rope"></div><div class="dish">${lin(B.st.c, B.st.d)}</div></div>
       </div>
-      <div class="eyebrow" style="text-align:center">Gör detta på båda sidor</div>
-      <div class="ops">${B.ops.map((o, idx) => `<button class="op" data-act="balop" data-arg="${idx}">${opLabel(o)}</button>`).join('')}</div>
-      <div class="row" style="justify-content:center"><button class="btn small ghost" data-act="balundo" ${B.hist.length ? '' : 'disabled'}>↶ Ångra</button></div>
+      ${B.coach ? `<div class="coach ${B.coach.kind}" role="status">${B.coach.html}</div>` : ''}
+      <div class="eyebrow" style="text-align:center">Välj vad du gör på båda sidor</div>
+      <div class="ops">${B.ops.map((o, idx) => `<button class="op ${B.suggest === opLabel(o) ? 'suggest' : ''}" data-act="balop" data-arg="${idx}">${opLabel(o)}</button>`).join('')}</div>
+      <div class="row" style="justify-content:center"><button class="btn small ghost" data-act="balundo" ${B.hist.length ? '' : 'disabled'}>↶ Ångra</button><button class="btn small ghost" data-act="baltip">💡 Tips</button><button class="btn small ghost" data-act="balintro">❓ Hur gör man?</button></div>
     </div>
     <div class="panel"><div class="eyebrow">Din uträkning</div><div class="steps">
       <div><b>${lin(eq.st.a, eq.st.b)} = ${lin(eq.st.c, eq.st.d)}</b></div>
@@ -2239,7 +2338,14 @@ SCREENS.balance = () => {
     </div></div>
   </section>`;
 };
-AFTER.balance = () => updateBalHUD();
+AFTER.balance = () => {
+  updateBalHUD();
+  const B = G.bal;
+  if (B && B.flyLabel && !reduceMotion) {
+    for (const id of ['#panl', '#panr']) { const d = $(id + ' .dish'); if (d) d.insertAdjacentHTML('beforeend', `<span class="opfly">${B.flyLabel}</span>`); }
+  }
+  if (B) B.flyLabel = null;
+};
 AFTER.map = () => { const n = $('.node.next') || $('.node.open:last-of-type'); if (n) setTimeout(() => n.scrollIntoView({ block: 'center', behavior: 'auto' }), 30); };
 function updateBalHUD() {
   const B = G.bal; if (!B) return;
@@ -2250,17 +2356,33 @@ async function balOp(idx) {
   const B = G.bal; if (!B || B.busy) return;
   const op = B.ops[idx]; if (!op) return;
   const n = applyOp(B.st, op);
-  if (!n) { shake($('.scale')); toast('Det blir bråk. Prova att flytta termer först, och dela sist.'); SFX.play('wrong'); return; }
+  if (!n) {
+    const bad = [B.st.a, B.st.b, B.st.c, B.st.d].find(v => v % op.div !== 0);
+    B.coach = { kind: 'bad', html: `${opLabel(op)} går inte jämnt ut: ${fmt(bad)} / ${fmt(op.div)} blir ett bråk. Ta först bort talen som står i vägen för x, och <b>dela sist</b>.` };
+    SFX.play('wrong'); render(); shake($('.scale'));
+    return;
+  }
   SFX.play('click');
+  const parBefore = solvePar(B.st), parAfter = solvePar(n);
   B.hist.push({ st: n, prev: B.st, label: opLabel(op) });
   B.st = n; B.moves++;
+  B.flyLabel = opLabel(op);
+  B.suggest = null;
   const eq = B.eqs[B.k];
+  if (!solvedEq(n)) {
+    if (parAfter < parBefore) {
+      B.coach = { kind: 'good', html: `<b>${R.pick(['Bra drag!', 'Snyggt!', 'Rätt riktning!'])}</b> Nu står det ${eqStr(n)}.` };
+    } else {
+      B.coach = { kind: 'bad', html: `Vågen är fortfarande i balans, men x kom inte närmare att stå ensamt. Tryck <b>↶ Ångra</b> och prova något annat.${B.moves === eq.par + 2 ? `<br><b>Varning:</b> ett onödigt drag till och ${esc(B.foe.n)} slår till!` : ''}` };
+    }
+  }
   if (B.moves > eq.par + 2) {
     if (B.shield > 0) { B.shield--; toast('🛡️ Skölden skyddade dig när trollet tröttnade.'); }
     else { B.hearts--; flash(); toast(`🧌 ${B.foe.n} tappar tålamodet! Försök hitta en kortare väg.`); }
     if (B.hearts <= 0 && B.revive > 0) { B.revive--; B.hearts = 1; banner('Skogsrået räddar dig!'); }
   }
   B.ops = opsFor(B.st);
+  if (balGuided() && !solvedEq(n) && B.coach.kind === 'good') { const h = balSuggest(); if (h) B.coach.html += `<br>${h.html}`; }
   render();
   $('#panl')?.classList.add('bump'); $('#panr')?.classList.add('bump');
   if (B.hearts <= 0) { await wait(500); return finishLevel(false, { w: B.w, i: B.i, stars: 0, correct: B.k, answered: 3, best: null, label: 'vågor lösta' }); }
@@ -2281,13 +2403,19 @@ async function balOp(idx) {
       if (B.extraTotal === 0) S.flags.bal = true;
       return finishLevel(true, { w: B.w, i: B.i, stars: B.extraTotal === 0 ? 3 : B.extraTotal <= 3 ? 2 : 1, correct: 3, answered: 3, best: null, label: 'vågor lösta' });
     }
+    if (B.k === 0 && !S.flags.balTut) { S.flags.balTut = true; save(); }
     B.k++; B.st = { ...B.eqs[B.k].st }; B.hist = []; B.moves = 0; B.ops = opsFor(B.st);
+    balStartCoach();
     render();
   }
 }
 function balUndo() {
   const B = G.bal; if (!B || !B.hist.length || B.busy) return;
-  const h = B.hist.pop(); B.st = h.prev; B.ops = opsFor(B.st); render();
+  const h = B.hist.pop(); B.st = h.prev; B.ops = opsFor(B.st);
+  B.suggest = null;
+  B.coach = { kind: 'info', html: `Ångrat. Nu står det ${eqStr(B.st)} igen.` };
+  if (balGuided()) { const t = balSuggest(); if (t) B.coach = { kind: 'hint', html: t.html }; }
+  render();
 }
 
 /* ---------- Runkastet (koordinatsystem) ---------- */
@@ -2589,6 +2717,7 @@ function modal(html) {
 const MODAL_ACT = {
   quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; go('hub'); },
   resume: () => { if (G.b && !G.b.locked) { G.b.tStart += performance.now() - (G.pausedAt || performance.now()); startTimer(); } },
+  balintro: () => { S.flags.balIntro = true; save(); },
   reset: () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } S = null; G.setup = { grade: 7, starter: null, name: '' }; go('setup'); },
   close: () => { }
 };
@@ -2665,6 +2794,8 @@ const ACT = {
   pracwrite: () => { G.prac.write = !G.prac.write; render(); },
   balop: a => balOp(Number(a)),
   balundo: () => balUndo(),
+  baltip: () => balTip(),
+  balintro: () => balIntro(),
   step: a => { const [id, d] = a.split('|'); canStep(id, Number(d)); },
   fire: () => canFire(),
   resetask: () => modal(`<h3>Byta spelare?</h3><p class="muted" style="margin:0">All framgång för ${esc(S.name)} på den här enheten raderas och går inte att få tillbaka.</p>

@@ -269,6 +269,23 @@ h3 { font-size: 27px; }
 .ops { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .op { min-width: 82px; padding: 10px 16px 7px; border: 0; background: var(--deck3); font-family: var(--display); font-size: 28px; font-weight: 600; line-height: 1; box-shadow: inset 0 0 0 2px var(--edge); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
 .op:hover { box-shadow: inset 0 0 0 2px var(--gold); color: var(--gold); }
+.scale .pan .dish { position: relative; }
+.opfly { position: absolute; left: 50%; top: -8px; font-family: var(--display); font-size: 30px; line-height: 1; color: var(--gold); text-shadow: 0 0 12px rgba(255, 197, 49, .8), 0 2px 0 #000; pointer-events: none; animation: opfly 1s forwards; white-space: nowrap; }
+@keyframes opfly { 0% { transform: translate(-50%, -40px) scale(1.6); opacity: 0; } 30% { transform: translate(-50%, -16px) scale(1); opacity: 1; } 100% { transform: translate(-50%, -16px); opacity: 0; } }
+.coach { border-left: 4px solid var(--volt); background: linear-gradient(90deg, rgba(45, 226, 255, .12), var(--deck2) 50%); padding: 10px 14px; font-size: 15px; font-weight: 600; line-height: 1.45; clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
+.coach.hint { border-left-color: var(--gold); background: linear-gradient(90deg, rgba(255, 197, 49, .14), var(--deck2) 50%); }
+.coach.good { border-left-color: var(--toxic); background: linear-gradient(90deg, rgba(166, 255, 61, .14), var(--deck2) 50%); }
+.coach.bad { border-left-color: var(--blaze); background: linear-gradient(90deg, rgba(255, 61, 110, .16), var(--deck2) 50%); }
+.coach b { color: #fff; }
+.op.suggest { background: var(--gold); color: #241500; box-shadow: none; animation: suggest .9s ease-in-out infinite; }
+@keyframes suggest { 50% { transform: translateY(-4px) scale(1.06); } }
+.exsteps { display: grid; gap: 4px; background: var(--void); box-shadow: inset 0 0 0 1px var(--edge); padding: 10px 12px; }
+.exrow { display: grid; grid-template-columns: auto 1fr; gap: 0 12px; align-items: baseline; }
+.exrow b { font-size: 19px; font-variant-numeric: tabular-nums; }
+.exrow .exop { color: var(--gold); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.exrow small { grid-column: 1 / -1; color: var(--dim); font-size: 12px; }
+.rules { margin: 0; padding-left: 20px; display: grid; gap: 3px; color: var(--dim); }
+.rules b { color: var(--text); }
 .steps { display: grid; gap: 2px; font-variant-numeric: tabular-nums; color: var(--dim); font-size: 16px; }
 .steps div b { color: var(--text); font-weight: 700; }
 .steps .opl { color: var(--gold); font-size: 13px; margin-left: 10px; }

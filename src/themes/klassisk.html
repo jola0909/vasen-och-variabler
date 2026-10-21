@@ -238,6 +238,23 @@ h3 { font-size: 22px; }
 .ops { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .op { min-width: 74px; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--pine2); font-size: 18px; font-weight: 700; box-shadow: 0 4px 0 rgba(0, 0, 0, .35); }
 .op:hover { border-color: var(--ember); }
+.scale .pan .dish { position: relative; }
+.opfly { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); font-size: 18px; font-weight: 700; color: var(--ember); pointer-events: none; animation: opfly 1s forwards; white-space: nowrap; }
+@keyframes opfly { 0% { transform: translate(-50%, -30px); opacity: 0; } 30% { transform: translate(-50%, -14px); opacity: 1; } 100% { transform: translate(-50%, -14px); opacity: 0; } }
+.coach { border-left: 4px solid var(--frost); background: var(--pine); border-radius: 10px; padding: 10px 14px; font-size: 15px; line-height: 1.45; }
+.coach.hint { border-left-color: var(--ember); }
+.coach.good { border-left-color: var(--aurora); }
+.coach.bad { border-left-color: var(--berry); }
+.coach b { color: var(--birch); }
+.op.suggest { border-color: var(--ember); box-shadow: 0 4px 0 rgba(0, 0, 0, .35), 0 0 0 4px rgba(243, 181, 74, .35); animation: suggest 1.1s ease-in-out infinite; }
+@keyframes suggest { 50% { transform: translateY(-3px); } }
+.exsteps { display: grid; gap: 4px; background: var(--night); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.exrow { display: grid; grid-template-columns: auto 1fr; gap: 0 12px; align-items: baseline; }
+.exrow b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.exrow .exop { color: var(--ember); font-size: 13px; font-weight: 600; }
+.exrow small { grid-column: 1 / -1; color: var(--mute); font-size: 12px; }
+.rules { margin: 0; padding-left: 20px; display: grid; gap: 3px; color: var(--mute); }
+.rules b { color: var(--birch); }
 .steps { display: grid; gap: 2px; font-variant-numeric: tabular-nums; color: var(--mute); font-size: 15px; }
 .steps div b { color: var(--birch); font-weight: 600; }
 .steps .opl { color: var(--ember); font-size: 13px; margin-left: 10px; }
