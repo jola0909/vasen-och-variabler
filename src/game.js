@@ -93,16 +93,16 @@ function fxText(fx) {
 const WORLDS = [
   { id: 1, n: 'Mörkskogen', grade: 7, col: '#5fe3b3', boss: { n: 'Skogsrået', e: '🧝‍♀️', v: 'skogsra', title: 'Mörkskogens drottning', forms: ['🧝‍♀️', '🦊', '🌳'],
       attacks: [['Rotpiskan', '🌿'], ['Rävklon', '🦊'], ['Lövstormen', '🍂']],
-      lines: { intro: 'Välkommen till min skog! Här är det jag som bestämmer!', hit: ['Aj! Mina löv!', 'Det där kändes ända ner i rötterna!', 'Grrr… men jag är fortfarande starkast!'], laugh: ['Hihihi! Skogen är på min sida!', 'Ingen är snabbare än jag!', 'Jag är skogens drottning!'], phase: ['Nu ska du få se min rävsvans!', 'Se min ihåliga rygg… min allra sista form!'], defeat: 'Nej… skogen… är din…' } }, troll: 'Mosstrollet', merchant: { n: 'Gnetaren', e: '🧙' },
+      lines: { intro: 'Välkommen till min skog! Här är det jag som bestämmer!', hit: ['Aj! Mina löv!', 'Det där kändes ända ner i rötterna!', 'Grrr… men jag är fortfarande starkast!'], laugh: ['Hihihi! Skogen är på min sida!', 'Ingen är snabbare än jag!', 'Jag är skogens drottning!'], phase: ['Nu ska du få se min rävsvans!', 'Se min ihåliga rygg… min allra sista form!'], defeat: 'Nej… skogen… är din…' } }, troll: 'Mosstrollet', merchant: { n: 'Gnetaren', e: '🧙' }, smith: { n: 'Smeden Brokk', e: '⚒️' },
     intro: 'Granarna står tätt och något viskar mellan stammarna. Här tränar du taluppfattning, bråk, procent och dina första ekvationer.',
     foes: [['Gråvargen', '🐺'], ['Skuggfladdermusen', '🦇'], ['Flugsvampen', '🍄'], ['Mossspindeln', '🕷️'], ['Vildgalten', '🐗'], ['Grävlingen', '🦡']],
     levels: [
       { n: 'Stigen in', t: 'battle', topics: ['neg', 'prio'], d: 1 },
-      { n: 'Mossiga stenar', t: 'battle', topics: ['brak', 'deci'], d: 1 },
+      { n: 'Bråksmedjan', t: 'forge' },
       { n: 'Procentbutiken', t: 'shop' },
       { n: 'Trollets bro', t: 'balance' },
       { n: 'Spindelsnåret', t: 'battle', topics: ['ekv1', 'prio', 'neg'], d: 2 },
-      { n: 'Ängsgläntan', t: 'battle', topics: ['geo1', 'enh'], d: 2 },
+      { n: 'Ängsgläntan', t: 'battle', topics: ['geo1', 'enh', 'deci'], d: 2 },
       { n: 'Runkastet', t: 'cannon' },
       { n: 'Myrens mitt', t: 'battle', topics: ['stat', 'proc1', 'brak'], d: 2 },
       { n: 'Vargflocken', t: 'battle', elite: true, topics: ['neg', 'brak', 'ekv1', 'geo1', 'proc1', 'deci'], d: 3 },
@@ -110,13 +110,13 @@ const WORLDS = [
     ] },
   { id: 2, n: 'Fjällvidderna', grade: 8, col: '#7cc7ff', boss: { n: 'Bergakungen', e: '👑', v: 'bergakung', title: 'Härskaren i berget', forms: ['👑', '👹', '🗻'],
       attacks: [['Silverregnet', '🪙'], ['Trollnäven', '👊'], ['Lavinen', '❄️']],
-      lines: { intro: 'Ingen rör mitt silver! Jag är den mäktigaste kungen i hela berget!', hit: ['Mitt berg skakar!', 'Omöjligt!', 'Grmpf! Min krona sitter snett!'], laugh: ['HAHA! Jag är mäktigast i hela fjället!', 'Mitt silver är säkert!', 'Ingen är starkare än berget!'], phase: ['Nu vaknar trollet i mig!', 'JAG ÄR BERGET!'], defeat: 'Mitt silver… är ditt…' } }, troll: 'Istrollet', merchant: { n: 'Fjällkrämaren', e: '🧔' }, keeper: { n: 'Skattväktaren', e: '🐲' },
+      lines: { intro: 'Ingen rör mitt silver! Jag är den mäktigaste kungen i hela berget!', hit: ['Mitt berg skakar!', 'Omöjligt!', 'Grmpf! Min krona sitter snett!'], laugh: ['HAHA! Jag är mäktigast i hela fjället!', 'Mitt silver är säkert!', 'Ingen är starkare än berget!'], phase: ['Nu vaknar trollet i mig!', 'JAG ÄR BERGET!'], defeat: 'Mitt silver… är ditt…' } }, troll: 'Istrollet', merchant: { n: 'Fjällkrämaren', e: '🧔' }, keeper: { n: 'Skattväktaren', e: '🐲' }, guide: { n: 'Fjällguiden', e: '🧗' },
     intro: 'Kalla vindar sveper över kalfjället. Potenser, förändringsfaktor, Pythagoras och sannolikhet väntar.',
     foes: [['Fjällörnen', '🦅'], ['Grottbjörnen', '🐻'], ['Myskoxen', '🐂'], ['Bergsväduren', '🐏'], ['Isvätten', '🧊'], ['Järven', '🦡']],
     levels: [
       { n: 'Snöfältet', t: 'battle', topics: ['pot', 'ff'], d: 1 },
-      { n: 'Isgrottan', t: 'battle', topics: ['ekv2', 'utt'], d: 1 },
-      { n: 'Kartstugan', t: 'battle', topics: ['pyth', 'skala'], d: 1 },
+      { n: 'Isgrottan', t: 'battle', topics: ['ekv2', 'utt', 'pyth'], d: 1 },
+      { n: 'Kartstugan', t: 'expedition' },
       { n: 'Isvågen', t: 'balance' },
       { n: 'Kistkammaren', t: 'chest' },
       { n: 'Fjällmarknaden', t: 'shop' },
@@ -507,6 +507,8 @@ function levelIcon(W, i) {
   if (L.t === 'cannon') return '🎯';
   if (L.t === 'shop') return '🛒';
   if (L.t === 'chest') return '💎';
+  if (L.t === 'forge') return '⚒️';
+  if (L.t === 'expedition') return '🗺️';
   return foeFor(W, i).e;
 }
 
@@ -619,6 +621,8 @@ SCREENS.hub = () => {
 function levelBlurb(W, i) {
   const L = W.levels[i];
   if (L.t === 'balance') return `${W.troll} vaktar bron med en våg. Gör samma sak på båda sidor tills x står ensamt.`;
+  if (L.t === 'forge') return `${W.smith.n} smider vapen av bråkbitar. Välj bitar som tillsammans blir exakt rätt längd.`;
+  if (L.t === 'expedition') return `${W.guide.n} leder en expedition med karta och skala. Mät, räkna om till verkligheten och hitta skatterna.`;
   if (L.t === 'chest') return `${W.keeper.n} vaktar tre kistor med juveler och stenar. Välj kistan med bäst chans och räkna ut sannolikheten.`;
   if (L.t === 'shop') return `${W.merchant.n} säljer utrustning med rabatt. Räkna ut rätt pris så räcker pengarna längre, och det som blir kvar blir guld.`;
   if (L.t === 'cannon') return W.id === 1 ? 'Väsen gömmer sig i koordinatsystemet. Ange rätt koordinater för att träffa dem.' : W.id === 2 ? 'Rikta runstrålen genom origo med rätt lutning k.' : 'Hitta linjen y = kx + m som träffar flera väsen på en gång.';
@@ -669,6 +673,8 @@ function startLevel(w, i) {
   if (L.t === 'cannon') return startCannon(w, i);
   if (L.t === 'shop') return startShop(w, i);
   if (L.t === 'chest') return startChest(w, i);
+  if (L.t === 'forge') return startForge(w, i);
+  if (L.t === 'expedition') return startExpedition(w, i);
   const boss = L.t === 'boss';
   const foe = boss ? { n: W.boss.n, e: W.boss.e } : L.elite ? { n: L.n, e: W.foes[0][1] } : foeFor(W, i);
   startBattle({ kind: 'level', w, i, topics: L.topics, d: L.d, boss, elite: !!L.elite, foe, hp: boss ? 330 : L.elite ? 160 : 110 });
@@ -1075,7 +1081,7 @@ function finishLevel(win, special) {
   res.levelUps = xpRes.ups;
   checkAch();
   save();
-  G.b = null; G.bal = null; G.can = null; G.shop = null; G.chest = null;
+  G.b = null; G.bal = null; G.can = null; G.shop = null; G.chest = null; G.forge = null; G.exp = null;
   G.result = res;
   go('result');
   if (win) { setTimeout(() => confetti(res.bossFirst ? 140 : 60), 150); for (let k = 0; k < stars; k++) setTimeout(() => SFX.play('star'), 300 + k * 260); }
@@ -1330,6 +1336,211 @@ function chestNext() {
   if (C.k >= n) {
     const max = n * 2, bonus = C.jewels * 8;
     return finishLevel(true, { w: C.w, i: C.i, stars: C.points >= max ? 3 : C.points >= max - 2 ? 2 : 1, correct: C.points, answered: max, best: null, label: 'poäng för val och svar', bonus, bonusText: `guld från ${C.jewels} juveler` });
+  }
+  render();
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+}
+
+/* ---------- Bråksmedjan ---------- */
+const FORGE_LINES = {
+  intro: ['Jag är Brokk, den bästa smeden i alla nio världar!', 'Mina blad är alltid exakt rätt långa. Alltid!', 'Ingen smider som jag. Men du får försöka!'],
+  right: ['Hmm! Nästan lika fint som mitt eget smide!', 'Exakt rätt. Det hade jag inte trott!', 'Mitt städ sjunger av glädje!'],
+  wrong: ['Ha! Mitt städ kräver exakthet!', 'Ingen smider exakt som jag!', 'Klang! Det där blev inte rätt längd.']
+};
+function startForge(w, i) {
+  G.forge = { w, i, rounds: FORGE_PLAN.map((_, r) => forgeRound(r)), k: 0, sel: [], phase: 'build', tries: 0, points: 0, last: null, m: WORLDS[w - 1].smith };
+  G.screen = 'forge'; render();
+  if (!S.flags.forgeIntro) forgeIntro();
+  setTimeout(() => bubble(R.pick(FORGE_LINES.intro), 3600), 400);
+}
+function forgeIntro() {
+  modal(`<div class="eyebrow">Ny bana</div><h2>Bråksmedjan</h2>
+    <ul class="rules" style="text-align:left">
+      <li>Varje vapen ska vara <b>exakt</b> en viss del av en stång, till exempel ${frac(3, 4)}.</li>
+      <li>Tryck på bråkbitar för att lägga dem på städet. Tryck igen för att ta bort en bit.</li>
+      <li>Strecket på städet visar målet. Försök få bitarna att sluta precis där.</li>
+      <li>Tryck <b>⚒️ Smid</b>. Rätt på första försöket ger 2 poäng, på andra 1 poäng.</li>
+      <li>Tips: gör om alla bitar till samma nämnare, till exempel åttondelar.</li>
+    </ul>
+    <button class="btn primary" data-m="forgeintro">Börja smida</button>`);
+}
+const forgeTarget = rd => (rd.r === 0 ? frac(rd.target[0] * rd.L / rd.target[1], rd.L, false) : mixed(rd.target[0], rd.target[1]));
+SCREENS.forge = () => {
+  const F = G.forge, rd = F.rounds[F.k], n = F.rounds.length;
+  const [tn, td] = rd.target, L = rd.L, max = rd.max;
+  const used = forgeUnits(rd, F.sel), cap = L * max, tu = tn * L / td;
+  const segs = F.sel.map((idx, j) => { const [a, b] = rd.pieces[idx]; return `<i class="seg s${j % 4}" style="width:${a / b / max * 100}%">${frac(a, b, false)}</i>`; }).join('');
+  const tiles = rd.pieces.map(([a, b], idx) => `<button class="ftile ${F.sel.includes(idx) ? 'on' : ''}" data-act="forgetile" data-arg="${idx}" ${F.phase !== 'build' ? 'disabled' : ''}>
+      <span class="fv">${frac(a, b, false)}</span><span class="fbar"><i style="width:${a / b / max * 100}%"></i></span></button>`).join('');
+  let below = '';
+  if (F.phase === 'build') {
+    below = `<div class="row" style="justify-content:center"><button class="btn primary" data-act="forgego" ${F.sel.length ? '' : 'disabled'}>⚒️ Smid</button><button class="btn ghost" data-act="forgeclear" ${F.sel.length ? '' : 'disabled'}>Töm städet</button></div>`;
+  } else {
+    const ok = F.last.ok;
+    below = `<div class="explain ${ok ? 'good' : ''}"><div class="eyebrow">${ok ? (F.last.pts === 2 ? 'Perfekt smide! +2 poäng' : 'Rätt på andra försöket! +1 poäng') : F.phase === 'retry' ? 'Inte exakt. Ett försök till!' : 'Inte exakt den här gången'}</div>
+      <div><b>Så här tänker du</b><ol>${F.last.expl.map(x => `<li>${x}</li>`).join('')}</ol></div>
+      ${!ok && F.phase === 'done' ? `<div>En lösning: <span class="right">${rd.sol.map(i => frac(rd.pieces[i][0], rd.pieces[i][1], false)).join(' + ')}</span></div>` : ''}</div>
+      ${F.phase === 'retry' ? `<button class="btn primary" data-act="forgeretry">Försök igen</button>` : `<button class="btn primary" data-act="forgenext" id="forgenext">${F.k + 1 < n ? 'Nästa smide' : 'Visa resultatet'}</button>`}`;
+  }
+  return `<section class="arena forgelevel" id="arena">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Lämna smedjan</button><span class="muted" style="font-size:13px">${WORLDS[F.w - 1].n} · nivå ${F.i + 1}</span></div>
+    <div class="foe merchant smith" id="foe">
+      <div class="foefx" id="foefx" aria-hidden="true"></div>
+      <div class="face" id="face">${F.m.e}</div>
+      <div class="stack" style="gap:6px">
+        <div class="row" style="justify-content:space-between"><b id="foename">${esc(F.m.n)}</b><button class="btn small ghost" data-act="forgehelp">❓ Hur gör man?</button></div>
+        <div class="bubble" id="bubble" hidden></div>
+        <div class="loot"><span>⭐ <b>${F.points}</b> av ${n * 2} poäng</span></div>
+        <div class="shoplist">${F.rounds.map((x, j) => `<span class="${j < F.k || (j === F.k && F.phase === 'done') ? 'got' : ''} ${j === F.k ? 'now' : ''}">${x.item[1]}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="qcard"><div class="topic"><span>Bråksmedjan · smide ${F.k + 1} av ${n}</span><span>Bråk</span></div>
+      <div class="offer"><span class="oe">${rd.item[1]}</span><span class="ob"><b>${esc(rd.item[0])}</b><span class="ptag">Mål: <b>${forgeTarget(rd)}</b>${max > 1 ? '&nbsp;av en stång (städet rymmer 2 stänger)' : ' av en stång'}</span></span></div>
+      <div class="qtext long">Välj bitar som tillsammans blir exakt ${forgeTarget(rd)}.</div></div>
+    <div class="anvil ${used > cap ? 'over' : ''} ${F.phase !== 'build' ? (F.last.ok ? 'hit' : 'miss') : ''}">
+      <div class="abar" style="--ticks:${L * max}">${segs}<span class="amark" style="left:${tu / cap * 100}%"><b>${forgeTarget(rd)}</b></span>${max > 1 ? '<span class="aone" style="left:50%"></span>' : ''}</div>
+      <div class="ascale"><span>0</span>${max > 1 ? '<span>1</span>' : ''}<span>${max}</span></div>
+    </div>
+    <div class="ftiles">${tiles}</div>
+    ${below}
+  </section>`;
+};
+AFTER.forge = () => { const F = G.forge; if (F && F.phase !== 'build') setTimeout(() => $('.forgelevel .explain')?.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }), 60); };
+function forgeToggle(idx) {
+  const F = G.forge; if (!F || F.phase !== 'build') return;
+  const at = F.sel.indexOf(idx);
+  if (at >= 0) F.sel.splice(at, 1); else F.sel.push(idx);
+  SFX.play('click');
+  render();
+}
+function forgeStrike() {
+  const F = G.forge; if (!F || F.phase !== 'build' || !F.sel.length) return;
+  const rd = F.rounds[F.k], [tn, td] = rd.target;
+  const ok = forgeUnits(rd, F.sel) * td === tn * rd.L;
+  F.tries++;
+  recordAnswer('brak', ok);
+  S.stats.answered++;
+  const pts = ok ? (F.tries === 1 ? 2 : 1) : 0;
+  F.points += pts;
+  F.last = { ok, pts, expl: forgeExplain(rd, F.sel) };
+  F.phase = ok || F.tries >= 2 ? 'done' : 'retry';
+  if (ok) { S.stats.correct++; quest('correct'); quest('topic', 1, 'brak'); SFX.play('hit'); setTimeout(() => SFX.play('right'), 120); }
+  else SFX.play('wrong');
+  render();
+  foeFx(ok ? '✨' : '💢');
+  bubble(R.pick(ok ? FORGE_LINES.right : FORGE_LINES.wrong), 3000);
+  if (ok) { const a = $('.anvil'); if (a) { const r = a.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 18); } }
+  save();
+}
+function forgeNext() {
+  const F = G.forge; if (!F || F.phase !== 'done') return;
+  const n = F.rounds.length;
+  F.k++; F.sel = []; F.phase = 'build'; F.tries = 0; F.last = null;
+  if (F.k >= n) {
+    const max = n * 2;
+    return finishLevel(true, { w: F.w, i: F.i, stars: F.points >= max ? 3 : F.points >= max - 2 ? 2 : 1, correct: F.points, answered: max, best: null, label: 'poäng i smedjan' });
+  }
+  render();
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+}
+
+/* ---------- Skalkartan ---------- */
+const MAP_LINES = {
+  intro: ['Jag har ritat varje karta i hela fjället själv!', 'Ingen hittar i fjällen som jag!', 'Följ mig. Jag går aldrig vilse!'],
+  right: ['Hmpf! Du läser kartor nästan lika bra som jag!', 'Där är skatten! Bra räknat.', 'Rätt väg. Inte illa!'],
+  wrong: ['Ha! Ingen hittar som jag!', 'Fjället är stort. Och jag känner varje sten!', 'Hoppsan, där tog vi en omväg.']
+};
+function startExpedition(w, i) {
+  G.exp = { w, i, rounds: MAP_PLAN.map(k => mapRound(k)), k: 0, food: 3, correct: 0, last: null, found: 0, m: WORLDS[w - 1].guide };
+  G.screen = 'expedition'; render();
+  if (!S.flags.expIntro) expIntro();
+  setTimeout(() => bubble(R.pick(MAP_LINES.intro), 3600), 400);
+}
+function expIntro() {
+  modal(`<div class="eyebrow">Ny bana</div><h2>Skalkartan</h2>
+    <ul class="rules" style="text-align:left">
+      <li>På kartan är <b>en ruta 1 cm</b>. Räkna rutorna för att mäta avstånd.</li>
+      <li><b>Skalan 1:50 000</b> betyder att 1 cm på kartan är 50 000 cm i verkligheten, alltså 500 m.</li>
+      <li>Går vägen snett räknar du ut avståndet med <b>Pythagoras sats</b>.</li>
+      <li>Rätt svar ger en skatt. Fel svar kostar 🍖 proviant, och utan proviant måste expeditionen vända.</li>
+    </ul>
+    <button class="btn primary" data-m="expintro">Starta expeditionen</button>`);
+}
+SCREENS.expedition = () => {
+  const E = G.exp, rd = E.rounds[E.k], n = E.rounds.length, L = E.last;
+  const answers = `<div class="answers">${rd.opts.map((o, j) => { const cls = L ? (o === rd.a ? 'right' : j === L.idx ? 'wrong' : 'gone') : ''; return `<button class="ans ${cls}" data-act="mapans" data-arg="${j}" ${L ? 'disabled' : ''}><kbd>${j + 1}</kbd>${o}</button>`; }).join('')}</div>`;
+  const out = E.food <= 0;
+  const after = !L ? '' : (L.ok ? `<div class="explain good"><div class="eyebrow">Rätt! Skatten är din</div><div>Svaret är <span class="right">${rd.a}</span>.</div></div>` : explainHTML(rd, false, undefined))
+    + `<button class="btn ${out ? '' : 'primary'}" data-act="mapnext" id="mapnext">${out ? 'Proviant slut. Se resultat' : E.k + 1 < n ? 'Vidare' : 'Avsluta expeditionen'}</button>`;
+  return `<section class="arena explevel" id="arena">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Avbryt expeditionen</button><span class="muted" style="font-size:13px">${WORLDS[E.w - 1].n} · nivå ${E.i + 1}</span></div>
+    <div class="foe merchant guide" id="foe">
+      <div class="foefx" id="foefx" aria-hidden="true"></div>
+      <div class="face" id="face">${E.m.e}</div>
+      <div class="stack" style="gap:6px">
+        <div class="row" style="justify-content:space-between"><b id="foename">${esc(E.m.n)}</b><button class="btn small ghost" data-act="maphelp">❓ Hur gör man?</button></div>
+        <div class="bubble" id="bubble" hidden></div>
+        <div class="loot"><span>🍖 ${'<b>●</b>'.repeat(Math.max(0, E.food))}${'○'.repeat(3 - Math.max(0, E.food))} proviant</span><span>💰 <b>${E.found}</b> skatter</span></div>
+        <div class="shoplist">${E.rounds.map((x, j) => `<span class="${j < E.k || (j === E.k && L) ? 'got' : ''} ${j === E.k ? 'now' : ''}">🗺️</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="mapwrap"><canvas id="mapcv" width="520" height="380" aria-label="Karta med rutnät där en ruta är 1 cm"></canvas>
+      <div class="maplegend"><span>1 ruta = 1 cm</span><span>${rd.S ? `Skala 1:${fmt(rd.S)}` : 'Skala ?'}</span></div></div>
+    <div class="qcard"><div class="topic"><span>Kartstugan · uppdrag ${E.k + 1} av ${n}</span><span>${esc(T[rd.topic].name)}</span></div><div class="qtext long">${rd.q}</div></div>
+    ${answers}
+    ${after}
+  </section>`;
+};
+AFTER.expedition = () => { drawExpedition(); const E = G.exp; if (E && E.last) setTimeout(() => $('#mapnext')?.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }), 60); };
+function drawExpedition() {
+  const E = G.exp, cv = $('#mapcv'); if (!E || !cv) return;
+  const rd = E.rounds[E.k], ctx = cv.getContext('2d');
+  const css = getComputedStyle(document.documentElement);
+  const ink = css.getPropertyValue('--mute').trim() || css.getPropertyValue('--dim').trim() || '#9db2ac';
+  const accent = css.getPropertyValue('--ember').trim() || '#f3b54a';
+  const c = 40, ox = 20, oy = 30, X = x => ox + x * c, Y = y => oy + y * c;
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.fillStyle = 'rgba(95,140,110,.10)'; ctx.fillRect(ox, oy, MAP_W * c, MAP_H * c);
+  ctx.strokeStyle = 'rgba(160,180,175,.25)'; ctx.lineWidth = 1;
+  for (let x = 0; x <= MAP_W; x++) { ctx.beginPath(); ctx.moveTo(X(x), Y(0)); ctx.lineTo(X(x), Y(MAP_H)); ctx.stroke(); }
+  for (let y = 0; y <= MAP_H; y++) { ctx.beginPath(); ctx.moveTo(X(0), Y(y)); ctx.lineTo(X(MAP_W), Y(y)); ctx.stroke(); }
+  const t = rd.targets[rd.focus];
+  if (t && (rd.kind === 'measure' || rd.kind === 'diag' || rd.kind === 'scalefind')) {
+    ctx.setLineDash([6, 5]); ctx.strokeStyle = accent; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(X(rd.camp.x), Y(rd.camp.y)); ctx.lineTo(X(t.x), Y(t.y)); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '26px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+  ctx.fillStyle = '#000';
+  ctx.fillText('⛺', X(rd.camp.x), Y(rd.camp.y));
+  rd.targets.forEach((p, k) => {
+    ctx.font = '26px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+    ctx.fillText(p.e, X(p.x), Y(p.y));
+    if (rd.kind === 'reach') { ctx.font = '600 11px Lexend, "Chakra Petch", sans-serif'; ctx.fillStyle = ink; ctx.fillText(p.n, X(p.x), Y(p.y) + 22); ctx.fillStyle = '#000'; }
+  });
+  if (E.last && E.last.ok && t) { ctx.font = '22px "Segoe UI Emoji", sans-serif'; ctx.fillText('🚩', X(t.x) + 14, Y(t.y) - 16); }
+}
+function expAnswer(idx) {
+  const E = G.exp; if (!E || E.last) return;
+  const rd = E.rounds[E.k];
+  const ok = rd.opts[idx] === rd.a;
+  recordAnswer(rd.topic, ok);
+  S.stats.answered++;
+  if (ok) { E.correct++; E.found++; S.stats.correct++; quest('correct'); quest('topic', 1, rd.topic); SFX.play('coin'); }
+  else { E.food--; SFX.play('wrong'); }
+  E.last = { ok, idx };
+  render();
+  foeFx(ok ? '💰' : '🍖');
+  bubble(R.pick(ok ? MAP_LINES.right : MAP_LINES.wrong), 3000);
+  save();
+}
+function expNext() {
+  const E = G.exp; if (!E || !E.last) return;
+  const n = E.rounds.length;
+  if (E.food <= 0) return finishLevel(false, { w: E.w, i: E.i, stars: 0, correct: E.correct, answered: E.k + 1, best: null, label: 'rätta uppdrag' });
+  E.k++; E.last = null;
+  if (E.k >= n) {
+    const bonus = E.found * 12;
+    return finishLevel(true, { w: E.w, i: E.i, stars: E.correct === n ? 3 : E.correct >= n - 1 ? 2 : 1, correct: E.correct, answered: n, best: null, label: 'rätta uppdrag', bonus, bonusText: `guld från ${E.found} skatter` });
   }
   render();
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -1911,11 +2122,13 @@ function modal(html) {
   return m;
 }
 const MODAL_ACT = {
-  quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; G.shop = null; G.chest = null; go('hub'); },
+  quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; G.shop = null; G.chest = null; G.forge = null; G.exp = null; go('hub'); },
   resume: () => { if (G.b && !G.b.locked) { G.b.tStart += performance.now() - (G.pausedAt || performance.now()); startTimer(); } },
   balintro: () => { S.flags.balIntro = true; save(); },
   shopintro: () => { S.flags.shopIntro = true; save(); },
   chestintro: () => { S.flags.chestIntro = true; save(); },
+  forgeintro: () => { S.flags.forgeIntro = true; save(); },
+  expintro: () => { S.flags.expIntro = true; save(); },
   reset: () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } S = null; G.setup = { grade: 7, starter: null, name: '' }; go('setup'); },
   battleintro: () => { if (G.introDone) { const f = G.introDone; G.introDone = null; f(); } },
   close: () => { }
@@ -1938,7 +2151,7 @@ function showLoginBonus() {
 
 /* ===== Händelser ===== */
 const ACT = {
-  hub: () => { if (G.screen === 'setup') return; if (G.b || G.bal || G.can || G.shop || G.chest) return ACT.quitask(); go('hub'); },
+  hub: () => { if (G.screen === 'setup') return; if (G.b || G.bal || G.can || G.shop || G.chest || G.forge || G.exp) return ACT.quitask(); go('hub'); },
   sound: () => { S.sound = !S.sound; save(); renderTop(); SFX.play('click'); },
   pickgrade: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.grade = Number(a); render(); },
   pickstarter: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.starter = a; render(); },
@@ -2002,6 +2215,15 @@ const ACT = {
   chestans: a => chestAnswer(Number(a)),
   chestnext: () => chestNext(),
   chesthelp: () => chestIntro(),
+  forgetile: a => forgeToggle(Number(a)),
+  forgeclear: () => { if (G.forge && G.forge.phase === 'build') { G.forge.sel = []; render(); } },
+  forgego: () => forgeStrike(),
+  forgeretry: () => { const F = G.forge; if (F && F.phase === 'retry') { F.phase = 'build'; F.sel = []; F.last = null; render(); } },
+  forgenext: () => forgeNext(),
+  forgehelp: () => forgeIntro(),
+  mapans: a => expAnswer(Number(a)),
+  mapnext: () => expNext(),
+  maphelp: () => expIntro(),
   tipok: () => showNextTip(),
   pracrevenge: () => { G.prac = { revenge: true, total: Math.min(10, (S.revenge || []).length), d: 1, n: 0, right: 0, write: false }; G.screen = 'practice'; practiceNext(); window.scrollTo({ top: 0 }); },
   balintro: () => balIntro(),
@@ -2031,6 +2253,7 @@ document.addEventListener('keydown', e => {
     else if (G.screen === 'shop' && G.shop && !G.shop.last) shopAnswer(n - 1);
     else if (G.screen === 'chest' && G.chest && G.chest.phase === 'pick' && n <= 3) chestPick(n - 1);
     else if (G.screen === 'chest' && G.chest && G.chest.phase === 'ask') chestAnswer(n - 1);
+    else if (G.screen === 'expedition' && G.exp && !G.exp.last) expAnswer(n - 1);
   }
 });
 // svarsknappar i övningsläget går via egen handler

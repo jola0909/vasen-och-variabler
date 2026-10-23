@@ -918,6 +918,116 @@ function chestAsk(round, i) {
     expl: [`Kista ${L} har ${j} ${JEWEL} av totalt ${t} saker.`, `P(${JEWEL}) = ${frac(j, t, false)}${gcd(j, t) > 1 ? ' = ' + frac(j, t) : ''}`, `Vanligt fel: ${j} ${JEWEL} mot ${s} ${STONE} är ett förhållande, inte en sannolikhet.`] });
 }
 
+/* ===== Bråksmedjan: välj bråkbitar som tillsammans blir exakt målet ===== */
+const lcm = (a, b) => a / gcd(a, b) * b;
+const FORGE_PLAN = [
+  { dens: [8], max: 1, k: 2, same: true },
+  { dens: [2, 4, 8], max: 1, k: 2 },
+  { dens: [2, 3, 6], max: 1, k: 2 },
+  { dens: [3, 4, 12], max: 1, k: 3 },
+  { dens: [2, 3, 4, 6], max: 2, k: 3, over: true }
+];
+const FORGE_ITEMS = [['Svärdsblad', '🗡️'], ['Spjutskaft', '🔱'], ['Yxhuvud', '🪓'], ['Hammarskaft', '🔨'], ['Pilspets', '🏹'], ['Sköldkant', '🛡️'], ['Nyckel', '🗝️'], ['Kedja', '⛓️']];
+/* bråk som blandad form när det är större än 1, t.ex. 1 1/4 */
+function mixed(n, d) {
+  const g = gcd(n, d); n /= g; d /= g;
+  if (n < d || d === 1) return frac(n, d);
+  const w = Math.floor(n / d), r = n % d;
+  return r ? `${w} ${frac(r, d)}` : fmt(w);
+}
+function forgeRound(r) {
+  const P = FORGE_PLAN[r];
+  const pool = [];
+  for (const d of P.dens) for (let n = 1; n < d; n++) if (P.same || gcd(n, d) === 1) pool.push([n, d]);
+  for (let tries = 0; tries < 800; tries++) {
+    const sol = Array.from({ length: P.k }, () => R.pick(pool));
+    let L = sol.reduce((l, f) => lcm(l, f[1]), 1);
+    const units = sol.reduce((s, f) => s + f[0] * L / f[1], 0);
+    const g = gcd(units, L), tn = units / g, td = L / g, tv = tn / td;
+    if (tv > P.max || tv < .4 || (P.over ? tv <= 1 : tv >= 1)) continue;
+    const extra = Array.from({ length: 3 }, () => R.pick(pool));
+    if (sol.concat(extra).some(f => f[0] * td === tn * f[1])) continue;   // målet får inte finnas som en enda bit
+    const pieces = R.shuffle(sol.concat(extra).map((f, i) => ({ n: f[0], d: f[1], sol: i < sol.length })));
+    L = pieces.reduce((l, f) => lcm(l, f.d), td);
+    if (L > 24) continue;
+    return { r, target: [tn, td], pieces: pieces.map(p => [p.n, p.d]), sol: pieces.map((p, i) => (p.sol ? i : -1)).filter(i => i >= 0), max: P.max, L, item: R.pick(FORGE_ITEMS) };
+  }
+  return { r, fallback: true, target: [3, 4], pieces: [[1, 2], [1, 4], [1, 8], [3, 8], [1, 8]], sol: [0, 1], max: 1, L: 8, item: FORGE_ITEMS[0] };
+}
+/* summan av valda bitar i delar av L (exakt heltalsräkning) */
+const forgeUnits = (rd, idxs) => idxs.reduce((s, i) => s + rd.pieces[i][0] * rd.L / rd.pieces[i][1], 0);
+function forgeExplain(rd, idxs) {
+  const { L } = rd, [tn, td] = rd.target, tu = tn * L / td;
+  const parts = idxs.map(i => { const [n, d] = rd.pieces[i]; return d === L ? frac(n, d, false) : `${frac(n, d, false)} = ${frac(n * L / d, L, false)}`; });
+  const su = forgeUnits(rd, idxs);
+  return [
+    `Gör om till ${L}-delar: ${parts.join(', ') || 'inga bitar valda'}`,
+    `Dina bitar: ${idxs.map(i => frac(rd.pieces[i][0] * L / rd.pieces[i][1], L, false)).join(' + ') || '0'} = ${frac(su, L, false)}`,
+    `Målet: ${mixed(tn, td)} = ${frac(tu, L, false)}. ${su > tu ? 'Det blev för långt.' : su < tu ? 'Det blev för kort.' : 'Exakt rätt!'}`
+  ];
+}
+
+/* ===== Skalkartan: mät på kartan och räkna med skala ===== */
+const MAP_W = 12, MAP_H = 8;
+const MAP_PLACES = [['Skattgrottan', '💰'], ['Borgen', '🏰'], ['Gruvan', '⛏️'], ['Fyren', '🗼'], ['Sjön', '🏞️'], ['Bron', '🌉'], ['Stugan', '🛖'], ['Toppen', '🏔️']];
+const MAP_PLAN = ['measure', 'measure', 'reach', 'diag', 'reverse', 'scalefind'];
+const realText = cm => (cm >= 100000 ? `${fmt(cm / 100000)} km` : `${fmt(cm / 100)} m`);
+function mapRound(kind) {
+  const places = R.shuffle(MAP_PLACES);
+  const camp = { x: 1, y: R.int(2, MAP_H - 2) };
+  const S = R.pick([10000, 20000, 25000, 50000, 100000]);
+  const base = { kind, S, camp, targets: [], focus: -1, topic: 'skala' };
+  const place = (dx, dy, k) => ({ x: camp.x + dx, y: camp.y + dy, n: places[k][0], e: places[k][1] });
+  if (kind === 'measure' || kind === 'diag') {
+    let dx, dy;
+    if (kind === 'diag') {
+      const fits = [[3, 4], [4, 3], [6, 8], [8, 6]].filter(([x, y]) => camp.x + x <= MAP_W && (camp.y + y <= MAP_H || camp.y - y >= 0));
+      [dx, dy] = fits.length ? R.pick(fits) : [4, 3];
+    }
+    else if (Math.random() < .6) { dx = R.int(3, MAP_W - 2); dy = 0; } else { dx = 0; dy = R.int(3, Math.max(camp.y, MAP_H - camp.y)); }
+    const sy = camp.y + dy <= MAP_H ? 1 : -1;
+    if (camp.y + sy * dy < 0 || camp.y + sy * dy > MAP_H || camp.x + dx > MAP_W) return mapRound(kind);
+    const d = Math.round(Math.sqrt(dx * dx + dy * dy)), cm = d * S, t = place(dx, sy * dy, 0);
+    const km = cm / 100000;
+    return Object.assign(base, { targets: [t], focus: 0, dx, dy, d }, mk({
+      q: `Skalan är 1:${fmt(S)} och en ruta är 1 cm. Hur långt är det i verkligheten från lägret ⛺ till ${t.n.toLowerCase()} ${t.e}?`,
+      ans: km, val: km, unit: ' km', wrongs: [km * 10, km / 10, km * 100, d + S / 100000],
+      expl: (kind === 'diag' ? [`Sträckan är snett. Pythagoras: √(${dx}<sup>2</sup> + ${dy}<sup>2</sup>) = √${dx * dx + dy * dy} = ${d} cm`] : [`Räkna rutorna: ${d} cm på kartan.`])
+        .concat([`I verkligheten: ${d} · ${fmt(S)} = ${fmt(cm)} cm`, `${fmt(cm)} cm = ${fmt(cm / 100)} m = ${fmt(km)} km`]) }));
+  }
+  if (kind === 'reach') {
+    for (let tries = 0; tries < 200; tries++) {
+      const ds = R.shuffle([2, 3, 4, 5, 6, 7, 8, 9, 10]).slice(0, 3).sort((a, b) => a - b);
+      const dirs = R.shuffle([[1, 0], [0, -1], [0, 1]]);
+      const ts = ds.map((d, k) => place(dirs[k][0] * d, dirs[k][1] * d, k));
+      if (ts.some(t => t.x > MAP_W || t.y < 0 || t.y > MAP_H)) continue;
+      const S2 = R.pick([25000, 50000, 100000]), kms = ds.map(d => d * S2 / 100000);
+      const R0 = Math.floor((kms[1] + .5) * 2) / 2;               // räcker till mål 2, inte mål 3
+      if (R0 < kms[1] || R0 >= kms[2]) continue;
+      const order = R.shuffle([0, 1, 2]);
+      return Object.assign(base, { S: S2, targets: order.map(k => ts[k]), focus: order.indexOf(1), reach: R0 }, mk({
+        q: `Skalan är 1:${fmt(S2)} och en ruta är 1 cm. Du orkar gå högst ${fmt(R0)} km. Vilket är det mål längst bort som du hinner fram till?`,
+        ans: `${ts[1].e} ${ts[1].n}`, wrongs: [`${ts[2].e} ${ts[2].n}`, `${ts[0].e} ${ts[0].n}`, 'Inget av målen'],
+        expl: ds.map((d, k) => `${ts[k].e} ${ts[k].n}: ${d} cm · ${fmt(S2)} = ${fmt(kms[k])} km`).concat([`Längst bort men inom ${fmt(R0)} km: ${ts[1].n}`]) }));
+    }
+  }
+  if (kind === 'reverse') {
+    const cm = R.int(2, 9), S2 = R.pick([10000, 25000, 50000]), real = cm * S2;
+    return Object.assign(base, { S: S2 }, mk({
+      q: `Bron 🌉 är ${realText(real)} lång i verkligheten. Hur lång blir den på en karta med skalan 1:${fmt(S2)}?`,
+      ans: cm, val: cm, unit: ' cm', wrongs: [cm * 10, cm / 10, cm * 100, round(real / 100 / S2 * 1000, 2)],
+      expl: [`${realText(real)} = ${fmt(real)} cm`, `På kartan är allt ${fmt(S2)} gånger mindre: ${fmt(real)} / ${fmt(S2)} = ${cm} cm`] }));
+  }
+  // scalefind
+  const d = R.int(2, 8), km = R.pick([.5, 1, 2, 2.5, 4, 5]), S2 = km * 100000 / d;
+  if (!Number.isInteger(S2) || S2 % 1000 !== 0) return mapRound(kind);
+  const t = place(d, 0, 0);
+  return Object.assign(base, { S: null, targets: [t], focus: 0, dx: d, dy: 0, d }, mk({
+    q: `Avståndet från lägret ⛺ till ${t.n.toLowerCase()} ${t.e} är ${fmt(km)} km i verkligheten. Vilken skala har kartan? (En ruta är 1 cm.)`,
+    ans: `1:${fmt(S2)}`, wrongs: [`1:${fmt(S2 * 10)}`, `1:${fmt(S2 / 10)}`, `${fmt(S2)}:1`, `1:${fmt(km * 1000 / d)}`, `1:${fmt(S2 * 100)}`],
+    expl: [`Kartan: ${d} cm. Verkligheten: ${fmt(km)} km = ${fmt(km * 100000)} cm`, `${fmt(km * 100000)} / ${d} = ${fmt(S2)}, alltså skalan 1:${fmt(S2)}`] }));
+}
+
 /* Parsning av skrivna svar: 0,75  3/4  −2  x = 5  45 kr */
 function parseAnswer(s) {
   if (s === null || s === undefined) return null;
@@ -928,4 +1038,4 @@ function parseAnswer(s) {
   return null;
 }
 
-if (typeof module !== 'undefined') module.exports = { T, R, fmt, frac, lin, quad, parseAnswer, gcd, round, shopRound, SHOP_PLAN, SHOP_ITEMS, chestRound, chestAsk, chestProb, CHEST_PLAN };
+if (typeof module !== 'undefined') module.exports = { T, R, fmt, frac, lin, quad, parseAnswer, gcd, round, shopRound, SHOP_PLAN, SHOP_ITEMS, chestRound, chestAsk, chestProb, CHEST_PLAN, forgeRound, forgeUnits, forgeExplain, mixed, FORGE_PLAN, mapRound, MAP_PLAN, MAP_W, MAP_H };

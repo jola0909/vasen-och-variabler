@@ -356,6 +356,37 @@ h3 { font-size: 22px; }
 .drawn small { grid-column: 1 / -1; color: var(--mute); }
 @media (max-width: 480px) { .tchest .items { font-size: 16px; } .tchest .ptxt { font-size: 12px; } }
 
+/* ---------- Bråksmedjan ---------- */
+.forgelevel .ptag b { background: #2f7bbf; }
+.anvil { display: grid; gap: 4px; padding: 14px 16px 8px; background: linear-gradient(180deg, #3b4448, #23292c); border-radius: 12px 12px 26px 26px; border: 2px solid #59656a; }
+.abar { position: relative; height: 54px; display: flex; overflow: hidden; border-radius: 6px; background: linear-gradient(90deg, rgba(255, 255, 255, .18) 1px, transparent 1px) 0 0 / calc(100% / var(--ticks)) 100%, #151a1c; }
+.abar .seg { display: grid; place-items: center; font-style: normal; font-weight: 700; font-size: 14px; color: #2a1600; border-right: 2px solid #2a1600; background: linear-gradient(180deg, #ffd27a, #e08a1e); animation: segIn .25s; overflow: hidden; }
+.abar .seg.s1 { background: linear-gradient(180deg, #ffe7a8, #f0a83a); }
+.abar .seg.s2 { background: linear-gradient(180deg, #ffc46a, #d4741a); }
+.abar .seg.s3 { background: linear-gradient(180deg, #ffdf96, #e89a2a); }
+.abar .seg .fr { font-size: .8em; }
+@keyframes segIn { from { transform: scaleX(0); transform-origin: left; } }
+.amark { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--aurora); box-shadow: 0 0 10px var(--aurora); }
+.amark b { position: absolute; top: 2px; left: 6px; font-size: 12px; color: var(--aurora); background: rgba(12, 22, 24, .8); border-radius: 6px; padding: 0 5px; white-space: nowrap; }
+.aone { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, .5); }
+.ascale { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--mute); }
+.anvil.over .abar { box-shadow: 0 0 0 2px var(--berry); }
+.anvil.hit { border-color: var(--aurora); box-shadow: 0 0 24px rgba(95, 227, 179, .35); }
+.anvil.miss { border-color: var(--berry); }
+.ftiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.ftile { display: grid; gap: 6px; justify-items: center; padding: 10px 8px; border-radius: 12px; border: 2px solid var(--line); background: var(--pine2); box-shadow: 0 4px 0 rgba(0, 0, 0, .35); }
+.ftile .fv { font-size: 22px; font-weight: 700; }
+.ftile .fbar { width: 100%; height: 6px; border-radius: 3px; background: var(--night); overflow: hidden; }
+.ftile .fbar i { display: block; height: 100%; background: var(--ember); }
+.ftile.on { border-color: var(--ember); background: rgba(243, 181, 74, .16); transform: translateY(2px); box-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+.ftile[disabled] { cursor: default; opacity: .7; }
+
+/* ---------- Skalkartan ---------- */
+.mapwrap { display: grid; gap: 4px; }
+.mapwrap canvas { width: 100%; height: auto; max-width: 100%; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(160deg, #20362f, #172824); display: block; }
+.maplegend { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--mute); }
+.maplegend span:last-child { color: var(--ember); }
+
 .shake { animation: shake .4s; }
 @keyframes shake { 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(4px); } }
 .flash { position: fixed; inset: 0; pointer-events: none; z-index: 50; background: rgba(236, 86, 112, .25); animation: fade .45s forwards; }

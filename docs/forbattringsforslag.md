@@ -2,7 +2,7 @@
 
 Genomgång av spelet 2026-10-23: vad som skulle göra det roligare och mer engagerande. Insats: **S** = liten, **M** = mellan, **L** = stor.
 
-**Status:** 2, 3 och 4 är klara (2026-10-23). Av 5 är Procentbutiken klar, och Sannolikhetskistorna är påbörjade.
+**Status:** 2, 3, 4 och 5 är klara (2026-10-23): Procentbutiken, Sannolikhetskistorna, Bråksmedjan och Skalkartan finns i spelet.
 
 ## Nuläge
 

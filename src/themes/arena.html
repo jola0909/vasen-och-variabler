@@ -383,6 +383,37 @@ h3 { font-size: 27px; }
 .drawn small { grid-column: 1 / -1; color: var(--dim); font-weight: 600; }
 @media (max-width: 480px) { .tchest .items { font-size: 16px; } .tchest .ptxt { font-size: 15px; } }
 
+/* ---------- Bråksmedjan ---------- */
+.forgelevel .ptag b { background: var(--volt); color: var(--volt-ink); }
+.anvil { display: grid; gap: 4px; padding: 14px 16px 8px; background: linear-gradient(180deg, #232c44, #121827); box-shadow: inset 0 0 0 2px var(--edge); clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 8% 100%, 0 70%); }
+.abar { position: relative; height: 56px; display: flex; overflow: hidden; background: linear-gradient(90deg, rgba(45, 226, 255, .22) 1px, transparent 1px) 0 0 / calc(100% / var(--ticks)) 100%, var(--void); box-shadow: inset 0 0 0 1px var(--edge); }
+.abar .seg { display: grid; place-items: center; font-style: normal; font-weight: 700; font-size: 15px; color: #241500; border-right: 2px solid #241500; background: linear-gradient(180deg, #ffe38a, var(--gold) 60%, #d98f00); box-shadow: inset 0 0 12px rgba(255, 255, 255, .35); animation: segIn .22s; overflow: hidden; }
+.abar .seg.s1 { background: linear-gradient(180deg, #fff0b3, #ffd04d 60%, #e9a10a); }
+.abar .seg.s2 { background: linear-gradient(180deg, #ffd27a, #ffb21f 60%, #cf8000); }
+.abar .seg.s3 { background: linear-gradient(180deg, #ffea9e, #ffc531 60%, #e09a12); }
+.abar .seg .fr { font-size: .8em; }
+@keyframes segIn { from { transform: scaleX(0); transform-origin: left; } }
+.amark { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: var(--toxic); box-shadow: 0 0 14px var(--toxic); }
+.amark b { position: absolute; top: 2px; left: 6px; font-size: 12px; color: var(--toxic-ink); background: var(--toxic); padding: 0 5px; white-space: nowrap; }
+.aone { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, .45); }
+.ascale { display: flex; justify-content: space-between; font-family: var(--display); font-size: 16px; color: var(--dim); line-height: 1; }
+.anvil.over .abar { box-shadow: inset 0 0 0 2px var(--blaze), 0 0 18px rgba(255, 61, 110, .5); }
+.anvil.hit { box-shadow: inset 0 0 0 2px var(--toxic), inset 0 0 40px rgba(166, 255, 61, .25); }
+.anvil.miss { box-shadow: inset 0 0 0 2px var(--blaze); }
+.ftiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+.ftile { display: grid; gap: 6px; justify-items: center; padding: 10px 8px; border: 0; background: var(--deck2); box-shadow: inset 0 0 0 1px var(--edge), inset 0 -4px 0 #0a0f1c; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+.ftile .fv { font-size: 24px; font-weight: 700; }
+.ftile .fbar { width: 100%; height: 6px; background: var(--void); overflow: hidden; transform: skewX(-20deg); }
+.ftile .fbar i { display: block; height: 100%; background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+.ftile.on { background: linear-gradient(160deg, rgba(255, 197, 49, .3), var(--deck2)); box-shadow: inset 0 0 0 2px var(--gold); transform: translateY(2px); }
+.ftile[disabled] { cursor: default; opacity: .7; }
+
+/* ---------- Skalkartan ---------- */
+.mapwrap { display: grid; gap: 4px; }
+.mapwrap canvas { width: 100%; height: auto; max-width: 100%; background: linear-gradient(160deg, #13223a, #0b1322); box-shadow: inset 0 0 0 1px var(--edge), 0 0 40px rgba(45, 226, 255, .08); display: block; }
+.maplegend { display: flex; justify-content: space-between; font-family: var(--display); font-size: 18px; letter-spacing: .5px; text-transform: uppercase; color: var(--dim); line-height: 1; }
+.maplegend span:last-child { color: var(--gold); }
+
 .shake { animation: shake .35s; }
 @keyframes shake { 15% { transform: translate(-9px, 3px); } 35% { transform: translate(9px, -3px); } 55% { transform: translate(-6px, 2px); } 75% { transform: translate(4px, -1px); } }
 .flash { position: fixed; inset: 0; pointer-events: none; z-index: 50; background: radial-gradient(circle, transparent 40%, rgba(255, 61, 110, .55)); animation: fade .5s forwards; }
@@ -612,7 +643,7 @@ window.THEME = {
       intro: 'Granarna står tätt och något jagar i mörkret. Här tränar du negativa tal, bråk, procent och dina första ekvationer.',
       foes: [['Gråvargen', '🐺'], ['Blodfladdermusen', '🦇'], ['Giftspindeln', '🕷️'], ['Vildgalten', '🐗'], ['Skogstrollet', '👹'], ['Draugkrigaren', '🧟']],
       boss: { n: 'Skogsrået', e: '🧝‍♀️', v: 'skogsra' },
-      levelNames: ['Inträdet', 'Mossgraven', 'Procentbutiken', 'Brotrollets bro', 'Spindelnästet', 'Blodgläntan', 'Runkastet', 'Myrens mitt', 'Vargflocken', 'Skogsråets tron'] },
+      levelNames: ['Inträdet', 'Bråksmedjan', 'Procentbutiken', 'Brotrollets bro', 'Spindelnästet', 'Blodgläntan', 'Runkastet', 'Myrens mitt', 'Vargflocken', 'Skogsråets tron'] },
     { n: 'Frostfjällen', troll: 'Istrollet',
       intro: 'Snöstormen viner över kalfjället. Potenser, förändringsfaktor, Pythagoras och sannolikhet avgör vem som överlever.',
       foes: [['Stormörnen', '🦅'], ['Grottbjörnen', '🐻'], ['Isvargen', '🐺'], ['Frostjätten', '🧊'], ['Bergsväduren', '🐏'], ['Snötrollet', '👹']],

@@ -1,5 +1,5 @@
 // Slumpar fram tusentals frågor per område och nivå och kontrollerar att varje fråga går att svara rätt på.
-const { T, parseAnswer, shopRound, SHOP_PLAN, SHOP_ITEMS, R, chestRound, chestAsk, CHEST_PLAN } = require('../src/gen.js');
+const { T, parseAnswer, shopRound, SHOP_PLAN, SHOP_ITEMS, R, chestRound, chestAsk, CHEST_PLAN, forgeRound, forgeUnits, forgeExplain, mixed, FORGE_PLAN, mapRound, MAP_PLAN, MAP_W, MAP_H } = require('../src/gen.js');
 
 const ROUNDS = 400;
 const strip = h => h
@@ -77,7 +77,39 @@ if (process.argv.includes('--sample')) {
 if (process.argv.includes('--sample')) {
   for (const id in T) for (let d = 1; d <= 3; d++) { const q = T[id].gen(d); console.log(`${id} d${d}`.padEnd(10), strip(q.q), '=>', strip(q.a)); }
 }
-console.log(`${checked} frågor kontrollerade i ${Object.keys(T).length} områden, Procentbutiken och Sannolikhetskistorna.`);
+// Bråksmedjan: lösningen ska bli exakt målet och bitarna ska gå att jämföra i en gemensam nämnare
+for (let r = 0; r < FORGE_PLAN.length; r++) for (let i = 0; i < ROUNDS; i++) {
+  const rd = forgeRound(r); checked++;
+  const [tn, td] = rd.target, bad = [];
+  if (rd.fallback) bad.push('generatorn hittade ingen uppgift');
+  if (rd.pieces.some(p => p[0] * td === tn * p[1])) bad.push('målet finns som en enda bit');
+  if (forgeUnits(rd, rd.sol) * td !== tn * rd.L) bad.push('lösningen blir inte målet');
+  if (rd.L > 24 || rd.L % td !== 0 || rd.pieces.some(p => rd.L % p[1] !== 0)) bad.push(`nämnaren ${rd.L} passar inte`);
+  if (rd.pieces.length !== FORGE_PLAN[r].k + 3) bad.push(`${rd.pieces.length} bitar`);
+  if (tn / td > rd.max) bad.push('målet är längre än städet');
+  const txt = [mixed(tn, td), ...forgeExplain(rd, rd.sol), ...forgeExplain(rd, [0])].join(' ');
+  if (/NaN|undefined|Infinity/.test(txt)) bad.push('ogiltig text');
+  if (bad.length) failures.push(`smedja runda ${r + 1}: ${bad.join('; ')} :: mål ${tn}/${td}, bitar ${rd.pieces.map(p => p.join('/')).join(' ')}`);
+}
+// Skalkartan: allt ska ligga på kartan och frågan ska ha fyra unika alternativ
+for (const kind of new Set(MAP_PLAN)) for (let i = 0; i < ROUNDS; i++) {
+  const rd = mapRound(kind); checked++;
+  const bad = [];
+  const all = [rd.q, rd.a, ...rd.opts, ...rd.expl].join(' | ');
+  if (/NaN|undefined|Infinity|null|\[object/.test(all)) bad.push('ogiltig text');
+  if (rd.opts.length !== 4) bad.push(`${rd.opts.length} alternativ`);
+  if (new Set(rd.opts.map(strip)).size !== rd.opts.length) bad.push('dubbla alternativ');
+  if (!rd.opts.includes(rd.a)) bad.push('rätt svar saknas');
+  if ([rd.camp, ...rd.targets].some(p => p.x < 0 || p.x > MAP_W || p.y < 0 || p.y > MAP_H)) bad.push('utanför kartan');
+  if (rd.d && rd.targets[rd.focus] && Math.hypot(rd.targets[rd.focus].x - rd.camp.x, rd.targets[rd.focus].y - rd.camp.y) !== rd.d) bad.push('avståndet stämmer inte');
+  if (rd.val !== null) for (const o of rd.opts) if (o !== rd.a) { const v = parseAnswer(strip(o)); if (v !== null && Math.abs(v - rd.val) < 1e-9) bad.push(`felalternativ ${strip(o)} är lika med svaret`); }
+  if (bad.length) failures.push(`karta ${kind}: ${bad.join('; ')} :: ${strip(rd.q)} => ${strip(rd.a)} [${rd.opts.map(strip).join(' / ')}]`);
+}
+if (process.argv.includes('--sample')) {
+  for (let r = 0; r < FORGE_PLAN.length; r++) { const rd = forgeRound(r); console.log(`smedja ${r + 1}`.padEnd(12), 'mål', strip(mixed(...rd.target)), '| bitar', rd.pieces.map(p => p.join('/')).join(' '), '| lösning', rd.sol.map(i => rd.pieces[i].join('/')).join(' + ')); }
+  for (const kind of new Set(MAP_PLAN)) { const rd = mapRound(kind); console.log(`karta ${kind}`.padEnd(16), strip(rd.q), '=>', strip(rd.a)); }
+}
+console.log(`${checked} frågor kontrollerade i ${Object.keys(T).length} områden och fyra specialbanor.`);
 if (failures.length) {
   console.log(`${failures.length} fel:`);
   failures.slice(0, 30).forEach(f => console.log('  ' + f));
