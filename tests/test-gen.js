@@ -1,5 +1,5 @@
 // Slumpar fram tusentals frågor per område och nivå och kontrollerar att varje fråga går att svara rätt på.
-const { T, parseAnswer } = require('../src/gen.js');
+const { T, parseAnswer, shopRound, SHOP_PLAN, SHOP_ITEMS, R } = require('../src/gen.js');
 
 const ROUNDS = 400;
 const strip = h => h
@@ -35,10 +35,30 @@ for (const id in T) for (let d = 1; d <= 3; d++) {
   }
 }
 
+// Procentbutiken: varje köp ska gå att räkna ut och felräkning ska kosta mer
+let shopChecked = 0;
+for (const g of [7, 8, 9]) for (const kind of new Set(SHOP_PLAN[g])) for (let i = 0; i < ROUNDS; i++) {
+  let r;
+  try { r = shopRound(g, kind, R.pick(SHOP_ITEMS)); } catch (e) { failures.push(`butik ${kind}: kastade ${e.message}`); break; }
+  shopChecked++;
+  const bad = [];
+  const all = [r.q, r.a, r.offer, ...r.opts, ...r.expl].join(' | ');
+  if (/NaN|undefined|Infinity|null|\[object/.test(all)) bad.push('ogiltig text');
+  if (r.opts.length !== 4) bad.push(`${r.opts.length} alternativ`);
+  if (new Set(r.opts.map(strip)).size !== r.opts.length) bad.push('dubbla alternativ');
+  if (!r.opts.includes(r.a)) bad.push('rätt svar saknas');
+  if (!(r.paid > 0) || !(r.pen > r.paid)) bad.push(`pris ${r.paid} / straff ${r.pen}`);
+  if (r.val !== null) for (const o of r.opts) if (o !== r.a) { const v = parseAnswer(strip(o)); if (v !== null && Math.abs(v - r.val) < 1e-9) bad.push(`felalternativ ${strip(o)} är lika med svaret`); }
+  if (bad.length) failures.push(`butik ${kind}: ${bad.join('; ')} :: ${strip(r.q)} => ${strip(r.a)} [${r.opts.map(strip).join(' / ')}]`);
+}
+checked += shopChecked;
+if (process.argv.includes('--sample')) {
+  for (const g of [7, 8, 9]) for (const kind of new Set(SHOP_PLAN[g])) { const r = shopRound(g, kind, R.pick(SHOP_ITEMS)); console.log(`butik ${kind}`.padEnd(16), strip(r.q), '=>', strip(r.a), `| betala ${r.paid}, fel ${r.pen}`); }
+}
 if (process.argv.includes('--sample')) {
   for (const id in T) for (let d = 1; d <= 3; d++) { const q = T[id].gen(d); console.log(`${id} d${d}`.padEnd(10), strip(q.q), '=>', strip(q.a)); }
 }
-console.log(`${checked} frågor kontrollerade i ${Object.keys(T).length} områden.`);
+console.log(`${checked} frågor kontrollerade i ${Object.keys(T).length} områden och Procentbutiken.`);
 if (failures.length) {
   console.log(`${failures.length} fel:`);
   failures.slice(0, 30).forEach(f => console.log('  ' + f));

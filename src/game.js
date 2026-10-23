@@ -93,13 +93,13 @@ function fxText(fx) {
 const WORLDS = [
   { id: 1, n: 'Mörkskogen', grade: 7, col: '#5fe3b3', boss: { n: 'Skogsrået', e: '🧝‍♀️', v: 'skogsra', title: 'Mörkskogens drottning', forms: ['🧝‍♀️', '🦊', '🌳'],
       attacks: [['Rotpiskan', '🌿'], ['Rävklon', '🦊'], ['Lövstormen', '🍂']],
-      lines: { intro: 'Välkommen till min skog! Här är det jag som bestämmer!', hit: ['Aj! Mina löv!', 'Det där kändes ända ner i rötterna!', 'Grrr… men jag är fortfarande starkast!'], laugh: ['Hihihi! Skogen är på min sida!', 'Ingen är snabbare än jag!', 'Jag är skogens drottning!'], phase: ['Nu ska du få se min rävsvans!', 'Se min ihåliga rygg… min allra sista form!'], defeat: 'Nej… skogen… är din…' } }, troll: 'Mosstrollet',
+      lines: { intro: 'Välkommen till min skog! Här är det jag som bestämmer!', hit: ['Aj! Mina löv!', 'Det där kändes ända ner i rötterna!', 'Grrr… men jag är fortfarande starkast!'], laugh: ['Hihihi! Skogen är på min sida!', 'Ingen är snabbare än jag!', 'Jag är skogens drottning!'], phase: ['Nu ska du få se min rävsvans!', 'Se min ihåliga rygg… min allra sista form!'], defeat: 'Nej… skogen… är din…' } }, troll: 'Mosstrollet', merchant: { n: 'Gnetaren', e: '🧙' },
     intro: 'Granarna står tätt och något viskar mellan stammarna. Här tränar du taluppfattning, bråk, procent och dina första ekvationer.',
     foes: [['Gråvargen', '🐺'], ['Skuggfladdermusen', '🦇'], ['Flugsvampen', '🍄'], ['Mossspindeln', '🕷️'], ['Vildgalten', '🐗'], ['Grävlingen', '🦡']],
     levels: [
       { n: 'Stigen in', t: 'battle', topics: ['neg', 'prio'], d: 1 },
       { n: 'Mossiga stenar', t: 'battle', topics: ['brak', 'deci'], d: 1 },
-      { n: 'Svampringen', t: 'battle', topics: ['proc1', 'deci', 'neg'], d: 1 },
+      { n: 'Procentbutiken', t: 'shop' },
       { n: 'Trollets bro', t: 'balance' },
       { n: 'Spindelsnåret', t: 'battle', topics: ['ekv1', 'prio', 'neg'], d: 2 },
       { n: 'Ängsgläntan', t: 'battle', topics: ['geo1', 'enh'], d: 2 },
@@ -110,7 +110,7 @@ const WORLDS = [
     ] },
   { id: 2, n: 'Fjällvidderna', grade: 8, col: '#7cc7ff', boss: { n: 'Bergakungen', e: '👑', v: 'bergakung', title: 'Härskaren i berget', forms: ['👑', '👹', '🗻'],
       attacks: [['Silverregnet', '🪙'], ['Trollnäven', '👊'], ['Lavinen', '❄️']],
-      lines: { intro: 'Ingen rör mitt silver! Jag är den mäktigaste kungen i hela berget!', hit: ['Mitt berg skakar!', 'Omöjligt!', 'Grmpf! Min krona sitter snett!'], laugh: ['HAHA! Jag är mäktigast i hela fjället!', 'Mitt silver är säkert!', 'Ingen är starkare än berget!'], phase: ['Nu vaknar trollet i mig!', 'JAG ÄR BERGET!'], defeat: 'Mitt silver… är ditt…' } }, troll: 'Istrollet',
+      lines: { intro: 'Ingen rör mitt silver! Jag är den mäktigaste kungen i hela berget!', hit: ['Mitt berg skakar!', 'Omöjligt!', 'Grmpf! Min krona sitter snett!'], laugh: ['HAHA! Jag är mäktigast i hela fjället!', 'Mitt silver är säkert!', 'Ingen är starkare än berget!'], phase: ['Nu vaknar trollet i mig!', 'JAG ÄR BERGET!'], defeat: 'Mitt silver… är ditt…' } }, troll: 'Istrollet', merchant: { n: 'Fjällkrämaren', e: '🧔' },
     intro: 'Kalla vindar sveper över kalfjället. Potenser, förändringsfaktor, Pythagoras och sannolikhet väntar.',
     foes: [['Fjällörnen', '🦅'], ['Grottbjörnen', '🐻'], ['Myskoxen', '🐂'], ['Bergsväduren', '🐏'], ['Isvätten', '🧊'], ['Järven', '🦡']],
     levels: [
@@ -119,7 +119,7 @@ const WORLDS = [
       { n: 'Kartstugan', t: 'battle', topics: ['pyth', 'skala'], d: 1 },
       { n: 'Isvågen', t: 'balance' },
       { n: 'Tärningsklippan', t: 'battle', topics: ['sann', 'cirk'], d: 2 },
-      { n: 'Renvaktarns läger', t: 'battle', topics: ['ff', 'pyth', 'pot'], d: 2 },
+      { n: 'Fjällmarknaden', t: 'shop' },
       { n: 'Lavinkastet', t: 'cannon' },
       { n: 'Glaciärkanten', t: 'battle', topics: ['utt', 'skala', 'ekv2'], d: 2 },
       { n: 'Stormtoppen', t: 'battle', elite: true, topics: ['pot', 'ff', 'ekv2', 'pyth', 'sann', 'cirk'], d: 3 },
@@ -127,18 +127,18 @@ const WORLDS = [
     ] },
   { id: 3, n: 'Dimsjön', grade: 9, col: '#b48cff', boss: { n: 'Näcken', e: '🎻', v: 'nacken', title: 'Forsens spelman', forms: ['🎻', '🐴', '🌊'],
       attacks: [['Fiolslingan', '🎵'], ['Bäckahästens spark', '🐴'], ['Forsvirveln', '🌊']],
-      lines: { intro: 'Lyssna på min fiol! Ingen i hela världen spelar vackrare än jag!', hit: ['En sträng gick av!', 'Falsk ton!', 'Aj, min fiol!'], laugh: ['Tralala! Min musik är oslagbar!', 'Forsen lyder bara mig!', 'Jag är forsens mästare!'], phase: ['Nu tar jag hästens skepnad!', 'Se forsens hela kraft!'], defeat: 'Min fiol… tystnar…' } }, troll: 'Dimtrollet',
+      lines: { intro: 'Lyssna på min fiol! Ingen i hela världen spelar vackrare än jag!', hit: ['En sträng gick av!', 'Falsk ton!', 'Aj, min fiol!'], laugh: ['Tralala! Min musik är oslagbar!', 'Forsen lyder bara mig!', 'Jag är forsens mästare!'], phase: ['Nu tar jag hästens skepnad!', 'Se forsens hela kraft!'], defeat: 'Min fiol… tystnar…' } }, troll: 'Dimtrollet', merchant: { n: 'Hamnhökaren', e: '🧓' },
     intro: 'Dimman ligger tung över vattnet och någon spelar fiol i forsen. Funktioner, ekvationssystem och sannolikhet i flera steg.',
     foes: [['Träskpaddan', '🐸'], ['Djupbläckfisken', '🦑'], ['Sjöormen', '🐍'], ['Gäddkungen', '🐟'], ['Klokräftan', '🦀'], ['Dimslöjan', '🌫️']],
     levels: [
       { n: 'Strandkanten', t: 'battle', topics: ['linje', 'fun'], d: 1 },
       { n: 'Vassen', t: 'battle', topics: ['ekvsys', 'rot'], d: 1 },
-      { n: 'Fiskeläget', t: 'battle', topics: ['tiop', 'proc3'], d: 1 },
+      { n: 'Fyndhamnen', t: 'shop' },
       { n: 'Dimvågen', t: 'balance' },
       { n: 'Näckrosbladen', t: 'battle', topics: ['sann2', 'kvad'], d: 2 },
       { n: 'Speglingen', t: 'battle', topics: ['likf', 'linje', 'rot'], d: 2 },
       { n: 'Ljuskastet', t: 'cannon' },
-      { n: 'Djupet', t: 'battle', topics: ['fun', 'proc3', 'ekvsys'], d: 2 },
+      { n: 'Djupet', t: 'battle', topics: ['fun', 'proc3', 'ekvsys', 'tiop'], d: 2 },
       { n: 'Virvelströmmen', t: 'battle', elite: true, topics: ['linje', 'ekvsys', 'kvad', 'sann2', 'tiop', 'likf'], d: 3 },
       { n: 'Forsen', t: 'boss', topics: ['linje', 'fun', 'ekvsys', 'rot', 'tiop', 'proc3', 'sann2', 'kvad', 'likf'], d: 3 }
     ] }
@@ -351,6 +351,9 @@ function floatText(x, y, text, crit) {
   el.className = 'float' + (crit ? ' crit' : '');
   el.style.left = x + 'px'; el.style.top = y + 'px'; el.textContent = text;
   document.body.appendChild(el);
+  // håll texten innanför skärmen (den är centrerad kring x)
+  const half = el.offsetWidth / 2, vw = document.documentElement.clientWidth;
+  el.style.left = clamp(x, half + 8, Math.max(half + 8, vw - half - 8)) + 'px';
   setTimeout(() => el.remove(), 2200);
 }
 function flash() { const f = document.createElement('div'); f.className = 'flash'; document.body.appendChild(f); setTimeout(() => f.remove(), 500); }
@@ -502,6 +505,7 @@ function levelIcon(W, i) {
   if (L.t === 'boss') return W.boss.e;
   if (L.t === 'balance') return '⚖️';
   if (L.t === 'cannon') return '🎯';
+  if (L.t === 'shop') return '🛒';
   return foeFor(W, i).e;
 }
 
@@ -614,6 +618,7 @@ SCREENS.hub = () => {
 function levelBlurb(W, i) {
   const L = W.levels[i];
   if (L.t === 'balance') return `${W.troll} vaktar bron med en våg. Gör samma sak på båda sidor tills x står ensamt.`;
+  if (L.t === 'shop') return `${W.merchant.n} säljer utrustning med rabatt. Räkna ut rätt pris så räcker pengarna längre, och det som blir kvar blir guld.`;
   if (L.t === 'cannon') return W.id === 1 ? 'Väsen gömmer sig i koordinatsystemet. Ange rätt koordinater för att träffa dem.' : W.id === 2 ? 'Rikta runstrålen genom origo med rätt lutning k.' : 'Hitta linjen y = kx + m som träffar flera väsen på en gång.';
   const names = L.topics.slice(0, 3).map(t => T[t].name.toLowerCase()).join(', ');
   if (L.t === 'boss') return `${W.boss.n} väntar. Tre faser, allt du lärt dig i ${W.n}.`;
@@ -660,6 +665,7 @@ function startLevel(w, i) {
   const W = WORLDS[w - 1], L = W.levels[i];
   if (L.t === 'balance') return startBalance(w, i);
   if (L.t === 'cannon') return startCannon(w, i);
+  if (L.t === 'shop') return startShop(w, i);
   const boss = L.t === 'boss';
   const foe = boss ? { n: W.boss.n, e: W.boss.e } : L.elite ? { n: L.n, e: W.foes[0][1] } : foeFor(W, i);
   startBattle({ kind: 'level', w, i, topics: L.topics, d: L.d, boss, elite: !!L.elite, foe, hp: boss ? 330 : L.elite ? 160 : 110 });
@@ -1044,10 +1050,11 @@ function finishLevel(win, special) {
   const kind = L.t === 'boss' ? 'boss' : L.elite ? 'elite' : 'normal';
   const firstClear = win && !prev;
   const blixt = special ? 0 : (b.blixt || 0);
-  const rw = rewardFor(kind, correct, win, (firstClear ? 40 : 0) + blixt * 3);
+  const shopBonus = (special && special.bonus) || 0;
+  const rw = rewardFor(kind, correct, win, (firstClear ? 40 : 0) + blixt * 3 + shopBonus);
   addGold(rw.gold);
   const xpRes = addXP(rw.xp);
-  const res = { win, stars, prev, gold: rw.gold, xp: rw.xp, correct, answered, blixt, best: special ? special.best : b.best, w, i, unlocks: [], weak: null, label: special && special.label };
+  const res = { win, stars, prev, gold: rw.gold, xp: rw.xp, correct, answered, blixt, shopBonus, shopLeft: special && special.left, best: special ? special.best : b.best, w, i, unlocks: [], weak: null, label: special && special.label };
   if (win) {
     S.stars[key] = Math.max(prev, stars);
     S.stats.wins++; quest('win'); if (stars === 3) quest('three');
@@ -1065,7 +1072,7 @@ function finishLevel(win, special) {
   res.levelUps = xpRes.ups;
   checkAch();
   save();
-  G.b = null; G.bal = null; G.can = null;
+  G.b = null; G.bal = null; G.can = null; G.shop = null;
   G.result = res;
   go('result');
   if (win) { setTimeout(() => confetti(res.bossFirst ? 140 : 60), 150); for (let k = 0; k < stars; k++) setTimeout(() => SFX.play('star'), 300 + k * 260); }
@@ -1091,6 +1098,7 @@ SCREENS.result = () => {
       <div class="reward"><b>${r.correct} / ${r.answered}</b><small>${r.label || 'rätt svar'}</small></div>
       ${r.best !== undefined && r.best !== null ? `<div class="reward"><b>${r.best}</b><small>bästa combo</small></div>` : ''}
       ${r.blixt ? `<div class="reward"><b>⚡ ${r.blixt}</b><small>blixtsnabba · +${r.blixt * 3} guld</small></div>` : ''}
+      ${r.shopBonus ? `<div class="reward"><b>💰 +${r.shopBonus}</b><small>guld från plånboken (${fmt(r.shopLeft)} kr kvar)</small></div>` : ''}
     </div>
     ${TH.rankOnResult ? `<div class="rankbar"><span class="badge" data-tier="${tierFor(S.level)}">${S.level}</span><div><b>${esc(titleFor(S.level))}</b><small>${S.xp} / ${xpFor(S.level)} XP till nästa nivå</small><div class="xp"><i style="width:${Math.round(S.xp / xpFor(S.level) * 100)}%"></i></div></div></div>` : ''}
     ${r.win && !r.prev ? '<p class="muted" style="margin:0">Första gången du klarar nivån: +40 guld extra.</p>' : ''}
@@ -1106,6 +1114,99 @@ SCREENS.result = () => {
     </div>
   </section>`;
 };
+
+/* ---------- Procentbutiken ---------- */
+const SHOP_LINES = {
+  intro: ['Välkommen till min butik! Mina priser är de bästa i hela världen… nästan.', 'Fynd, fynd, fynd! Ingen säljer billigare än jag!', 'Kom in, kom in! Här finns rabatter för den som kan räkna.'],
+  right: ['Grmpf! Där for min vinst!', 'Du är ett riktigt fyndgeni!', 'Hmm… du räknar lika bra som jag!'],
+  wrong: ['Hehe! Kassan klingar!', 'Mina priser är oslagbara!', 'Tack för affären!']
+};
+function startShop(w, i) {
+  const W = WORLDS[w - 1];
+  const kinds = SHOP_PLAN[W.grade];
+  const items = R.shuffle(SHOP_ITEMS).slice(0, kinds.length);
+  const rounds = kinds.map((k, j) => shopRound(W.grade, k, items[j]));
+  const paid = rounds.reduce((a, r) => a + r.paid, 0), extra = rounds.reduce((a, r) => a + r.pen - r.paid, 0);
+  const budget = Math.ceil((paid + extra * .5) / 10) * 10;
+  G.shop = { w, i, rounds, k: 0, budget, start: budget, correct: 0, last: null, m: W.merchant };
+  G.screen = 'shop'; render();
+  if (!S.flags.shopIntro) shopIntro();
+  setTimeout(() => bubble(R.pick(SHOP_LINES.intro), 3600), 400);
+}
+function shopIntro() {
+  const m = G.shop ? G.shop.m : WORLDS[0].merchant;
+  modal(`<div class="eyebrow">Ny bana</div><h2>Procentbutiken</h2>
+    <ul class="rules" style="text-align:left">
+      <li>Du har en <b>plånbok</b> och en <b>inköpslista</b> med sex saker.</li>
+      <li>Räkna ut vad varje sak kostar. <b>Räknar du rätt</b> betalar du det priset.</li>
+      <li><b>Räknar du fel</b> tar ${esc(m.n)} mer betalt, till exempel fullpris.</li>
+      <li>Ibland säljer två bodar samma sak. Välj den billigaste.</li>
+      <li>Det som blir kvar i plånboken blir <b>guld</b>. Tar pengarna slut förlorar du banan.</li>
+    </ul>
+    <button class="btn primary" data-m="shopintro">Börja handla</button>`);
+}
+SCREENS.shop = () => {
+  const Sh = G.shop, r = Sh.rounds[Sh.k], n = Sh.rounds.length, L = Sh.last;
+  const pct = Math.max(0, Sh.budget / Sh.start * 100);
+  const answers = `<div class="answers">${r.opts.map((o, j) => {
+    const cls = L ? (o === r.a ? 'right' : j === L.idx ? 'wrong' : 'gone') : '';
+    return `<button class="ans ${cls}" data-act="shopans" data-arg="${j}" ${L ? 'disabled' : ''}><kbd>${j + 1}</kbd>${o}</button>`;
+  }).join('')}</div>`;
+  const broke = Sh.budget < 0;
+  const after = !L ? '' : (L.ok
+    ? `<div class="explain good"><div class="eyebrow">Rätt räknat!</div><div>Du köpte ${esc(r.item[0].toLowerCase())} för <span class="right">${kr(r.paid)}</span>${r.pen > r.paid ? ` och slapp betala ${kr(r.pen)}.` : '.'}</div></div>`
+    : explainHTML(r, false, undefined) + `<p class="shopnote">${esc(Sh.m.n)} tog <b>${kr(r.pen)}</b>. Rätt uträknat hade det kostat ${kr(r.paid)}.</p>`)
+    + `<button class="btn ${broke ? '' : 'primary'}" data-act="shopnext" id="shopnext">${broke ? 'Plånboken är tom. Se resultat' : Sh.k + 1 < n ? 'Nästa köp' : 'Gå till kassan'}</button>`;
+  return `<section class="arena shop" id="arena">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Lämna butiken</button><span class="muted" style="font-size:13px">${WORLDS[Sh.w - 1].n} · nivå ${Sh.i + 1}</span></div>
+    <div class="foe merchant" id="foe">
+      <div class="foefx" id="foefx" aria-hidden="true"></div>
+      <div class="face" id="face">${Sh.m.e}</div>
+      <div class="stack" style="gap:6px">
+        <div class="row" style="justify-content:space-between"><b id="foename">${esc(Sh.m.n)}</b><button class="btn small ghost" data-act="shophelp">❓ Hur gör man?</button></div>
+        <div class="bubble" id="bubble" hidden></div>
+        <div class="wallet"><span>💰 Plånbok</span><div class="wbar"><i style="width:${pct}%"></i></div><b class="${broke ? 'neg' : ''}">${kr(Sh.budget)}</b></div>
+        <div class="shoplist" aria-label="Inköpslista">${Sh.rounds.map((x, j) => `<span class="${j < Sh.k || (j === Sh.k && L) ? 'got' : ''} ${j === Sh.k ? 'now' : ''}" title="${esc(x.item[0])}">${x.item[1]}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="qcard"><div class="topic"><span>${esc(WORLDS[Sh.w - 1].levels[Sh.i].n)} · köp ${Sh.k + 1} av ${n}</span><span>${esc(T[r.topic].name)}</span></div>
+      <div class="offer"><span class="oe">${r.item[1]}</span><span class="ob"><b>${esc(r.item[0])}</b>${r.offer}</span></div>
+      <div class="qtext long">${r.q}</div></div>
+    ${answers}
+    ${after}
+  </section>`;
+};
+AFTER.shop = () => { if (G.shop && G.shop.last) setTimeout(() => $('#shopnext')?.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }), 60); };
+function shopAnswer(idx) {
+  const Sh = G.shop; if (!Sh || Sh.last) return;
+  const r = Sh.rounds[Sh.k];
+  const ok = r.opts[idx] === r.a;
+  recordAnswer(r.topic, ok);
+  S.stats.answered++;
+  const pay = ok ? r.paid : r.pen;
+  Sh.budget -= pay;
+  Sh.last = { ok, idx };
+  if (ok) { Sh.correct++; S.stats.correct++; quest('correct'); quest('topic', 1, r.topic); SFX.play('coin'); }
+  else SFX.play('wrong');
+  render();
+  foeFx(ok ? '💸' : '💰');
+  bubble(R.pick(ok ? SHOP_LINES.right : SHOP_LINES.wrong), 3000);
+  const w = $('.wallet b'); if (w) { const rc = w.getBoundingClientRect(); floatText(rc.left + rc.width / 2, rc.top, `${MINUS}${kr(pay)}`, !ok); }
+  if (Sh.budget < 0) shake($('.wallet'));
+  save();
+}
+function shopNext() {
+  const Sh = G.shop; if (!Sh || !Sh.last) return;
+  const n = Sh.rounds.length;
+  if (Sh.budget < 0) return finishLevel(false, { w: Sh.w, i: Sh.i, stars: 0, correct: Sh.correct, answered: Sh.k + 1, best: null, label: 'rätta köp' });
+  Sh.k++; Sh.last = null;
+  if (Sh.k >= n) {
+    const bonus = Math.round(Sh.budget / 10);
+    return finishLevel(true, { w: Sh.w, i: Sh.i, stars: Sh.correct === n ? 3 : Sh.correct >= n - 1 ? 2 : 1, correct: Sh.correct, answered: n, best: null, label: 'rätta köp', bonus, left: Sh.budget });
+  }
+  render();
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+}
 
 /* ---------- Runtornet ---------- */
 function startTower() {
@@ -1683,9 +1784,10 @@ function modal(html) {
   return m;
 }
 const MODAL_ACT = {
-  quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; go('hub'); },
+  quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; G.shop = null; go('hub'); },
   resume: () => { if (G.b && !G.b.locked) { G.b.tStart += performance.now() - (G.pausedAt || performance.now()); startTimer(); } },
   balintro: () => { S.flags.balIntro = true; save(); },
+  shopintro: () => { S.flags.shopIntro = true; save(); },
   reset: () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } S = null; G.setup = { grade: 7, starter: null, name: '' }; go('setup'); },
   battleintro: () => { if (G.introDone) { const f = G.introDone; G.introDone = null; f(); } },
   close: () => { }
@@ -1708,7 +1810,7 @@ function showLoginBonus() {
 
 /* ===== Händelser ===== */
 const ACT = {
-  hub: () => { if (G.screen === 'setup') return; if (G.b || G.bal || G.can) return ACT.quitask(); go('hub'); },
+  hub: () => { if (G.screen === 'setup') return; if (G.b || G.bal || G.can || G.shop) return ACT.quitask(); go('hub'); },
   sound: () => { S.sound = !S.sound; save(); renderTop(); SFX.play('click'); },
   pickgrade: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.grade = Number(a); render(); },
   pickstarter: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.starter = a; render(); },
@@ -1765,6 +1867,9 @@ const ACT = {
   balundo: () => balUndo(),
   baltip: () => balTip(),
   power: a => usePower(a),
+  shopans: a => shopAnswer(Number(a)),
+  shopnext: () => shopNext(),
+  shophelp: () => shopIntro(),
   tipok: () => showNextTip(),
   pracrevenge: () => { G.prac = { revenge: true, total: Math.min(10, (S.revenge || []).length), d: 1, n: 0, right: 0, write: false }; G.screen = 'practice'; practiceNext(); window.scrollTo({ top: 0 }); },
   balintro: () => balIntro(),
@@ -1791,6 +1896,7 @@ document.addEventListener('keydown', e => {
   if (n >= 1 && n <= 4) {
     if (G.screen === 'battle' && G.b && !G.b.locked && !G.b.write) { const btn = $$('.ans')[n - 1]; if (btn && !btn.classList.contains('gone')) answer(n - 1); }
     else if (G.screen === 'practice' && G.prac && G.prac.q && !G.prac.done && !G.prac.write) practiceAnswer(n - 1);
+    else if (G.screen === 'shop' && G.shop && !G.shop.last) shopAnswer(n - 1);
   }
 });
 // svarsknappar i övningsläget går via egen handler

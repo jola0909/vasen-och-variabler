@@ -329,6 +329,35 @@ h3 { font-size: 27px; }
 .timer i.frozen { background: #bfe7ff; box-shadow: 0 0 16px #bfe7ff; }
 .card .pwline { color: #fff; }
 
+/* ---------- Procentbutiken ---------- */
+.foe.merchant .bubble { position: static; justify-self: start; max-width: 100%; clip-path: none; padding: 6px 12px; }
+.foe.merchant { background: repeating-linear-gradient(-55deg, rgba(255, 197, 49, .05) 0 12px, transparent 12px 24px), radial-gradient(120% 160% at 0% 50%, rgba(255, 197, 49, .28), transparent 60%), var(--deck); }
+.foe.merchant .face { filter: drop-shadow(0 0 18px rgba(255, 197, 49, .5)); }
+.wallet { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-family: var(--display); font-size: 20px; letter-spacing: .5px; text-transform: uppercase; line-height: 1; }
+.wallet .wbar { height: 14px; background: var(--void); overflow: hidden; transform: skewX(-18deg); box-shadow: inset 0 0 0 1px var(--edge); }
+.wallet .wbar i { display: block; height: 100%; background: linear-gradient(180deg, #ffe38a, var(--gold) 55%, #d98f00); box-shadow: 0 0 12px rgba(255, 197, 49, .5); transition: width .5s; }
+.wallet b { color: var(--gold); font-size: 26px; font-variant-numeric: tabular-nums; }
+.wallet b.neg { color: var(--blaze); }
+.shoplist { display: flex; gap: 6px; flex-wrap: wrap; }
+.shoplist span { width: 40px; height: 44px; display: grid; place-items: center; font-size: 21px; background: var(--deck3); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); filter: grayscale(1); opacity: .45; }
+.shoplist span.now { background: var(--gold); filter: none; opacity: 1; }
+.shoplist span.got { background: linear-gradient(160deg, var(--toxic), #4f9a10); filter: none; opacity: 1; }
+.offer { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.offer .oe { font-size: 64px; line-height: 1; filter: drop-shadow(0 0 16px rgba(45, 226, 255, .4)); }
+.offer .ob { display: grid; gap: 8px; }
+.offer .ob > b { font-family: var(--display); font-size: 32px; font-weight: 600; text-transform: uppercase; line-height: 1; }
+.ptags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.ptag { display: inline-flex; align-items: center; gap: 8px; background: var(--void); padding: 4px 4px 4px 12px; font-weight: 700; font-size: 18px; box-shadow: inset 0 0 0 1px var(--edge); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%); padding-right: 16px; }
+.ptag s { color: var(--dim); font-weight: 600; }
+.ptag b { background: var(--blaze); color: #fff; padding: 1px 8px; font-family: var(--display); font-size: 19px; letter-spacing: .5px; line-height: 1.1; }
+.ptag.up b { background: var(--volt); color: var(--volt-ink); }
+.offers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.shopcard { display: grid; gap: 6px; justify-items: start; background: var(--deck2); padding: 8px 10px; box-shadow: inset 0 0 0 1px var(--edge); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%); }
+.shopcard > b { font-family: var(--display); font-size: 18px; letter-spacing: 1px; text-transform: uppercase; color: var(--volt); line-height: 1; }
+.shopnote { margin: 0; color: var(--dim); font-weight: 600; }
+.shopnote b { color: var(--blaze); }
+@media (max-width: 480px) { .offers { grid-template-columns: 1fr; } .offer .oe { font-size: 48px; } }
+
 .shake { animation: shake .35s; }
 @keyframes shake { 15% { transform: translate(-9px, 3px); } 35% { transform: translate(9px, -3px); } 55% { transform: translate(-6px, 2px); } 75% { transform: translate(4px, -1px); } }
 .flash { position: fixed; inset: 0; pointer-events: none; z-index: 50; background: radial-gradient(circle, transparent 40%, rgba(255, 61, 110, .55)); animation: fade .5s forwards; }
@@ -558,17 +587,17 @@ window.THEME = {
       intro: 'Granarna står tätt och något jagar i mörkret. Här tränar du negativa tal, bråk, procent och dina första ekvationer.',
       foes: [['Gråvargen', '🐺'], ['Blodfladdermusen', '🦇'], ['Giftspindeln', '🕷️'], ['Vildgalten', '🐗'], ['Skogstrollet', '👹'], ['Draugkrigaren', '🧟']],
       boss: { n: 'Skogsrået', e: '🧝‍♀️', v: 'skogsra' },
-      levelNames: ['Inträdet', 'Mossgraven', 'Svampringen', 'Brotrollets bro', 'Spindelnästet', 'Blodgläntan', 'Runkastet', 'Myrens mitt', 'Vargflocken', 'Skogsråets tron'] },
+      levelNames: ['Inträdet', 'Mossgraven', 'Procentbutiken', 'Brotrollets bro', 'Spindelnästet', 'Blodgläntan', 'Runkastet', 'Myrens mitt', 'Vargflocken', 'Skogsråets tron'] },
     { n: 'Frostfjällen', troll: 'Istrollet',
       intro: 'Snöstormen viner över kalfjället. Potenser, förändringsfaktor, Pythagoras och sannolikhet avgör vem som överlever.',
       foes: [['Stormörnen', '🦅'], ['Grottbjörnen', '🐻'], ['Isvargen', '🐺'], ['Frostjätten', '🧊'], ['Bergsväduren', '🐏'], ['Snötrollet', '👹']],
       boss: { n: 'Bergakungen', e: '👑', v: 'bergakung' },
-      levelNames: ['Snöfältet', 'Isgrottan', 'Kartstugan', 'Isvågen', 'Tärningsklippan', 'Vargpasset', 'Lavinkastet', 'Glaciärkanten', 'Stormtoppen', 'Bergakungens sal'] },
+      levelNames: ['Snöfältet', 'Isgrottan', 'Kartstugan', 'Isvågen', 'Tärningsklippan', 'Fjällmarknaden', 'Lavinkastet', 'Glaciärkanten', 'Stormtoppen', 'Bergakungens sal'] },
     { n: 'Dimträsket', troll: 'Dimtrollet',
       intro: 'Dimman ligger tung över vattnet och något rör sig under ytan. Funktioner, ekvationssystem och sannolikhet i flera steg.',
       foes: [['Sjöormen', '🐍'], ['Djupkraken', '🦑'], ['Gäddkungen', '🐟'], ['Klokräftan', '🦀'], ['Irrandet', '👻'], ['Dränkta draugen', '💀']],
       boss: { n: 'Näcken', e: '🧜‍♂️', v: 'nacken' },
-      levelNames: ['Strandkanten', 'Vassen', 'Vraket', 'Dimvågen', 'Näckrosbladen', 'Speglingen', 'Ljuskastet', 'Djupet', 'Virvelströmmen', 'Forsen'] }
+      levelNames: ['Strandkanten', 'Vassen', 'Fyndhamnen', 'Dimvågen', 'Näckrosbladen', 'Speglingen', 'Ljuskastet', 'Djupet', 'Virvelströmmen', 'Forsen'] }
   ]
 };
 </script>

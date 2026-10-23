@@ -211,7 +211,7 @@ h3 { font-size: 22px; }
 .explain.good { border-left-color: var(--aurora); }
 .explain ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 .explain .right { font-size: 20px; font-weight: 700; color: var(--aurora); }
-.float { position: fixed; pointer-events: none; z-index: 60; font-weight: 800; font-size: 30px; color: var(--ember); text-shadow: 0 3px 0 rgba(0, 0, 0, .6); animation: floatUp 2s forwards; }
+.float { position: fixed; pointer-events: none; z-index: 60; font-weight: 800; font-size: 30px; color: var(--ember); text-shadow: 0 3px 0 rgba(0, 0, 0, .6); animation: floatUp 2s forwards; white-space: nowrap; }
 .float.crit { color: #fff; font-size: 38px; }
 @keyframes floatUp { 0% { transform: translate(-50%, 0) scale(.6); opacity: 0; } 8% { transform: translate(-50%, -10px) scale(1.15); opacity: 1; } 14% { transform: translate(-50%, -12px) scale(1); } 75% { transform: translate(-50%, -45px) scale(1); opacity: 1; } 100% { transform: translate(-50%, -80px) scale(1); opacity: 0; } }
 .bolt { position: fixed; z-index: 55; pointer-events: none; font-size: 28px; transition: transform .38s cubic-bezier(.4, .1, .6, 1), opacity .38s; filter: drop-shadow(0 0 10px var(--aurora)); }
@@ -301,6 +301,36 @@ h3 { font-size: 22px; }
 .card .pwline { color: var(--birch); }
 .callout { position: fixed; left: 50%; top: 24%; z-index: 72; pointer-events: none; font-family: var(--display); font-weight: 800; font-size: clamp(34px, 8vw, 56px); line-height: 1; white-space: nowrap; color: var(--ember); text-shadow: 0 4px 0 rgba(0, 0, 0, .6), 0 0 24px rgba(243, 181, 74, .5); animation: slam 2.2s forwards; }
 @keyframes slam { 0% { transform: translate(-50%, 0) scale(.3); opacity: 0; } 14% { transform: translate(-50%, 0) scale(1.12); opacity: 1; } 24% { transform: translate(-50%, 0) scale(1); } 80% { opacity: 1; } 100% { transform: translate(-50%, -40px) scale(1); opacity: 0; } }
+
+/* ---------- Procentbutiken ---------- */
+.foe.merchant .bubble { position: static; justify-self: start; max-width: 100%; }
+.foe.merchant .bubble::after { display: none; }
+.foe.merchant { background: radial-gradient(120% 140% at 0% 50%, rgba(243, 181, 74, .18), transparent 60%), var(--pine); }
+.foe.merchant .face { filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .55)); }
+.wallet { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-weight: 600; }
+.wallet .wbar { height: 12px; border-radius: 8px; background: var(--night); border: 1px solid var(--line); overflow: hidden; }
+.wallet .wbar i { display: block; height: 100%; background: linear-gradient(90deg, #c98a1c, var(--ember)); transition: width .5s; }
+.wallet b { color: var(--ember); font-variant-numeric: tabular-nums; }
+.wallet b.neg { color: var(--berry); }
+.shoplist { display: flex; gap: 6px; flex-wrap: wrap; }
+.shoplist span { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; background: var(--night); border: 2px dashed var(--line); filter: grayscale(1); opacity: .55; }
+.shoplist span.now { border-style: solid; border-color: var(--ember); filter: none; opacity: 1; }
+.shoplist span.got { border-style: solid; border-color: var(--aurora); background: var(--pine2); filter: none; opacity: 1; }
+.offer { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.offer .oe { font-size: 56px; line-height: 1; }
+.offer .ob { display: grid; gap: 6px; }
+.offer .ob > b { font-family: var(--display); font-size: 26px; }
+.ptags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.ptag { display: inline-flex; align-items: center; gap: 8px; background: #fff8e8; border: 2px solid #c9a46a; border-radius: 8px 18px 18px 8px; padding: 3px 4px 3px 10px; font-weight: 700; font-size: 17px; color: #13252a; }
+.ptag s { color: #7a8a86; font-weight: 600; }
+.ptag b { background: var(--berry); color: #fff; border-radius: 12px; padding: 1px 9px; font-size: 15px; }
+.ptag.up b { background: #2f7bbf; }
+.offers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.shopcard { display: grid; gap: 6px; justify-items: start; background: rgba(19, 37, 42, .06); border: 1px solid rgba(19, 37, 42, .2); border-radius: 12px; padding: 8px 10px; }
+.shopcard > b { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #4e6a64; }
+.shopnote { margin: 0; color: var(--mute); }
+.shopnote b { color: var(--berry); }
+@media (max-width: 480px) { .offers { grid-template-columns: 1fr; } .offer .oe { font-size: 44px; } }
 
 .shake { animation: shake .4s; }
 @keyframes shake { 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(4px); } }

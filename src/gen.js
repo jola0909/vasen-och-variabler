@@ -748,6 +748,114 @@ topic('likf', 'Likformighet', 9, '△', 40, d => {
     expl: [`Längdskala ${k} ger areaskala ${k}<sup>2</sup> = ${k * k}`, `${A} · ${k * k} = ${v} cm<sup>2</sup>`] });
 });
 
+/* ===== Procentbutiken: köp varor och räkna ut priset ===== */
+const SHOP_ITEMS = [['Runsvärd', '🗡️'], ['Sköld', '🛡️'], ['Läkedryck', '🧪'], ['Trollstav', '🪄'], ['Lykta', '🏮'], ['Rep', '🪢'], ['Karta', '🗺️'], ['Stövlar', '🥾'],
+  ['Mantel', '🧥'], ['Pilbåge', '🏹'], ['Kompass', '🧭'], ['Ryggsäck', '🎒'], ['Yxa', '🪓'], ['Kristall', '💎'], ['Fiskespö', '🎣'], ['Tältduk', '⛺']];
+/* Ordning per årskurs: lätt först, svårast sist */
+const SHOP_PLAN = {
+  7: ['rabatt', 'rabatt', 'procent', 'jamfor', 'rabatt', 'jamfor'],
+  8: ['rabatt8', 'moms', 'hojning', 'jamfor8', 'rabatt8', 'moms'],
+  9: ['dubbel', 'tillbaka', 'dagspris', 'jamfor9', 'dubbel', 'tillbaka']
+};
+const kr = v => fmt(v) + ' kr';
+const pct = v => fmt(v) + ' %';
+const tag = (main, badge, cls = '') => `<span class="ptag ${cls}">${main}<b>${badge}</b></span>`;
+const pickInt = (fn, tries = 200) => { for (let i = 0; i < tries; i++) { const r = fn(); if (r) return r; } return null; };
+
+function shopRound(grade, kind, item) {
+  const [name, emoji] = item, lc = name.toLowerCase();
+  const topic = grade === 7 ? 'proc1' : grade === 8 ? 'ff' : 'proc3';
+  const done = (o, offer, paid, pen) => Object.assign(mk(o), { kind, item, offer, paid, pen, topic });
+
+  if (kind === 'rabatt' || kind === 'rabatt8') {
+    const Ps = kind === 'rabatt' ? [80, 120, 160, 200, 240, 300, 400, 500, 600, 800, 1000, 1200] : [240, 360, 450, 640, 750, 880, 1250, 1500, 1800];
+    const rs = kind === 'rabatt' ? [10, 20, 25, 30, 40, 50] : [5, 12, 15, 35, 45, 8];
+    const { P, r, pay } = pickInt(() => { const P = R.pick(Ps), r = R.pick(rs), pay = round(P * (100 - r) / 100, 2); return Number.isInteger(pay) ? { P, r, pay } : null; });
+    return done({ q: `${name} kostar ${kr(P)}. Nu är det ${r} % rabatt. Vad kostar ${lc} nu?`, ans: pay, val: pay, unit: ' kr',
+      wrongs: [round(P * r / 100, 2), P - r, round(P * (100 + r) / 100, 2), round(P * (1 - r / 10), 2)].filter(v => v > 0),
+      expl: kind === 'rabatt'
+        ? [`Rabatten är ${r} % av ${kr(P)} = ${kr(round(P * r / 100, 2))}`, `${kr(P)} ${MINUS} ${kr(round(P * r / 100, 2))} = ${kr(pay)}`]
+        : [`${r} % rabatt ger förändringsfaktorn 1 ${MINUS} ${fmt(r / 100)} = ${fmt(1 - r / 100)}`, `${fmt(P)} · ${fmt(1 - r / 100)} = ${kr(pay)}`] },
+      tag(`<s>${kr(P)}</s>`, `${MINUS}${r} %`), pay, P);
+  }
+  if (kind === 'procent') {
+    const { P, r, N } = pickInt(() => { const P = R.pick([200, 250, 400, 500, 800, 120, 160, 300]), r = R.pick([10, 20, 25, 30, 40, 50]), N = P * (100 - r) / 100; return Number.isInteger(N) ? { P, r, N } : null; });
+    return done({ q: `Handlaren sänker priset på ${lc} från ${kr(P)} till ${kr(N)}. Hur många procent rabatt är det?`, ans: r, val: r, unit: ' %',
+      wrongs: [100 - r, P - N, round((P - N) / N * 100, 1), r / 10],
+      expl: [`Sänkningen är ${kr(P)} ${MINUS} ${kr(N)} = ${kr(P - N)}`, `Jämför med det gamla priset: ${fmt(P - N)} / ${fmt(P)} = ${fmt((P - N) / P)} = ${r} %`] },
+      tag(`<s>${kr(P)}</s> ${kr(N)}`, '? %'), N, P);
+  }
+  if (kind === 'moms') {
+    const P = R.pick([80, 120, 200, 240, 320, 360, 400, 480, 600, 800]), pay = P * 1.25, pen = Math.round(pay * 1.25);
+    return done({ q: `${name} kostar ${kr(P)} utan moms. Momsen är 25 %. Vad kostar ${lc} med moms?`, ans: pay, val: pay, unit: ' kr',
+      wrongs: [P * .25, P + 25, P * .75, round(P * 1.025, 2)],
+      expl: [`Momsen är 25 % av ${kr(P)} = ${kr(P * .25)}`, `${kr(P)} + ${kr(P * .25)} = ${kr(pay)}`, `Snabbare: ${fmt(P)} · 1,25 = ${kr(pay)}`] },
+      tag(kr(P), '+25 % moms', 'up'), pay, pen);
+  }
+  if (kind === 'hojning') {
+    const { P, r, pay } = pickInt(() => { const P = R.pick([160, 200, 240, 400, 500, 800, 1200]), r = R.pick([5, 10, 15, 20, 25, 30, 40]), pay = P * (100 + r) / 100; return Number.isInteger(pay) ? { P, r, pay } : null; });
+    return done({ q: `Vinterpriset på ${lc} har höjts med ${r} % från ${kr(P)}. Vad är det nya priset?`, ans: pay, val: pay, unit: ' kr',
+      wrongs: [P * r / 100, P + r, P * (100 - r) / 100, round(P * (1 + r / 10), 2)],
+      expl: [`En höjning med ${r} % ger förändringsfaktorn ${fmt(1 + r / 100)}`, `${fmt(P)} · ${fmt(1 + r / 100)} = ${kr(pay)}`] },
+      tag(`<s>${kr(P)}</s>`, `+${r} %`, 'up'), pay, Math.round(pay * 1.25));
+  }
+  if (kind === 'dubbel') {
+    const { P, r1, r2, pay } = pickInt(() => { const P = R.pick([400, 500, 800, 1000, 1200, 2000]), r1 = R.pick([10, 20, 25, 30, 40, 50]), r2 = R.pick([10, 20, 25, 50]), pay = P * (100 - r1) * (100 - r2) / 10000; return Number.isInteger(pay) ? { P, r1, r2, pay } : null; });
+    const first = P * (100 - r1) / 100;
+    return done({ q: `${name} kostar ${kr(P)}. Först får du ${r1} % rabatt och sedan ${r2} % extra rabatt på det nya priset. Vad blir slutpriset?`, ans: pay, val: pay, unit: ' kr',
+      wrongs: [P * (100 - r1 - r2) / 100, first, round(first - P * r2 / 100, 2), round(P * r1 * r2 / 10000, 2)].filter(v => v > 0),
+      expl: [`Efter ${r1} % rabatt: ${fmt(P)} · ${fmt(1 - r1 / 100)} = ${kr(first)}`, `Sedan ${r2} % på det nya priset: ${fmt(first)} · ${fmt(1 - r2 / 100)} = ${kr(pay)}`, `Obs! ${r1} % + ${r2} % i två steg är inte samma sak som ${r1 + r2} % på en gång.`] },
+      `<span class="ptags">${tag(`<s>${kr(P)}</s>`, `${MINUS}${r1} %`)}${tag('sedan', `${MINUS}${r2} %`)}</span>`, pay, first);
+  }
+  if (kind === 'tillbaka') {
+    const { P, r, N } = pickInt(() => { const P = R.pick([400, 500, 600, 800, 1000, 1200]), r = R.pick([10, 20, 25, 40, 50]), N = P * (100 - r) / 100; return Number.isInteger(N) ? { P, r, N } : null; });
+    return done({ q: `Efter ${r} % rabatt kostar ${lc} ${kr(N)}. Vad var det ordinarie priset?`, ans: P, val: P, unit: ' kr',
+      wrongs: [round(N * (100 + r) / 100, 2), N + r, round(N * (100 - r) / 100, 2), round(N / (r / 100), 2)],
+      expl: [`${r} % rabatt betyder att ${kr(N)} är ${100 - r} % av det ordinarie priset.`, `Ordinarie pris = ${fmt(N)} / ${fmt(1 - r / 100)} = ${kr(P)}`, `Vanligt fel: ${fmt(N)} · ${fmt(1 + r / 100)} = ${kr(round(N * (100 + r) / 100, 2))} blir för lite.`] },
+      tag(kr(N), `efter ${MINUS}${r} %`), N, P);
+  }
+  if (kind === 'dagspris') {
+    const P = R.pick([800, 1000, 1600, 2000, 5000]), r = R.pick([10, 20, 25]), n = R.pick([2, 3]);
+    const pay = Math.round(P * Math.pow(1 - r / 100, n)), before = Math.round(P * Math.pow(1 - r / 100, n - 1));
+    return done({ q: `Handlaren sänker priset på ${lc} med ${r} % varje dag. I dag kostar ${lc} ${kr(P)}. Vad kostar ${lc} om ${n} dagar? Avrunda till hela kronor.`, ans: pay, val: pay, unit: ' kr',
+      wrongs: [Math.round(P * (1 - n * r / 100)), before, Math.round(P * Math.pow(1 - r / 100, n + 1)), P - n * r],
+      expl: [`Varje dag multipliceras priset med ${fmt(1 - r / 100)}`, `${fmt(P)} · ${fmt(1 - r / 100)}<sup>${n}</sup> ≈ ${kr(pay)}`] },
+      tag(kr(P), `${MINUS}${r} % per dag`), pay, before);
+  }
+  // jämför två bodar
+  const g = kind === 'jamfor' ? 7 : kind === 'jamfor8' ? 8 : 9;
+  const offer = pickInt(() => {
+    if (g === 9) {
+      const P = R.pick([400, 500, 800, 1000, 1200, 2000]), r1 = R.pick([10, 20, 30]), r2 = R.pick([10, 20, 25]), rA = r1 + r2 - R.pick([0, 0, 5, 10]);
+      const fA = P * (100 - rA) / 100, fB = P * (100 - r1) * (100 - r2) / 10000;
+      if (!Number.isInteger(fA) || !Number.isInteger(fB) || fA === fB) return null;
+      return { fA, fB, tA: tag(kr(P), `${MINUS}${rA} %`), tB: `<span class="ptags">${tag(kr(P), `${MINUS}${r1} %`)}${tag('sedan', `${MINUS}${r2} %`)}</span>`,
+        eA: `A: ${fmt(P)} · ${fmt(1 - rA / 100)} = ${kr(fA)}`, eB: `B: ${fmt(P)} · ${fmt(1 - r1 / 100)} · ${fmt(1 - r2 / 100)} = ${kr(fB)}`,
+        wA: P - rA, wB: P * (100 - r1 - r2) / 100 };
+    }
+    const Ps = [200, 240, 300, 400, 500, 600, 800], rs = [10, 20, 25, 30, 40, 50];
+    const P1 = R.pick(Ps), r1 = R.pick(rs), P2 = R.pick(Ps), r2 = R.pick(rs);
+    if (P1 === P2) return null;
+    const fA = P1 * (100 - r1) / 100;
+    if (g === 8) {
+      const f = R.pick([.75, .8, .85, .9, .6]), fB = P2 * f;
+      if (!Number.isInteger(fA) || !Number.isInteger(fB) || fA === fB || Math.abs(fA - fB) > 150) return null;
+      return { fA, fB, tA: tag(`<s>${kr(P1)}</s>`, `${MINUS}${r1} %`), tB: tag(`${kr(P2)}`, `faktor ${fmt(f)}`),
+        eA: `A: ${fmt(P1)} · ${fmt(1 - r1 / 100)} = ${kr(fA)}`, eB: `B: ${fmt(P2)} · ${fmt(f)} = ${kr(fB)}`, wA: P1 - r1, wB: round(P2 * (1 - f), 2) };
+    }
+    const fB = P2 * (100 - r2) / 100;
+    if (!Number.isInteger(fA) || !Number.isInteger(fB) || fA === fB || Math.abs(fA - fB) > 150) return null;
+    return { fA, fB, tA: tag(`<s>${kr(P1)}</s>`, `${MINUS}${r1} %`), tB: tag(`<s>${kr(P2)}</s>`, `${MINUS}${r2} %`),
+      eA: `A: ${fmt(P1)} ${MINUS} ${r1} % = ${kr(fA)}`, eB: `B: ${fmt(P2)} ${MINUS} ${r2} % = ${kr(fB)}`, wA: P1 * r1 / 100, wB: P2 * r2 / 100 };
+  });
+  const best = offer.fA < offer.fB ? 'A' : 'B', cheap = Math.min(offer.fA, offer.fB), dear = Math.max(offer.fA, offer.fB);
+  return done({ q: `Två bodar säljer ${lc}. Vilken bod är billigast, och vad kostar ${lc} där?`, ans: `Bod ${best}: ${kr(cheap)}`,
+    wrongs: [`Bod ${best === 'A' ? 'B' : 'A'}: ${kr(dear)}`, `Bod A: ${kr(offer.wA)}`, `Bod B: ${kr(offer.wB)}`, `Bod ${best === 'A' ? 'B' : 'A'}: ${kr(cheap)}`,
+      `Bod ${best}: ${kr(dear)}`, `Bod ${best === 'A' ? 'B' : 'A'}: ${kr(Math.round((cheap + dear) / 2))}`, `Bod ${best}: ${kr(cheap + 50)}`],
+    expl: [offer.eA, offer.eB, `Bod ${best} är billigast.`] },
+    `<span class="offers"><span class="shopcard"><b>Bod A</b>${offer.tA}</span><span class="shopcard"><b>Bod B</b>${offer.tB}</span></span>`, cheap, dear);
+}
+
 /* Parsning av skrivna svar: 0,75  3/4  −2  x = 5  45 kr */
 function parseAnswer(s) {
   if (s === null || s === undefined) return null;
@@ -758,4 +866,4 @@ function parseAnswer(s) {
   return null;
 }
 
-if (typeof module !== 'undefined') module.exports = { T, R, fmt, frac, lin, quad, parseAnswer, gcd, round };
+if (typeof module !== 'undefined') module.exports = { T, R, fmt, frac, lin, quad, parseAnswer, gcd, round, shopRound, SHOP_PLAN, SHOP_ITEMS };

@@ -2,7 +2,7 @@
 
 Genomgång av spelet 2026-10-23: vad som skulle göra det roligare och mer engagerande. Insats: **S** = liten, **M** = mellan, **L** = stor.
 
-**Status:** 2, 3 och 4 är klara (2026-10-23). 5 står på tur.
+**Status:** 2, 3 och 4 är klara (2026-10-23). Av 5 är Procentbutiken klar, och Sannolikhetskistorna är påbörjade.
 
 ## Nuläge
 
