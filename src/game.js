@@ -67,7 +67,9 @@ function fxText(fx) {
 
 /* ===== Världar & nivåer ===== */
 const WORLDS = [
-  { id: 1, n: 'Mörkskogen', grade: 7, col: '#5fe3b3', boss: { n: 'Skogsrået', e: '🧝‍♀️', v: 'skogsra' }, troll: 'Mosstrollet',
+  { id: 1, n: 'Mörkskogen', grade: 7, col: '#5fe3b3', boss: { n: 'Skogsrået', e: '🧝‍♀️', v: 'skogsra', title: 'Mörkskogens drottning', forms: ['🧝‍♀️', '🦊', '🌳'],
+      attacks: [['Rotpiskan', '🌿'], ['Rävklon', '🦊'], ['Lövstormen', '🍂']],
+      lines: { intro: 'Välkommen till min skog! Här är det jag som bestämmer!', hit: ['Aj! Mina löv!', 'Det där kändes ända ner i rötterna!', 'Grrr… men jag är fortfarande starkast!'], laugh: ['Hihihi! Skogen är på min sida!', 'Ingen är snabbare än jag!', 'Jag är skogens drottning!'], phase: ['Nu ska du få se min rävsvans!', 'Se min ihåliga rygg… min allra sista form!'], defeat: 'Nej… skogen… är din…' } }, troll: 'Mosstrollet',
     intro: 'Granarna står tätt och något viskar mellan stammarna. Här tränar du taluppfattning, bråk, procent och dina första ekvationer.',
     foes: [['Gråvargen', '🐺'], ['Skuggfladdermusen', '🦇'], ['Flugsvampen', '🍄'], ['Mossspindeln', '🕷️'], ['Vildgalten', '🐗'], ['Grävlingen', '🦡']],
     levels: [
@@ -82,7 +84,9 @@ const WORLDS = [
       { n: 'Vargflocken', t: 'battle', elite: true, topics: ['neg', 'brak', 'ekv1', 'geo1', 'proc1', 'deci'], d: 3 },
       { n: 'Skogsråets glänta', t: 'boss', topics: ['neg', 'prio', 'brak', 'deci', 'proc1', 'ekv1', 'geo1', 'stat', 'enh'], d: 3 }
     ] },
-  { id: 2, n: 'Fjällvidderna', grade: 8, col: '#7cc7ff', boss: { n: 'Bergakungen', e: '👑', v: 'bergakung' }, troll: 'Istrollet',
+  { id: 2, n: 'Fjällvidderna', grade: 8, col: '#7cc7ff', boss: { n: 'Bergakungen', e: '👑', v: 'bergakung', title: 'Härskaren i berget', forms: ['👑', '👹', '🗻'],
+      attacks: [['Silverregnet', '🪙'], ['Trollnäven', '👊'], ['Lavinen', '❄️']],
+      lines: { intro: 'Ingen rör mitt silver! Jag är den mäktigaste kungen i hela berget!', hit: ['Mitt berg skakar!', 'Omöjligt!', 'Grmpf! Min krona sitter snett!'], laugh: ['HAHA! Jag är mäktigast i hela fjället!', 'Mitt silver är säkert!', 'Ingen är starkare än berget!'], phase: ['Nu vaknar trollet i mig!', 'JAG ÄR BERGET!'], defeat: 'Mitt silver… är ditt…' } }, troll: 'Istrollet',
     intro: 'Kalla vindar sveper över kalfjället. Potenser, förändringsfaktor, Pythagoras och sannolikhet väntar.',
     foes: [['Fjällörnen', '🦅'], ['Grottbjörnen', '🐻'], ['Myskoxen', '🐂'], ['Bergsväduren', '🐏'], ['Isvätten', '🧊'], ['Järven', '🦡']],
     levels: [
@@ -97,7 +101,9 @@ const WORLDS = [
       { n: 'Stormtoppen', t: 'battle', elite: true, topics: ['pot', 'ff', 'ekv2', 'pyth', 'sann', 'cirk'], d: 3 },
       { n: 'Bergakungens sal', t: 'boss', topics: ['pot', 'ff', 'ekv2', 'utt', 'pyth', 'sann', 'skala', 'cirk'], d: 3 }
     ] },
-  { id: 3, n: 'Dimsjön', grade: 9, col: '#b48cff', boss: { n: 'Näcken', e: '🎻', v: 'nacken' }, troll: 'Dimtrollet',
+  { id: 3, n: 'Dimsjön', grade: 9, col: '#b48cff', boss: { n: 'Näcken', e: '🎻', v: 'nacken', title: 'Forsens spelman', forms: ['🎻', '🐴', '🌊'],
+      attacks: [['Fiolslingan', '🎵'], ['Bäckahästens spark', '🐴'], ['Forsvirveln', '🌊']],
+      lines: { intro: 'Lyssna på min fiol! Ingen i hela världen spelar vackrare än jag!', hit: ['En sträng gick av!', 'Falsk ton!', 'Aj, min fiol!'], laugh: ['Tralala! Min musik är oslagbar!', 'Forsen lyder bara mig!', 'Jag är forsens mästare!'], phase: ['Nu tar jag hästens skepnad!', 'Se forsens hela kraft!'], defeat: 'Min fiol… tystnar…' } }, troll: 'Dimtrollet',
     intro: 'Dimman ligger tung över vattnet och någon spelar fiol i forsen. Funktioner, ekvationssystem och sannolikhet i flera steg.',
     foes: [['Träskpaddan', '🐸'], ['Djupbläckfisken', '🦑'], ['Sjöormen', '🐍'], ['Gäddkungen', '🐟'], ['Klokräftan', '🦀'], ['Dimslöjan', '🌫️']],
     levels: [
@@ -115,8 +121,9 @@ const WORLDS = [
 ];
 if (TH.worlds) TH.worlds.forEach((o, i) => {
   if (!o) return;
-  const { levelNames, ...rest } = o;
+  const { levelNames, boss, ...rest } = o;
   Object.assign(WORLDS[i], rest);
+  if (boss) Object.assign(WORLDS[i].boss, boss);
   if (levelNames) levelNames.forEach((n, j) => { if (n) WORLDS[i].levels[j].n = n; });
 });
 const lvlKey = (w, i) => `${w}-${i}`;
@@ -156,6 +163,7 @@ const ACH = [
   { id: 'st30', ic: '⭐', n: 'Stjärnfångare', d: 'Samla 30 stjärnor', test: s => totalStars(s) >= 30 },
   { id: 'st90', ic: '🌟', n: 'Stjärnregn', d: 'Samla alla 90 stjärnor', test: s => totalStars(s) >= 90 },
   { id: 'r500', ic: '🧮', n: 'Räknekämpe', d: 'Svara rätt 500 gånger', test: s => s.stats.correct >= 500 },
+  { id: 'blixt50', ic: '⚡', n: 'Blixten', d: 'Svara blixtsnabbt 50 gånger', test: s => (s.stats.blixt || 0) >= 50 },
   { id: 'w50', ic: '✍️', n: 'Runristare', d: 'Skriv in 50 rätta svar själv', test: s => s.stats.writes >= 50 },
   { id: 'bal', ic: '⚖️', n: 'Vågmästare', d: 'Klara en våg utan ett enda onödigt drag', test: s => !!s.flags.bal },
   { id: 'snipe', ic: '🎯', n: 'Prickskytt', d: 'Träffa 3 mål med ett enda kast', test: s => !!s.flags.snipe },
@@ -179,7 +187,7 @@ function newState(name, grade, starter) {
   const s = {
     v: 1, name: name || 'Runjägare', grade, gold: 100, xp: 0, level: 1, sound: true,
     stars: {}, boss: {}, vasen: {}, team: [starter], chests: { tra: 1, silver: 0, guld: 0 }, claimedMs: {},
-    stats: { correct: 0, answered: 0, bestStreak: 0, wins: 0, chests: 0, writes: 0 },
+    stats: { correct: 0, answered: 0, bestStreak: 0, wins: 0, chests: 0, writes: 0, blixt: 0 },
     mastery: {}, ach: {}, flags: {}, tower: { best: 0 },
     daily: null, login: { last: null, streak: 0, best: 0 }, savedAt: 0
   };
@@ -244,12 +252,12 @@ const SFX = {
       this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)();
       const c = this.ctx;
       const seq = { right: [[660, .07], [990, .12]], wrong: [[220, .16], [160, .24]], hit: TH.sfx === 'arena' ? [[140, .16]] : [[180, .08]], coin: [[988, .05], [1319, .12]], chest: [[523, .09], [659, .09], [784, .09], [1047, .32]],
-        win: [[523, .11], [659, .11], [784, .11], [1047, .45]], lose: [[392, .2], [330, .2], [262, .4]], click: [[620, .03]], star: [[1175, .08], [1568, .14]], shot: [[880, .05], [440, .1]] }[kind];
+        win: [[523, .11], [659, .11], [784, .11], [1047, .45]], lose: [[392, .2], [330, .2], [262, .4]], click: [[620, .03]], star: [[1175, .08], [1568, .14]], shot: [[880, .05], [440, .1]], roar: [[140, .25], [95, .45]], zap: [[1568, .05], [2093, .09]] }[kind];
       if (!seq) return;
       let t = c.currentTime;
       for (const [f, d] of seq) {
         const o = c.createOscillator(), g = c.createGain();
-        const bad = kind === 'wrong' || kind === 'lose';
+        const bad = kind === 'wrong' || kind === 'lose' || kind === 'roar';
         const arena = TH.sfx === 'arena';
         o.type = bad ? 'sawtooth' : arena ? (kind === 'hit' ? 'sine' : 'square') : 'triangle';
         o.frequency.value = f;
@@ -276,10 +284,10 @@ function callout(text, cls = '') {
   const el = document.createElement('div');
   el.className = 'callout ' + cls; el.textContent = text;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1400);
+  setTimeout(() => el.remove(), 2300);
 }
 function burst(x, y, n = 12) {
-  if (reduceMotion || !TH.juice) return;
+  if (reduceMotion) return;
   for (let i = 0; i < n; i++) {
     const sp = document.createElement('i');
     const a = Math.random() * Math.PI * 2, r = 40 + Math.random() * 70;
@@ -295,7 +303,7 @@ function banner(text, sub = '') {
   const el = document.createElement('div');
   el.className = 'banner'; el.innerHTML = esc(text) + (sub ? `<small>${esc(sub)}</small>` : '');
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1900);
+  setTimeout(() => el.remove(), 2900);
 }
 function confetti(n = 60) {
   if (reduceMotion) return;
@@ -317,7 +325,7 @@ function floatText(x, y, text, crit) {
   el.className = 'float' + (crit ? ' crit' : '');
   el.style.left = x + 'px'; el.style.top = y + 'px'; el.textContent = text;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1200);
+  setTimeout(() => el.remove(), 2200);
 }
 function flash() { const f = document.createElement('div'); f.className = 'flash'; document.body.appendChild(f); setTimeout(() => f.remove(), 500); }
 function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
@@ -636,25 +644,77 @@ function makeFighter() {
   return { fx, hearts, maxHearts: hearts, shield: fx.shield || 0, guard: fx.comboGuard || 0, revive: fx.revive || 0, hints: 1 + (fx.hints || 0) };
 }
 function startBattle(cfg) {
-  G.b = Object.assign({ streak: 0, best: 0, correct: 0, answered: 0, writes: 0, phase: 0, write: false, wrongTopics: {}, floor: 1, towerGold: 0 }, makeFighter(), cfg, { max: cfg.hp });
-  G.screen = 'battle'; render(); nextQuestion();
+  const b = G.b = Object.assign({ streak: 0, best: 0, correct: 0, answered: 0, writes: 0, blixt: 0, phase: 0, write: false, wrongTopics: {}, floor: 1, towerGold: 0 }, makeFighter(), cfg, { max: cfg.hp });
+  if (b.boss) { b.bd = WORLDS[b.w - 1].boss; b.forms = [b.bd.e, ...b.bd.forms.slice(1)]; }
+  G.screen = 'battle'; render();
+  if (b.boss) bossIntro(b).then(() => { if (G.b === b) nextQuestion(); });
+  else nextQuestion();
+}
+/* ---- Bossens liv: entré, pratbubblor, reaktioner, förvandlingar ---- */
+function bossIntro(b) {
+  return new Promise(res => {
+    const ov = document.createElement('div');
+    ov.className = 'bossintro';
+    ov.innerHTML = `<div class="bi-inner"><div class="bi-face">${b.foe.e}</div><div class="bi-title">${esc(b.bd.title)}</div><div class="bi-name">${esc(b.foe.n)}</div>
+      <div class="bi-line">”${esc(b.bd.lines.intro)}”</div><div class="bi-go">${tx('fight', 'Strid!')}</div><small class="bi-skip">Tryck för att börja</small></div>`;
+    document.body.appendChild(ov);
+    SFX.play('roar');
+    let done = false;
+    const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 280); };
+    ov.addEventListener('click', end);
+    setTimeout(end, reduceMotion ? 1800 : 4500);
+  });
+}
+function bubble(text, ms = 3000) {
+  const el = $('#bubble'); if (!el) return;
+  el.textContent = text; el.hidden = false;
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  clearTimeout(bubble.t); bubble.t = setTimeout(() => { el.hidden = true; }, ms);
+}
+function foeFx(glyph) {
+  const host = $('#foefx'); if (!host || reduceMotion) return;
+  const sp = document.createElement('span');
+  sp.textContent = glyph; sp.style.left = (20 + Math.random() * 55) + '%';
+  host.appendChild(sp); setTimeout(() => sp.remove(), 950);
+}
+async function bossPhase(b, ph) {
+  b.phase = ph;
+  $$('#phases span').forEach((x, i) => x.classList.toggle('on', i <= ph));
+  const face = $('#face'), arena = $('#arena');
+  await wait(250);
+  if (face) face.classList.add('roar');
+  SFX.play('roar'); shake(arena); flash();
+  bubble(b.bd.lines.phase[ph - 1], 4000);
+  await wait(800);
+  b.foe.e = b.forms[ph];
+  if (face) face.textContent = b.foe.e;
+  if (arena) { arena.classList.remove('phase-0', 'phase-1', 'phase-2'); arena.classList.add('phase-' + ph); }
+  if (face) { const r = face.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 26); }
+  banner(`Fas ${ph + 1}`, `${b.foe.n} förvandlas! Attackerna laddas snabbare.`);
+  await wait(1100);
+  if (face) face.classList.remove('roar');
 }
 SCREENS.battle = () => {
   const b = G.b;
-  return `<section class="arena" id="arena">
+  return `<section class="arena ${b.boss ? 'bossfight phase-' + b.phase : ''}" id="arena">
     <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Fly</button>
       <span class="muted" style="font-size:13px">${b.kind === 'tower' ? `Runtornet · våning ${b.floor}` : `${WORLDS[b.w - 1].n} · nivå ${b.i + 1}`}</span></div>
     <div class="foe ${b.boss ? 'boss' : ''}" id="foe">
+      <div class="bubble" id="bubble" hidden></div><div class="foefx" id="foefx" aria-hidden="true"></div>
       <div class="face" id="face">${b.foe.e}</div>
       <div class="stack" style="gap:6px">
         <div class="row" style="justify-content:space-between"><b id="foename">${esc(b.foe.n)}</b>${b.boss ? `<span class="phases" id="phases">${[0, 1, 2].map(p => `<span class="${p <= b.phase ? 'on' : ''}"></span>`).join('')}</span>` : ''}</div>
-        <div class="hpbar"><i class="ghost" id="hpghost" style="width:${b.hp / b.max * 100}%"></i><i id="hp" style="width:${b.hp / b.max * 100}%"></i></div>
+        <div class="hpbar ${b.boss ? 'notched' : ''}" id="hpbar"><i class="ghost" id="hpghost" style="width:${b.hp / b.max * 100}%"></i><i id="hp" style="width:${b.hp / b.max * 100}%"></i></div>
         <small class="muted" id="hptext">${Math.max(0, Math.ceil(b.hp))} / ${b.max}</small>
       </div>
     </div>
     <div class="me"><span class="hearts" id="hearts"></span><span class="combo" id="combo"></span>
       <span class="row" style="gap:6px">${S.team.slice(0, teamSlots()).map(id => `<span class="mini" style="width:36px;height:36px;font-size:20px" title="${esc(VB[id].n)}: ${esc(fxText(VB[id].fx(S.vasen[id].l)))}">${VB[id].e}</span>`).join('')}</span></div>
-    <div class="timer"><i id="tbar"></i></div>
+    <div class="timerwrap">
+      ${b.boss ? `<div class="charge" id="charge"></div>` : ''}
+      <div class="timer"><i id="tbar"></i><span class="mark" style="left:75%"></span><span class="mark" style="left:50%"></span></div>
+      <div class="zones" aria-hidden="true"><span></span><span></span><span class="z1">⚡ Snabbt ×1,5</span><span class="z2">⚡⚡ Blixt ×2</span></div>
+    </div>
     <div id="qzone"></div>
   </section>`;
 };
@@ -666,6 +726,7 @@ function updateHUD() {
   if (c) { c.textContent = b.streak >= 2 ? `🔥 ${b.streak} i rad · ×${comboMult(b).toFixed(1).replace('.', ',')}` : ''; c.classList.toggle('hot', b.streak >= 5); }
   const pct = Math.max(0, b.hp / b.max * 100);
   if ($('#hp')) { $('#hp').style.width = pct + '%'; $('#hpghost').style.width = pct + '%'; $('#hptext').textContent = `${Math.max(0, Math.ceil(b.hp))} / ${b.max}`; }
+  $('#face')?.classList.toggle('weak', b.hp > 0 && pct < 25);
 }
 const comboMult = b => 1 + Math.min(1, Math.max(0, b.streak - 1) * .1 * (1 + (b.fx.comboRate || 0)));
 function nextQuestion() {
@@ -678,8 +739,11 @@ function nextQuestion() {
   const q = T[topic].gen(d); q.topic = topic; q.d = d;
   b.q = q; b.locked = false; b.removed = [];
   const tm = (T[topic].time * (d === 3 ? 1.15 : d === 1 ? .9 : 1) + (b.fx.time || 0)) * (1 - .12 * b.phase);
-  b.tMax = tm * 1000; b.tStart = performance.now();
+  b.tMax = tm * 1000; b.tStart = performance.now(); b.zone = null;
   renderQ();
+  const ch = $('#charge');
+  if (ch && b.bd) { const atk = b.bd.attacks[b.phase]; ch.className = 'charge'; ch.innerHTML = `${esc(b.foe.n)} laddar <b>${esc(atk[0])}</b> ${atk[1]}`; }
+  $('#face')?.classList.remove('charging');
   startTimer();
 }
 function qcardHTML(q, extra = '') {
@@ -708,7 +772,9 @@ function tick() {
   const b = G.b; if (!b || b.locked || G.screen !== 'battle') return;
   const left = 1 - (performance.now() - b.tStart) / b.tMax;
   const bar = $('#tbar');
-  if (bar) { bar.style.width = Math.max(0, left * 100) + '%'; bar.className = left < .2 ? 'crit' : left < .45 ? 'warn' : ''; }
+  const el = 1 - left;
+  const zone = el < .25 ? 'blixt' : el < .5 ? 'snabb' : left < .2 ? 'crit' : left < .45 ? 'warn' : '';
+  if (bar) { bar.style.width = Math.max(0, left * 100) + '%'; if (zone !== b.zone) { bar.className = zone; b.zone = zone; if (b.boss) { $('#charge')?.classList.toggle('danger', zone === 'crit'); $('#face')?.classList.toggle('charging', zone === 'crit'); } } }
   if (left <= 0) { answer(null, true); return; }
   timerRAF = requestAnimationFrame(tick);
 }
@@ -737,20 +803,28 @@ async function answer(idx, timeout = false, typed) {
     if (wrote) { b.writes++; S.stats.writes++; quest('write'); }
     if (idx !== null && btns[idx]) btns[idx].classList.add('right');
     if (wrote) $('#wans')?.classList.add('right');
-    const crit = ratio < .35;
-    const dmg = Math.round(24 * (1 + (b.fx.dmg || 0)) * comboMult(b) * (crit ? 1.5 + (b.fx.crit || 0) : 1) * (wrote ? 2 : 1));
-    SFX.play('right');
+    const tier = ratio < .25 ? 2 : ratio < .5 ? 1 : 0;
+    const crit = tier === 2;
+    if (crit) { b.blixt++; S.stats.blixt = (S.stats.blixt || 0) + 1; }
+    const speed = tier === 2 ? 2 + (b.fx.crit || 0) : tier === 1 ? 1.5 : 1;
+    const dmg = Math.round(24 * (1 + (b.fx.dmg || 0)) * comboMult(b) * speed * (wrote ? 2 : 1));
+    const ch = $('#charge'); if (ch) { ch.className = 'charge broken'; ch.textContent = crit ? 'Attacken krossad!' : 'Attacken avbruten!'; }
+    $('#face')?.classList.remove('charging');
+    SFX.play(crit ? 'zap' : 'right');
     await bolt(idx !== null ? btns[idx] : $('#wans'), $('#face'), wrote ? '✸' : '✦');
     SFX.play('hit');
     const face = $('#face');
-    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, (crit ? tx('crit', 'BLIXT! ') : '') + dmg, crit); burst(r.left + r.width / 2, r.top + r.height / 2, crit ? 18 : 10); if (crit && TH.juice) { shake($('#foe')); face.classList.add('crit'); setTimeout(() => face.classList.remove('crit'), 300); } }
+    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, (tier === 2 ? tx('crit', 'BLIXTSNABBT! ') : tier === 1 ? tx('fast', 'SNABBT! ') : '') + dmg, tier > 0); burst(r.left + r.width / 2, r.top + r.height / 2, crit ? 20 : tier ? 12 : 8); if (crit) { shake($('#foe')); face.classList.add('crit'); setTimeout(() => face.classList.remove('crit'), 300); } }
+    const hb = $('#hpbar'); if (hb) { hb.classList.remove('jolt'); void hb.offsetWidth; hb.classList.add('jolt'); }
+    foeFx(crit ? '💫' : '💢');
+    if (b.bd && b.hp - dmg > 0 && (crit || Math.random() < .35)) bubble(R.pick(b.bd.lines.hit), 2800);
     b.hp -= dmg;
     if (TH.announce && TH.announce[b.streak]) callout(TH.announce[b.streak], 'streak');
     if (b.fx.healEvery && b.streak % b.fx.healEvery === 0 && b.hearts < b.maxHearts) { b.hearts++; toast('💚 Ditt väsen läkte ett hjärta!'); }
     updateHUD();
     if (b.boss) {
       const ph = b.hp <= b.max / 3 ? 2 : b.hp <= b.max * 2 / 3 ? 1 : 0;
-      if (ph > b.phase && b.hp > 0) { b.phase = ph; $$('#phases span').forEach((s, i) => s.classList.toggle('on', i <= ph)); await wait(350); banner(`${b.foe.n} rasar!`, `Fas ${ph + 1} · snabbare frågor`); SFX.play('lose'); }
+      if (ph > b.phase && b.hp > 0) await bossPhase(b, ph);
     }
     await wait(550);
     if (b.hp <= 0) return foeDefeated();
@@ -764,7 +838,13 @@ async function answer(idx, timeout = false, typed) {
   btns.forEach((el, i) => { if (q.opts[i] === q.a) el.classList.add('right'); });
   if (idx !== null && btns[idx]) btns[idx].classList.add('wrong');
   SFX.play('wrong');
-  const face = $('#face'); if (face) { face.classList.remove('lunge'); void face.offsetWidth; face.classList.add('lunge'); }
+  const face = $('#face'); if (face) { face.classList.remove('lunge', 'charging'); void face.offsetWidth; face.classList.add('lunge'); }
+  if (b.bd) {
+    const atk = b.bd.attacks[b.phase];
+    bubble(timeout ? `${atk[0]}!` : R.pick(b.bd.lines.laugh), 3200);
+    const ch = $('#charge'); if (ch) { ch.className = 'charge hit'; ch.innerHTML = `<b>${esc(atk[0])}</b> träffar! ${atk[1]}`; }
+    await bolt(face, $('#hearts'), atk[1]);
+  } else bubble(R.pick(['Haha! Jag är snabbast!', 'Hehe! Jag är starkast!', 'Jag är oslagbar!', 'Ha! Mina klor är vassast!', 'Haha! Testa igen!']), 2600);
   if (b.shield > 0) { b.shield--; toast('🛡️ Skölden tog smällen!'); }
   else { b.hearts--; flash(); shake($('#arena')); }
   if (b.hearts <= 0 && b.revive > 0) { b.revive--; b.hearts = 1; setTimeout(() => banner('Skogsrået räddar dig!', 'Ett hjärta kvar'), 200); }
@@ -788,7 +868,7 @@ function showExplain(q, timeout, typed) {
 }
 async function foeDefeated() {
   const b = G.b;
-  const face = $('#face'); if (face) face.classList.add('dead');
+  const face = $('#face'); if (face && !b.bd) face.classList.add('dead');
   SFX.play('win');
   if (b.kind === 'tower') {
     const g = 6 + b.floor * 2; b.towerGold += g;
@@ -804,7 +884,16 @@ async function foeDefeated() {
     render(); nextQuestion();
     return;
   }
-  await wait(800);
+  if (b.bd) {
+    bubble(b.bd.lines.defeat, 3800);
+    if (face) { face.classList.remove('dead', 'weak'); face.classList.add('ko'); }
+    SFX.play('roar');
+    await wait(900);
+    banner(tx('ko', 'Besegrad!'), `${b.foe.n} har fallit`);
+    if (face) { const r = face.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 40); }
+    confetti(80);
+    await wait(2400);
+  } else await wait(800);
   finishLevel(true);
 }
 function rewardFor(kind, correct, win, extra = 0) {
@@ -824,10 +913,11 @@ function finishLevel(win, special) {
   const key = lvlKey(w, i), prev = S.stars[key] || 0;
   const kind = L.t === 'boss' ? 'boss' : L.elite ? 'elite' : 'normal';
   const firstClear = win && !prev;
-  const rw = rewardFor(kind, correct, win, firstClear ? 40 : 0);
+  const blixt = special ? 0 : (b.blixt || 0);
+  const rw = rewardFor(kind, correct, win, (firstClear ? 40 : 0) + blixt * 3);
   addGold(rw.gold);
   const xpRes = addXP(rw.xp);
-  const res = { win, stars, prev, gold: rw.gold, xp: rw.xp, correct, answered, best: special ? special.best : b.best, w, i, unlocks: [], weak: null, label: special && special.label };
+  const res = { win, stars, prev, gold: rw.gold, xp: rw.xp, correct, answered, blixt, best: special ? special.best : b.best, w, i, unlocks: [], weak: null, label: special && special.label };
   if (win) {
     S.stars[key] = Math.max(prev, stars);
     S.stats.wins++; quest('win'); if (stars === 3) quest('three');
@@ -856,7 +946,7 @@ SCREENS.result = () => {
   if (r.tower) {
     return `<section class="result"><div class="eyebrow">Runtornet</div><h1>Våning ${r.floor}</h1>
       <p class="muted">${r.floor > r.prevBest ? 'Nytt rekord!' : `Ditt rekord är våning ${S.tower.best}.`}</p>
-      <div class="rewards"><div class="reward"><b>+${r.gold}</b><small>guld</small></div><div class="reward"><b>+${r.xp}</b><small>XP</small></div><div class="reward"><b>${r.correct}</b><small>rätt svar</small></div><div class="reward"><b>${r.best}</b><small>bästa combo</small></div></div>
+      <div class="rewards"><div class="reward"><b>+${r.gold}</b><small>guld</small></div><div class="reward"><b>+${r.xp}</b><small>XP</small></div><div class="reward"><b>${r.correct}</b><small>rätt svar</small></div><div class="reward"><b>${r.best}</b><small>bästa combo</small></div>${r.blixt ? `<div class="reward"><b>⚡ ${r.blixt}</b><small>blixtsnabba · +${r.blixt * 3} guld</small></div>` : ''}</div>
       <div class="row" style="justify-content:center"><button class="btn primary" data-act="tower">Klättra igen</button><button class="btn ghost" data-act="hub">Till byn</button></div></section>`;
   }
   const W = WORLDS[r.w - 1];
@@ -870,6 +960,7 @@ SCREENS.result = () => {
       <div class="reward"><b>+${r.xp}</b><small>XP</small></div>
       <div class="reward"><b>${r.correct} / ${r.answered}</b><small>${r.label || 'rätt svar'}</small></div>
       ${r.best !== undefined && r.best !== null ? `<div class="reward"><b>${r.best}</b><small>bästa combo</small></div>` : ''}
+      ${r.blixt ? `<div class="reward"><b>⚡ ${r.blixt}</b><small>blixtsnabba · +${r.blixt * 3} guld</small></div>` : ''}
     </div>
     ${TH.rankOnResult ? `<div class="rankbar"><span class="badge" data-tier="${tierFor(S.level)}">${S.level}</span><div><b>${esc(titleFor(S.level))}</b><small>${S.xp} / ${xpFor(S.level)} XP till nästa nivå</small><div class="xp"><i style="width:${Math.round(S.xp / xpFor(S.level) * 100)}%"></i></div></div></div>` : ''}
     ${r.win && !r.prev ? '<p class="muted" style="margin:0">Första gången du klarar nivån: +40 guld extra.</p>' : ''}
@@ -898,10 +989,10 @@ function finishTower() {
   const prevBest = b.startBest || 0;
   S.tower.best = Math.max(S.tower.best, floor);
   const fx = teamFx();
-  const gold = addGold((b.towerGold + b.correct * 3) * (1 + (fx.gold || 0)));
+  const gold = addGold((b.towerGold + b.correct * 3 + b.blixt * 3) * (1 + (fx.gold || 0)));
   const xpr = addXP((b.correct * 10 + floor * 6) * (1 + (fx.xp || 0)));
   checkAch(); save();
-  G.result = { tower: true, floor, prevBest, gold, xp: xpr.n, correct: b.correct, best: b.best };
+  G.result = { tower: true, floor, prevBest, gold, xp: xpr.n, correct: b.correct, best: b.best, blixt: b.blixt };
   G.b = null;
   go('result');
   if (floor > prevBest) confetti(80);
