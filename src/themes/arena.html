@@ -307,6 +307,28 @@ h3 { font-size: 27px; }
   .charge { font-size: 17px; }
 }
 
+/* ---------- Specialkrafter, tips och revansch ---------- */
+.powers { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
+.pmeter { display: grid; gap: 5px; align-content: center; min-width: 120px; font-family: var(--display); font-size: 18px; letter-spacing: .6px; text-transform: uppercase; color: var(--dim); line-height: 1; }
+.pmeter .pbar { height: 10px; background: var(--deck3); overflow: hidden; transform: skewX(-20deg); }
+.pmeter .pbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--r-e), var(--gold)); box-shadow: 0 0 10px rgba(181, 77, 255, .6); transition: width .3s; }
+.pmeter.full span { color: var(--gold); text-shadow: 0 0 12px rgba(255, 197, 49, .7); }
+.pw { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 10px; border: 0; background: var(--deck2); text-align: left; flex: 1 1 160px; min-width: 0; box-shadow: inset 0 0 0 1px var(--edge); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+.pw .pe { font-size: 26px; line-height: 1; }
+.pw .pt { display: grid; min-width: 0; }
+.pw .pt b { font-family: var(--display); font-size: 19px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; line-height: 1; }
+.pw .pt small { font-size: 11px; color: var(--dim); line-height: 1.2; }
+.pw[disabled] { opacity: .45; cursor: default; }
+.pw.ready { background: linear-gradient(120deg, rgba(255, 197, 49, .28), var(--deck2) 70%); box-shadow: inset 0 0 0 2px var(--gold); animation: suggest .9s ease-in-out infinite; }
+.pw.ready .pt b { color: var(--gold); }
+.tripletag { align-self: center; font-family: var(--display); font-size: 20px; text-transform: uppercase; color: var(--gold); text-shadow: 0 0 10px rgba(255, 197, 49, .7); }
+#tipbox:empty { display: none; }
+.coach.tip { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+.revtag { background: var(--r-e); color: #fff; padding: 1px 8px; font-size: 11px; letter-spacing: 1px; clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); }
+.qcard.rev { border-top-color: var(--r-e); box-shadow: inset 0 0 0 1px rgba(181, 77, 255, .5); }
+.timer i.frozen { background: #bfe7ff; box-shadow: 0 0 16px #bfe7ff; }
+.card .pwline { color: #fff; }
+
 .shake { animation: shake .35s; }
 @keyframes shake { 15% { transform: translate(-9px, 3px); } 35% { transform: translate(9px, -3px); } 55% { transform: translate(-6px, 2px); } 75% { transform: translate(4px, -1px); } }
 .flash { position: fixed; inset: 0; pointer-events: none; z-index: 50; background: radial-gradient(circle, transparent 40%, rgba(255, 61, 110, .55)); animation: fade .5s forwards; }

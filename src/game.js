@@ -46,6 +46,30 @@ const TH = window.THEME || {};
 const tx = (k, d) => (TH.text && TH.text[k] !== undefined ? TH.text[k] : d);
 if (TH.vasen) for (const id in TH.vasen) if (VB[id]) Object.assign(VB[id], TH.vasen[id]);
 const BRAND = TH.brand || 'Väsen <span>&amp;</span> Variabler';
+/* Specialkrafter: rätt svar laddar kraftmätaren, full mätare = välj ett väsens kraft */
+const CHARGE_MAX = 5;
+const POWERS = {
+  heal: { n: 'Läkning', ic: '💚', d: v => `Läker ${v} ${v > 1 ? 'hjärtan' : 'hjärta'}` },
+  shield: { n: 'Skyddssköld', ic: '🛡️', d: v => `Ger ${v} ${v > 1 ? 'sköldar' : 'sköld'} mot träffar` },
+  freeze: { n: 'Tidsstopp', ic: '⏸️', d: () => 'Stoppar tiden för frågan' },
+  fifty: { n: 'Siarblick', ic: '🔮', d: () => 'Tar bort två fel svar' },
+  smite: { n: 'Kraftslag', ic: '💥', d: v => `${v} skada direkt` },
+  triple: { n: 'Trippelslag', ic: '⚔️', d: () => 'Nästa träff gör ×3 skada' },
+  loot: { n: 'Skattfynd', ic: '🪙', d: v => `+${v} guld direkt` },
+  combo: { n: 'Comboboost', ic: '🔥', d: v => `+${v} i combo` }
+};
+const PW = {
+  tomte: ['heal', 1, .25], pyssling: ['freeze'], mus: ['loot', 30, 10], korp: ['fifty'], lykt: ['fifty'], ekorre: ['smite', 40, 10], uggla: ['triple'], groda: ['heal', 1, .25],
+  vittra: ['combo', 3, 1], backahast: ['smite', 55, 12], gloson: ['shield', 1, .25], myling: ['freeze'], trollkatt: ['loot', 50, 15], mara: ['triple'], lindormunge: ['heal', 1, .25], irrbloss: ['fifty'],
+  huldran: ['heal', 2, .25], havsfrun: ['shield', 2, .25], jatten: ['smite', 80, 15], draugen: ['triple'], norrsken: ['combo', 5, 1],
+  skogsra: ['heal', 3, 0], bergakung: ['smite', 110, 20], nacken: ['freeze'], lindorm: ['smite', 140, 25]
+};
+function powerOf(id, l = 1) {
+  const pw = PW[id]; if (!pw) return null;
+  const v = Math.floor((pw[1] || 0) + (pw[2] || 0) * (l - 1));
+  return Object.assign({ kind: pw[0], v }, POWERS[pw[0]], { text: POWERS[pw[0]].d(v) });
+}
+const powerLine = (id, l) => { const pw = powerOf(id, l); return pw ? `<span class="ab pwline">${pw.ic} <b>${pw.n}:</b> ${pw.text}</span>` : ''; };
 const STARTERS = ['tomte', 'pyssling', 'ekorre'];
 function fxText(fx) {
   const pc = v => Math.round(v * 100) + ' %';
@@ -163,6 +187,8 @@ const ACH = [
   { id: 'st30', ic: '⭐', n: 'Stjärnfångare', d: 'Samla 30 stjärnor', test: s => totalStars(s) >= 30 },
   { id: 'st90', ic: '🌟', n: 'Stjärnregn', d: 'Samla alla 90 stjärnor', test: s => totalStars(s) >= 90 },
   { id: 'r500', ic: '🧮', n: 'Räknekämpe', d: 'Svara rätt 500 gånger', test: s => s.stats.correct >= 500 },
+  { id: 'pow25', ic: '💥', n: 'Kraftfull', d: 'Använd 25 specialkrafter', test: s => (s.stats.powers || 0) >= 25 },
+  { id: 'rev10', ic: '🔁', n: 'Revanschen', d: 'Klara 10 revanschfrågor', test: s => (s.stats.revenge || 0) >= 10 },
   { id: 'blixt50', ic: '⚡', n: 'Blixten', d: 'Svara blixtsnabbt 50 gånger', test: s => (s.stats.blixt || 0) >= 50 },
   { id: 'w50', ic: '✍️', n: 'Runristare', d: 'Skriv in 50 rätta svar själv', test: s => s.stats.writes >= 50 },
   { id: 'bal', ic: '⚖️', n: 'Vågmästare', d: 'Klara en våg utan ett enda onödigt drag', test: s => !!s.flags.bal },
@@ -187,7 +213,7 @@ function newState(name, grade, starter) {
   const s = {
     v: 1, name: name || 'Runjägare', grade, gold: 100, xp: 0, level: 1, sound: true,
     stars: {}, boss: {}, vasen: {}, team: [starter], chests: { tra: 1, silver: 0, guld: 0 }, claimedMs: {},
-    stats: { correct: 0, answered: 0, bestStreak: 0, wins: 0, chests: 0, writes: 0, blixt: 0 },
+    stats: { correct: 0, answered: 0, bestStreak: 0, wins: 0, chests: 0, writes: 0, blixt: 0, powers: 0, revenge: 0 }, revenge: [], qCount: 0,
     mastery: {}, ach: {}, flags: {}, tower: { best: 0 },
     daily: null, login: { last: null, streak: 0, best: 0 }, savedAt: 0
   };
@@ -524,7 +550,7 @@ SCREENS.setup = () => {
         <p class="muted" style="margin:8px 0 0;font-size:13px">Du får tillgång till alla världar upp till din årskurs. Tidigare världar finns kvar för repetition, stjärnor och väsen.</p>
       </div>
       <div><div class="eyebrow" style="margin-bottom:6px">Välj ditt första väsen</div>
-        <div class="starters">${STARTERS.map(id => { const v = VB[id]; return `<button class="card c-${v.r} ${st.starter === id ? 'inteam' : ''}" data-act="pickstarter" data-arg="${id}"><span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="ab">${fxText(v.fx(1))}</span></button>`; }).join('')}</div>
+        <div class="starters">${STARTERS.map(id => { const v = VB[id]; return `<button class="card c-${v.r} ${st.starter === id ? 'inteam' : ''}" data-act="pickstarter" data-arg="${id}"><span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="ab">${fxText(v.fx(1))}</span>${powerLine(id, 1)}</button>`; }).join('')}</div>
       </div>
       <button class="btn primary" data-act="begin" ${st.starter ? '' : 'disabled'}>Börja äventyret</button>
     </div>
@@ -557,7 +583,7 @@ SCREENS.hub = () => {
           <button class="tile" data-act="vasen"><span class="ic">📖</span><b>Väsenboken</b><small>${ownedCount(S)} / ${V.length} väsen</small></button>
           <button class="tile" data-act="chests">${chestN ? `<span class="dot">${chestN}</span>` : ''}<span class="ic">🧰</span><b>Kistor</b><small>Öppna &amp; köp</small></button>
           <button class="tile ${S.level >= 2 ? '' : 'locked'}" data-act="tower"><span class="ic">🗼</span><b>Runtornet</b><small>${S.level >= 2 ? `Rekord: våning ${S.tower.best}` : 'Låses upp på nivå 2'}</small></button>
-          <button class="tile" data-act="practice"><span class="ic">🌿</span><b>Övningsgläntan</b><small>Träna utan tidspress</small></button>
+          <button class="tile" data-act="practice">${(S.revenge || []).length ? `<span class="dot">${S.revenge.length}</span>` : ''}<span class="ic">🌿</span><b>Övningsgläntan</b><small>${(S.revenge || []).length ? '🔁 Revanscher väntar' : 'Träna utan tidspress'}</small></button>
           <button class="tile" data-act="medals"><span class="ic">🏅</span><b>Medaljer</b><small>${Object.keys(S.ach).length} / ${ACH.length}</small></button>
         </div>
       </div>
@@ -644,11 +670,11 @@ function makeFighter() {
   return { fx, hearts, maxHearts: hearts, shield: fx.shield || 0, guard: fx.comboGuard || 0, revive: fx.revive || 0, hints: 1 + (fx.hints || 0) };
 }
 function startBattle(cfg) {
-  const b = G.b = Object.assign({ streak: 0, best: 0, correct: 0, answered: 0, writes: 0, blixt: 0, phase: 0, write: false, wrongTopics: {}, floor: 1, towerGold: 0 }, makeFighter(), cfg, { max: cfg.hp });
+  const b = G.b = Object.assign({ streak: 0, best: 0, correct: 0, answered: 0, writes: 0, blixt: 0, phase: 0, write: false, wrongTopics: {}, floor: 1, towerGold: 0, charge: 0, triple: false, frozen: false, revengeWon: 0 }, makeFighter(), cfg, { max: cfg.hp });
   if (b.boss) { b.bd = WORLDS[b.w - 1].boss; b.forms = [b.bd.e, ...b.bd.forms.slice(1)]; }
+  G.tipQ = [];
   G.screen = 'battle'; render();
-  if (b.boss) bossIntro(b).then(() => { if (G.b === b) nextQuestion(); });
-  else nextQuestion();
+  (b.boss ? bossIntro(b) : Promise.resolve()).then(battleIntro).then(() => { if (G.b === b) nextQuestion(); });
 }
 /* ---- Bossens liv: entré, pratbubblor, reaktioner, förvandlingar ---- */
 function bossIntro(b) {
@@ -663,6 +689,35 @@ function bossIntro(b) {
     const end = () => { if (done) return; done = true; ov.classList.add('out'); setTimeout(() => { ov.remove(); res(); }, 280); };
     ov.addEventListener('click', end);
     setTimeout(end, reduceMotion ? 1800 : 4500);
+  });
+}
+/* ---- Tips första gången något händer ---- */
+function tipOnce(id, html) {
+  S.flags.tips = S.flags.tips || {};
+  if (S.flags.tips[id]) return;
+  S.flags.tips[id] = true; save();
+  G.tipQ = G.tipQ || [];
+  G.tipQ.push(html);
+  if (!$('#tipbox .tip')) showNextTip();
+}
+function showNextTip() {
+  const box = $('#tipbox'); if (!box) { G.tipQ = []; return; }
+  const html = (G.tipQ || []).shift();
+  box.innerHTML = html ? `<div class="coach hint tip" role="status"><span>${html}</span><button class="btn small" data-act="tipok">OK</button></div>` : '';
+}
+function battleIntro() {
+  S.flags.tips = S.flags.tips || {};
+  if (S.flags.tips.intro) return Promise.resolve();
+  return new Promise(res => {
+    G.introDone = () => { S.flags.tips.intro = true; save(); res(); };
+    modal(`<div class="eyebrow">Första striden</div><h2>Så funkar striden</h2>
+      <ul class="rules" style="text-align:left">
+        <li><b>Svara rätt</b> så skadar du fienden. Fel svar eller slut på tid kostar ett hjärta.</li>
+        <li><b>Snabbt svar ger mer skada.</b> Titta på tidsmätaren: ⚡ Snabbt ×1,5 och ⚡⚡ Blixt ×2.</li>
+        <li><b>Flera rätt i rad</b> bygger en 🔥 combo som ökar skadan ännu mer.</li>
+        <li><b>Varje rätt svar laddar kraftmätaren.</b> När den är full trycker du på ett väsen i ditt lag och använder dess specialkraft.</li>
+      </ul>
+      <button class="btn primary" data-m="battleintro">Kör!</button>`);
   });
 }
 function bubble(text, ms = 3000) {
@@ -708,13 +763,14 @@ SCREENS.battle = () => {
         <small class="muted" id="hptext">${Math.max(0, Math.ceil(b.hp))} / ${b.max}</small>
       </div>
     </div>
-    <div class="me"><span class="hearts" id="hearts"></span><span class="combo" id="combo"></span>
-      <span class="row" style="gap:6px">${S.team.slice(0, teamSlots()).map(id => `<span class="mini" style="width:36px;height:36px;font-size:20px" title="${esc(VB[id].n)}: ${esc(fxText(VB[id].fx(S.vasen[id].l)))}">${VB[id].e}</span>`).join('')}</span></div>
+    <div class="me"><span class="hearts" id="hearts"></span><span class="combo" id="combo"></span></div>
+    <div class="powers" id="powers"></div>
     <div class="timerwrap">
       ${b.boss ? `<div class="charge" id="charge"></div>` : ''}
       <div class="timer"><i id="tbar"></i><span class="mark" style="left:75%"></span><span class="mark" style="left:50%"></span></div>
       <div class="zones" aria-hidden="true"><span></span><span></span><span class="z1">⚡ Snabbt ×1,5</span><span class="z2">⚡⚡ Blixt ×2</span></div>
     </div>
+    <div id="tipbox"></div>
     <div id="qzone"></div>
   </section>`;
 };
@@ -727,6 +783,16 @@ function updateHUD() {
   const pct = Math.max(0, b.hp / b.max * 100);
   if ($('#hp')) { $('#hp').style.width = pct + '%'; $('#hpghost').style.width = pct + '%'; $('#hptext').textContent = `${Math.max(0, Math.ceil(b.hp))} / ${b.max}`; }
   $('#face')?.classList.toggle('weak', b.hp > 0 && pct < 25);
+  const pw = $('#powers');
+  if (pw) {
+    const ready = b.charge >= CHARGE_MAX;
+    pw.innerHTML = `<div class="pmeter ${ready ? 'full' : ''}" title="Kraftmätare ${b.charge} av ${CHARGE_MAX}"><span>💥 Kraft</span><div class="pbar"><i style="width:${b.charge / CHARGE_MAX * 100}%"></i></div></div>`
+      + S.team.slice(0, teamSlots()).map(id => {
+        const p = powerOf(id, S.vasen[id].l);
+        return `<button class="pw ${ready ? 'ready' : ''}" data-act="power" data-arg="${id}" ${ready ? '' : 'disabled'} title="${esc(VB[id].n)}: ${esc(p.n)}. ${esc(p.text)}"><span class="pe">${VB[id].e}</span><span class="pt"><b>${p.ic} ${esc(p.n)}</b><small>${esc(p.text)}</small></span></button>`;
+      }).join('')
+      + (b.triple ? '<span class="tripletag">⚔️ ×3 laddat</span>' : '');
+  }
 }
 const comboMult = b => 1 + Math.min(1, Math.max(0, b.streak - 1) * .1 * (1 + (b.fx.comboRate || 0)));
 function nextQuestion() {
@@ -736,19 +802,23 @@ function nextQuestion() {
   let d = b.d;
   if (b.kind === 'tower') d = b.floor < 5 ? 1 : b.floor < 12 ? (Math.random() < .5 ? 1 : 2) : b.floor < 20 ? (Math.random() < .5 ? 2 : 3) : 3;
   else if (d > 1 && Math.random() < .25) d--;
-  const q = T[topic].gen(d); q.topic = topic; q.d = d;
-  b.q = q; b.locked = false; b.removed = [];
-  const tm = (T[topic].time * (d === 3 ? 1.15 : d === 1 ? .9 : 1) + (b.fx.time || 0)) * (1 - .12 * b.phase);
+  let q = T[topic].gen(d); q.topic = topic; q.d = d;
+  const rv = (S.revenge || []).filter(r => b.topics.includes(r.t) && r.after <= S.qCount && (!b.q || r.q.q !== b.q.q));
+  if (rv.length && Math.random() < .35) { const r = R.pick(rv); q = Object.assign({}, r.q, { opts: R.shuffle(r.q.opts), topic: r.t, d: r.d, revenge: true }); d = r.d; }
+  b.q = q; b.locked = false; b.removed = []; b.frozen = false;
+  const tm = (T[q.topic].time * (d === 3 ? 1.15 : d === 1 ? .9 : 1) + (b.fx.time || 0)) * (1 - .12 * b.phase);
   b.tMax = tm * 1000; b.tStart = performance.now(); b.zone = null;
   renderQ();
   const ch = $('#charge');
   if (ch && b.bd) { const atk = b.bd.attacks[b.phase]; ch.className = 'charge'; ch.innerHTML = `${esc(b.foe.n)} laddar <b>${esc(atk[0])}</b> ${atk[1]}`; }
   $('#face')?.classList.remove('charging');
+  if (q.revenge) tipOnce('revenge', '🔁 <b>Revansch!</b> Den här frågan svarade du fel på tidigare. Klara den nu för +10 guld.');
+  else if (q.write && b.answered >= 1) tipOnce('write', '✍ <b>Kan du svaret utan alternativ?</b> Tryck <b>Skriv svaret själv</b> så gör du dubbel skada.');
   startTimer();
 }
 function qcardHTML(q, extra = '') {
   const long = q.q.replace(/<[^>]+>/g, '').length > 70;
-  return `<div class="qcard"><div class="topic"><span>${esc(T[q.topic].name)}</span><span>${'◆'.repeat(q.d)}${'◇'.repeat(3 - q.d)}</span></div>
+  return `<div class="qcard ${q.revenge ? 'rev' : ''}"><div class="topic"><span>${q.revenge ? '<span class="revtag">🔁 Revansch</span> ' : ''}${esc(T[q.topic].name)}</span><span>${'◆'.repeat(q.d)}${'◇'.repeat(3 - q.d)}</span></div>
     <div class="qtext ${long ? 'long' : ''}">${q.q}</div>${q.fig || ''}${extra}</div>`;
 }
 function answersHTML(q, removed = [], write = false) {
@@ -770,6 +840,7 @@ function startTimer() { stopTimer(); timerRAF = requestAnimationFrame(tick); }
 function stopTimer() { if (timerRAF) cancelAnimationFrame(timerRAF); timerRAF = null; }
 function tick() {
   const b = G.b; if (!b || b.locked || G.screen !== 'battle') return;
+  if (b.frozen) b.tStart = performance.now() - b.frozenEl;
   const left = 1 - (performance.now() - b.tStart) / b.tMax;
   const bar = $('#tbar');
   const el = 1 - left;
@@ -795,6 +866,7 @@ async function answer(idx, timeout = false, typed) {
   const ok = !timeout && isRight(q, idx !== null ? q.opts[idx] : null, typed);
   recordAnswer(q.topic, ok);
   b.answered++; S.stats.answered++;
+  trackRevenge(q, ok);
   const btns = $$('.ans');
   if (ok) {
     b.correct++; b.streak++; b.best = Math.max(b.best, b.streak);
@@ -807,14 +879,18 @@ async function answer(idx, timeout = false, typed) {
     const crit = tier === 2;
     if (crit) { b.blixt++; S.stats.blixt = (S.stats.blixt || 0) + 1; }
     const speed = tier === 2 ? 2 + (b.fx.crit || 0) : tier === 1 ? 1.5 : 1;
-    const dmg = Math.round(24 * (1 + (b.fx.dmg || 0)) * comboMult(b) * speed * (wrote ? 2 : 1));
+    const dmg = Math.round(24 * (1 + (b.fx.dmg || 0)) * comboMult(b) * speed * (wrote ? 2 : 1) * (b.triple ? 3 : 1));
+    const wasTriple = b.triple; b.triple = false;
+    const wasFull = b.charge >= CHARGE_MAX;
+    b.charge = Math.min(CHARGE_MAX, b.charge + (crit ? 2 : 1));
+    if (q.revenge) { b.revengeWon++; addGold(10); }
     const ch = $('#charge'); if (ch) { ch.className = 'charge broken'; ch.textContent = crit ? 'Attacken krossad!' : 'Attacken avbruten!'; }
     $('#face')?.classList.remove('charging');
     SFX.play(crit ? 'zap' : 'right');
     await bolt(idx !== null ? btns[idx] : $('#wans'), $('#face'), wrote ? '✸' : '✦');
     SFX.play('hit');
     const face = $('#face');
-    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, (tier === 2 ? tx('crit', 'BLIXTSNABBT! ') : tier === 1 ? tx('fast', 'SNABBT! ') : '') + dmg, tier > 0); burst(r.left + r.width / 2, r.top + r.height / 2, crit ? 20 : tier ? 12 : 8); if (crit) { shake($('#foe')); face.classList.add('crit'); setTimeout(() => face.classList.remove('crit'), 300); } }
+    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, (wasTriple ? '×3! ' : '') + (tier === 2 ? tx('crit', 'BLIXTSNABBT! ') : tier === 1 ? tx('fast', 'SNABBT! ') : '') + dmg, tier > 0 || wasTriple); if (q.revenge) setTimeout(() => floatText(r.left + r.width / 2, r.top + 50, '🔁 +10 guld', false), 350); burst(r.left + r.width / 2, r.top + r.height / 2, crit ? 20 : tier ? 12 : 8); if (crit) { shake($('#foe')); face.classList.add('crit'); setTimeout(() => face.classList.remove('crit'), 300); } }
     const hb = $('#hpbar'); if (hb) { hb.classList.remove('jolt'); void hb.offsetWidth; hb.classList.add('jolt'); }
     foeFx(crit ? '💫' : '💢');
     if (b.bd && b.hp - dmg > 0 && (crit || Math.random() < .35)) bubble(R.pick(b.bd.lines.hit), 2800);
@@ -822,6 +898,9 @@ async function answer(idx, timeout = false, typed) {
     if (TH.announce && TH.announce[b.streak]) callout(TH.announce[b.streak], 'streak');
     if (b.fx.healEvery && b.streak % b.fx.healEvery === 0 && b.hearts < b.maxHearts) { b.hearts++; toast('💚 Ditt väsen läkte ett hjärta!'); }
     updateHUD();
+    if (crit) tipOnce('blixt', '⚡ <b>Blixtsnabbt!</b> Svarar du medan tidsmätaren är i den gula zonen gör du dubbel skada och får bonusguld.');
+    else if (b.streak === 2) tipOnce('combo', '🔥 <b>Combo!</b> Varje rätt svar i rad ökar skadan. Ett fel nollställer den.');
+    if (!wasFull && b.charge >= CHARGE_MAX) tipOnce('power', '💥 <b>Kraftmätaren är full!</b> Tryck på ett väsen i ditt lag för att använda dess specialkraft.');
     if (b.boss) {
       const ph = b.hp <= b.max / 3 ? 2 : b.hp <= b.max * 2 / 3 ? 1 : 0;
       if (ph > b.phase && b.hp > 0) await bossPhase(b, ph);
@@ -850,6 +929,57 @@ async function answer(idx, timeout = false, typed) {
   if (b.hearts <= 0 && b.revive > 0) { b.revive--; b.hearts = 1; setTimeout(() => banner('Skogsrået räddar dig!', 'Ett hjärta kvar'), 200); }
   updateHUD();
   showExplain(q, timeout, typed);
+  if (b.hints > 0) tipOnce('hint', `🏮 <b>Kör du fast?</b> Ledtråden tar bort två fel svar. Du har ${b.hints} kvar i den här striden.`);
+}
+/* ---- Revanschfrågor: fel svar kommer tillbaka några frågor senare ---- */
+function trackRevenge(q, ok) {
+  S.qCount = (S.qCount || 0) + 1;
+  S.revenge = S.revenge || [];
+  const i = S.revenge.findIndex(r => r.q.q === q.q && r.t === q.topic);
+  if (ok) {
+    if (q.revenge || i >= 0) { if (i >= 0) S.revenge.splice(i, 1); if (q.revenge) S.stats.revenge = (S.stats.revenge || 0) + 1; }
+    return;
+  }
+  if (i >= 0) { S.revenge[i].after = S.qCount + 4; return; }
+  const { q: text, a, val, opts, expl, write, fig } = q;
+  S.revenge.push({ t: q.topic, d: q.d, after: S.qCount + 3, q: JSON.parse(JSON.stringify({ q: text, a, val, opts, expl, write: !!write, fig: fig || '' })) });
+  if (S.revenge.length > 30) S.revenge.shift();
+}
+async function usePower(id) {
+  const b = G.b;
+  if (!b || b.locked || !b.q || b.charge < CHARGE_MAX || !S.team.slice(0, teamSlots()).includes(id)) return;
+  const p = powerOf(id, S.vasen[id].l);
+  b.charge = 0;
+  S.stats.powers = (S.stats.powers || 0) + 1;
+  SFX.play('zap');
+  callout(`${p.ic} ${p.n}!`, 'power');
+  const btn = document.querySelector(`.pw[data-arg="${id}"]`);
+  if (btn) { const r = btn.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 14); }
+  if (p.kind === 'heal') b.hearts = Math.min(b.maxHearts, b.hearts + p.v);
+  else if (p.kind === 'shield') b.shield += p.v;
+  else if (p.kind === 'freeze') { b.frozen = true; b.frozenEl = performance.now() - b.tStart; $('#tbar')?.classList.add('frozen'); }
+  else if (p.kind === 'fifty') { b.write = false; const wrong = b.q.opts.map((o, i) => i).filter(i => b.q.opts[i] !== b.q.a && !b.removed.includes(i)); b.removed.push(...R.shuffle(wrong).slice(0, 2)); renderQ(); }
+  else if (p.kind === 'triple') b.triple = true;
+  else if (p.kind === 'loot') { addGold(p.v); renderTop(); if (btn) { const r = btn.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, `+${p.v} guld`, false); } }
+  else if (p.kind === 'combo') { b.streak += p.v; b.best = Math.max(b.best, b.streak); S.stats.bestStreak = Math.max(S.stats.bestStreak, b.streak); }
+  else if (p.kind === 'smite') {
+    b.locked = true; stopTimer();
+    await bolt(btn, $('#face'), '💥');
+    const face = $('#face');
+    SFX.play('hit');
+    if (face) { face.classList.remove('hit'); void face.offsetWidth; face.classList.add('hit'); const r = face.getBoundingClientRect(); floatText(r.left + r.width / 2, r.top, `${p.n.toUpperCase()}! ${p.v}`, true); burst(r.left + r.width / 2, r.top + r.height / 2, 22); }
+    foeFx('💥');
+    b.hp -= p.v;
+    updateHUD();
+    if (b.boss) { const ph = b.hp <= b.max / 3 ? 2 : b.hp <= b.max * 2 / 3 ? 1 : 0; if (ph > b.phase && b.hp > 0) await bossPhase(b, ph); }
+    await wait(500);
+    if (b.hp <= 0) return foeDefeated();
+    if (G.b === b) nextQuestion();
+    save();
+    return;
+  }
+  updateHUD();
+  save();
 }
 function explainHTML(q, timeout, typed, good = false) {
   return `<div class="explain ${good ? 'good' : ''}">
@@ -1427,6 +1557,7 @@ function vasenCard(v) {
     <span class="lv">${'★'.repeat(o.l)}${'☆'.repeat(5 - o.l)}</span>
     ${o.l < 5 ? `<div class="shard" title="${o.s} / ${o.l} dubbletter till nästa nivå"><i style="width:${o.s / o.l * 100}%"></i></div>` : '<small class="muted">Maxnivå</small>'}
     <span class="ab">${fxText(v.fx(o.l))}</span>
+    ${powerLine(v.id, o.l)}
     <span class="ab" style="font-style:italic">${esc(v.lore)}</span>
     <button class="btn small ${inTeam ? 'ghost' : 'primary'}" data-act="team" data-arg="${v.id}">${inTeam ? 'Ta ur laget' : 'Till laget'}</button></div>`;
 }
@@ -1470,7 +1601,7 @@ function openChest(type) {
     if (v.r === 'l' || v.r === 'e') confetti(v.r === 'l' ? 160 : 80);
     ov.innerHTML = `<div class="inner c-${v.r}"><div class="rays"></div>
       <div class="card c-${v.r} ${v.r === 'l' ? 'l' : ''}">${res.isNew ? '<span class="tag">NY!</span>' : ''}<span class="em">${v.e}</span><span class="nm">${v.n}</span><span class="rar">${RAR[v.r]}</span>
-      <span class="ab">${fxText(v.fx(S.vasen[id].l))}</span><span class="ab" style="font-style:italic">${esc(v.lore)}</span></div>
+      <span class="ab">${fxText(v.fx(S.vasen[id].l))}</span>${powerLine(id, S.vasen[id].l)}<span class="ab" style="font-style:italic">${esc(v.lore)}</span></div>
       <p style="margin:0;font-weight:600">${res.isNew ? 'Ett nytt väsen till Väsenboken!' : res.maxed ? `Redan på maxnivå: +${res.gold} guld` : res.leveled ? `Dubblett! ${v.n} nådde nivå ${res.l}!` : `Dubblett! ${S.vasen[id].s} / ${S.vasen[id].l} mot nästa nivå`}</p>
       <div class="row" style="justify-content:center">${res.isNew && !S.team.includes(id) ? `<button class="btn primary" data-close="team" data-id="${id}">Sätt i laget</button>` : ''}<button class="btn ${res.isNew && !S.team.includes(id) ? 'ghost' : 'primary'}" data-close="ok">Fortsätt</button></div></div>`;
     ov.addEventListener('click', e => {
@@ -1497,6 +1628,7 @@ SCREENS.practice = () => {
     <button class="back" data-act="hub">← Byn</button>
     <div class="screenhead"><div><div class="eyebrow">Ingen tidspress · inga hjärtan</div><h2>Övningsgläntan</h2></div>
       <div class="seg" role="group" aria-label="Svårighet">${[1, 2, 3].map(d => `<button class="${(G.pracD || 1) === d ? 'sel' : ''}" data-act="pracd" data-arg="${d}">${['Lätt', 'Mellan', 'Svår'][d - 1]}</button>`).join('')}</div></div>
+    ${(S.revenge || []).length ? `<div class="panel row" style="justify-content:space-between"><div><b>🔁 Revanschfrågor</b><p class="muted" style="margin:2px 0 0">${S.revenge.length} ${S.revenge.length === 1 ? 'fråga' : 'frågor'} du svarat fel på väntar. Varje klarad revansch ger +10 guld.</p></div><button class="btn gold" data-act="pracrevenge">Ta revansch</button></div>` : ''}
     <p class="muted" style="margin:0;max-width:62ch">Välj ett område. Medaljen visar hur säker du är: 🥉 brons, 🥈 silver och 🥇 guld bygger på dina senaste 20 svar, i strider och här.</p>
     ${[7, 8, 9].map(g => `<div class="stack" style="gap:8px"><h3>Åk ${g}</h3><div class="topics">${Object.values(T).filter(t => t.grade === g).map(t => {
       const m = S.mastery[t.id], acc = masteryAcc(t.id), med = masteryMedal(S, t.id);
@@ -1506,14 +1638,20 @@ SCREENS.practice = () => {
 };
 function practiceNext() {
   const P = G.prac;
-  const q = T[P.topic].gen(P.d); q.topic = P.topic; q.d = P.d;
+  let q;
+  if (P.revenge) {
+    const list = S.revenge || [];
+    if (!list.length || P.n >= P.total) { G.prac = null; toast(list.length ? `🔁 Bra jobbat! ${list.length} revanscher finns kvar till nästa gång.` : '🔁 Alla revanscher klara!'); render(); return; }
+    const r = list[0];
+    q = Object.assign({}, r.q, { opts: R.shuffle(r.q.opts), topic: r.t, d: r.d, revenge: true });
+  } else { q = T[P.topic].gen(P.d); q.topic = P.topic; q.d = P.d; }
   P.q = q; P.done = false; P.write = P.write && q.write;
   render();
 }
 function practiceQ() {
   const P = G.prac, q = P.q;
   return `<section class="stack">
-    <div class="row" style="justify-content:space-between"><button class="back" data-act="pracexit">← Alla områden</button><span class="muted">Rätt: ${P.right} / ${P.n}</span></div>
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="pracexit">← Alla områden</button><span class="muted">${P.revenge ? `Revansch ${Math.min(P.n + (P.done ? 0 : 1), P.total)} av ${P.total} · ` : ''}Rätt: ${P.right} / ${P.n}</span></div>
     ${qcardHTML(q)}
     ${P.done ? explainHTML(q, false, P.typed, P.ok) + `<button class="btn primary" data-act="pracnext" id="pracnext">Nästa fråga</button>`
       : answersHTML(q, [], P.write) + (q.write ? `<div class="tools"><button class="toggle ${P.write ? 'on' : ''}" data-act="pracwrite">✍ Skriv svaret själv</button></div>` : '')}
@@ -1524,9 +1662,11 @@ function practiceAnswer(idx, typed) {
   const P = G.prac; if (!P || P.done) return;
   const q = P.q;
   const ok = isRight(q, idx !== null ? q.opts[idx] : null, typed);
-  P.n++; if (ok) { P.right++; quest('practice'); quest('correct'); quest('topic', 1, q.topic); S.stats.correct++; addXP(4); }
+  P.n++; if (ok) { P.right++; quest('practice'); quest('correct'); quest('topic', 1, q.topic); S.stats.correct++; addXP(4); if (q.revenge) addGold(10); }
   S.stats.answered++;
   recordAnswer(q.topic, ok);
+  if (P.revenge && !ok) { const i = S.revenge.findIndex(r => r.q.q === q.q); if (i >= 0) S.revenge.push(S.revenge.splice(i, 1)[0]); }
+  trackRevenge(q, ok);
   P.ok = ok; P.typed = typed; P.done = true;
   SFX.play(ok ? 'right' : 'wrong');
   checkAch(); save();
@@ -1547,6 +1687,7 @@ const MODAL_ACT = {
   resume: () => { if (G.b && !G.b.locked) { G.b.tStart += performance.now() - (G.pausedAt || performance.now()); startTimer(); } },
   balintro: () => { S.flags.balIntro = true; save(); },
   reset: () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } S = null; G.setup = { grade: 7, starter: null, name: '' }; go('setup'); },
+  battleintro: () => { if (G.introDone) { const f = G.introDone; G.introDone = null; f(); } },
   close: () => { }
 };
 function showLoginBonus() {
@@ -1623,6 +1764,9 @@ const ACT = {
   balop: a => balOp(Number(a)),
   balundo: () => balUndo(),
   baltip: () => balTip(),
+  power: a => usePower(a),
+  tipok: () => showNextTip(),
+  pracrevenge: () => { G.prac = { revenge: true, total: Math.min(10, (S.revenge || []).length), d: 1, n: 0, right: 0, write: false }; G.screen = 'practice'; practiceNext(); window.scrollTo({ top: 0 }); },
   balintro: () => balIntro(),
   step: a => { const [id, d] = a.split('|'); canStep(id, Number(d)); },
   fire: () => canFire(),
