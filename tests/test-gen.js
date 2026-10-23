@@ -1,5 +1,5 @@
 // Slumpar fram tusentals frågor per område och nivå och kontrollerar att varje fråga går att svara rätt på.
-const { T, parseAnswer, shopRound, SHOP_PLAN, SHOP_ITEMS, R } = require('../src/gen.js');
+const { T, parseAnswer, shopRound, SHOP_PLAN, SHOP_ITEMS, R, chestRound, chestAsk, CHEST_PLAN } = require('../src/gen.js');
 
 const ROUNDS = 400;
 const strip = h => h
@@ -52,13 +52,32 @@ for (const g of [7, 8, 9]) for (const kind of new Set(SHOP_PLAN[g])) for (let i 
   if (bad.length) failures.push(`butik ${kind}: ${bad.join('; ')} :: ${strip(r.q)} => ${strip(r.a)} [${r.opts.map(strip).join(' / ')}]`);
 }
 checked += shopChecked;
+// Sannolikhetskistorna: en tydligt bästa kista och en följdfråga per kista som går att besvara
+for (const g of [7, 8, 9]) for (const mode of new Set(CHEST_PLAN[g])) for (let i = 0; i < ROUNDS; i++) {
+  const rd = chestRound(g, mode);
+  const sorted = rd.p.slice().sort((a, b) => b - a);
+  const bad = [];
+  if (rd.p[rd.best] !== sorted[0] || sorted[0] - sorted[1] < .03) bad.push('ingen tydligt bästa kista');
+  if (rd.chests.some(c => c.j < 1 || c.s < 1)) bad.push('kista utan juvel eller sten');
+  for (let k = 0; k < 3; k++) {
+    const q = chestAsk(rd, k);
+    checked++;
+    const all = [q.q, q.a, ...q.opts, ...q.expl].join(' | ');
+    if (/NaN|undefined|Infinity|null|\[object/.test(all)) bad.push('ogiltig text');
+    if (q.opts.length !== 4) bad.push(`${q.opts.length} alternativ`);
+    if (new Set(q.opts.map(strip)).size !== q.opts.length) bad.push('dubbla alternativ');
+    if (!q.opts.includes(q.a)) bad.push('rätt svar saknas');
+    for (const o of q.opts) if (o !== q.a) { const v = parseAnswer(strip(o)); if (v !== null && Math.abs(v - q.val) < 1e-9) bad.push(`felalternativ ${strip(o)} är lika med svaret`); }
+  }
+  if (bad.length) failures.push(`kistor ${mode}: ${[...new Set(bad)].join('; ')} :: ${rd.chests.map(c => c.j + '/' + (c.j + c.s)).join(' ')}`);
+}
 if (process.argv.includes('--sample')) {
   for (const g of [7, 8, 9]) for (const kind of new Set(SHOP_PLAN[g])) { const r = shopRound(g, kind, R.pick(SHOP_ITEMS)); console.log(`butik ${kind}`.padEnd(16), strip(r.q), '=>', strip(r.a), `| betala ${r.paid}, fel ${r.pen}`); }
 }
 if (process.argv.includes('--sample')) {
   for (const id in T) for (let d = 1; d <= 3; d++) { const q = T[id].gen(d); console.log(`${id} d${d}`.padEnd(10), strip(q.q), '=>', strip(q.a)); }
 }
-console.log(`${checked} frågor kontrollerade i ${Object.keys(T).length} områden och Procentbutiken.`);
+console.log(`${checked} frågor kontrollerade i ${Object.keys(T).length} områden, Procentbutiken och Sannolikhetskistorna.`);
 if (failures.length) {
   console.log(`${failures.length} fel:`);
   failures.slice(0, 30).forEach(f => console.log('  ' + f));

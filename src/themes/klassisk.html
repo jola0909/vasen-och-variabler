@@ -332,6 +332,30 @@ h3 { font-size: 22px; }
 .shopnote b { color: var(--berry); }
 @media (max-width: 480px) { .offers { grid-template-columns: 1fr; } .offer .oe { font-size: 44px; } }
 
+/* ---------- Sannolikhetskistorna ---------- */
+.loot { display: flex; gap: 16px; flex-wrap: wrap; font-weight: 600; color: var(--mute); }
+.loot b { color: var(--ember); font-variant-numeric: tabular-nums; }
+.tchests { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tchest { position: relative; display: grid; gap: 6px; justify-items: center; align-content: start; padding: 26px 8px 12px; border-radius: 14px 14px 10px 10px; border: 3px solid #8a5a2b; background: linear-gradient(180deg, #6b4423 0 22px, #f0d9a8 22px 26px, #4e3119 26px 30px, #3a2615 30px); box-shadow: 0 6px 0 rgba(0, 0, 0, .35); transition: transform .1s; }
+.tchest:not([disabled]):hover { transform: translateY(-3px); border-color: var(--ember); }
+.tchest .tl { position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-family: var(--display); font-size: 18px; color: #f6e2b8; }
+.tchest .items { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; font-size: 20px; line-height: 1.1; min-height: 48px; padding-top: 6px; }
+.tchest .items i { font-style: normal; }
+.tchest .cnt { font-size: 12px; font-weight: 600; color: #f6e2b8; }
+.tchest .ptxt { font-size: 15px; font-weight: 700; color: var(--birch); background: rgba(0, 0, 0, .35); border-radius: 8px; padding: 2px 8px; }
+.tchest[disabled] { opacity: .65; cursor: default; }
+.tchest.picked { opacity: 1; border-color: var(--frost); box-shadow: 0 0 0 4px rgba(124, 199, 255, .35), 0 6px 0 rgba(0, 0, 0, .35); }
+.tchest.best { opacity: 1; border-color: var(--aurora); }
+.tchest .besttag { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); background: var(--aurora); color: var(--aurora-ink); font-size: 11px; font-weight: 700; border-radius: 6px; padding: 1px 7px; white-space: nowrap; }
+.drawn { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: center; background: var(--pine); border: 1px solid var(--line); border-left: 4px solid var(--mute); border-radius: 12px; padding: 10px 14px; }
+.drawn.win { border-left-color: var(--ember); }
+.drawn .dr { font-size: 32px; display: flex; gap: 6px; }
+.drawn .dr i { font-style: normal; animation: drawPop .5s backwards cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes drawPop { from { transform: scale(0) rotate(-40deg); opacity: 0; } }
+.drawn b { color: var(--ember); }
+.drawn small { grid-column: 1 / -1; color: var(--mute); }
+@media (max-width: 480px) { .tchest .items { font-size: 16px; } .tchest .ptxt { font-size: 12px; } }
+
 .shake { animation: shake .4s; }
 @keyframes shake { 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(4px); } }
 .flash { position: fixed; inset: 0; pointer-events: none; z-index: 50; background: rgba(236, 86, 112, .25); animation: fade .45s forwards; }

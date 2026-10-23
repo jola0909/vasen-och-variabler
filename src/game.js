@@ -110,7 +110,7 @@ const WORLDS = [
     ] },
   { id: 2, n: 'Fjällvidderna', grade: 8, col: '#7cc7ff', boss: { n: 'Bergakungen', e: '👑', v: 'bergakung', title: 'Härskaren i berget', forms: ['👑', '👹', '🗻'],
       attacks: [['Silverregnet', '🪙'], ['Trollnäven', '👊'], ['Lavinen', '❄️']],
-      lines: { intro: 'Ingen rör mitt silver! Jag är den mäktigaste kungen i hela berget!', hit: ['Mitt berg skakar!', 'Omöjligt!', 'Grmpf! Min krona sitter snett!'], laugh: ['HAHA! Jag är mäktigast i hela fjället!', 'Mitt silver är säkert!', 'Ingen är starkare än berget!'], phase: ['Nu vaknar trollet i mig!', 'JAG ÄR BERGET!'], defeat: 'Mitt silver… är ditt…' } }, troll: 'Istrollet', merchant: { n: 'Fjällkrämaren', e: '🧔' },
+      lines: { intro: 'Ingen rör mitt silver! Jag är den mäktigaste kungen i hela berget!', hit: ['Mitt berg skakar!', 'Omöjligt!', 'Grmpf! Min krona sitter snett!'], laugh: ['HAHA! Jag är mäktigast i hela fjället!', 'Mitt silver är säkert!', 'Ingen är starkare än berget!'], phase: ['Nu vaknar trollet i mig!', 'JAG ÄR BERGET!'], defeat: 'Mitt silver… är ditt…' } }, troll: 'Istrollet', merchant: { n: 'Fjällkrämaren', e: '🧔' }, keeper: { n: 'Skattväktaren', e: '🐲' },
     intro: 'Kalla vindar sveper över kalfjället. Potenser, förändringsfaktor, Pythagoras och sannolikhet väntar.',
     foes: [['Fjällörnen', '🦅'], ['Grottbjörnen', '🐻'], ['Myskoxen', '🐂'], ['Bergsväduren', '🐏'], ['Isvätten', '🧊'], ['Järven', '🦡']],
     levels: [
@@ -118,16 +118,16 @@ const WORLDS = [
       { n: 'Isgrottan', t: 'battle', topics: ['ekv2', 'utt'], d: 1 },
       { n: 'Kartstugan', t: 'battle', topics: ['pyth', 'skala'], d: 1 },
       { n: 'Isvågen', t: 'balance' },
-      { n: 'Tärningsklippan', t: 'battle', topics: ['sann', 'cirk'], d: 2 },
+      { n: 'Kistkammaren', t: 'chest' },
       { n: 'Fjällmarknaden', t: 'shop' },
       { n: 'Lavinkastet', t: 'cannon' },
-      { n: 'Glaciärkanten', t: 'battle', topics: ['utt', 'skala', 'ekv2'], d: 2 },
+      { n: 'Glaciärkanten', t: 'battle', topics: ['utt', 'skala', 'ekv2', 'cirk'], d: 2 },
       { n: 'Stormtoppen', t: 'battle', elite: true, topics: ['pot', 'ff', 'ekv2', 'pyth', 'sann', 'cirk'], d: 3 },
       { n: 'Bergakungens sal', t: 'boss', topics: ['pot', 'ff', 'ekv2', 'utt', 'pyth', 'sann', 'skala', 'cirk'], d: 3 }
     ] },
   { id: 3, n: 'Dimsjön', grade: 9, col: '#b48cff', boss: { n: 'Näcken', e: '🎻', v: 'nacken', title: 'Forsens spelman', forms: ['🎻', '🐴', '🌊'],
       attacks: [['Fiolslingan', '🎵'], ['Bäckahästens spark', '🐴'], ['Forsvirveln', '🌊']],
-      lines: { intro: 'Lyssna på min fiol! Ingen i hela världen spelar vackrare än jag!', hit: ['En sträng gick av!', 'Falsk ton!', 'Aj, min fiol!'], laugh: ['Tralala! Min musik är oslagbar!', 'Forsen lyder bara mig!', 'Jag är forsens mästare!'], phase: ['Nu tar jag hästens skepnad!', 'Se forsens hela kraft!'], defeat: 'Min fiol… tystnar…' } }, troll: 'Dimtrollet', merchant: { n: 'Hamnhökaren', e: '🧓' },
+      lines: { intro: 'Lyssna på min fiol! Ingen i hela världen spelar vackrare än jag!', hit: ['En sträng gick av!', 'Falsk ton!', 'Aj, min fiol!'], laugh: ['Tralala! Min musik är oslagbar!', 'Forsen lyder bara mig!', 'Jag är forsens mästare!'], phase: ['Nu tar jag hästens skepnad!', 'Se forsens hela kraft!'], defeat: 'Min fiol… tystnar…' } }, troll: 'Dimtrollet', merchant: { n: 'Hamnhökaren', e: '🧓' }, keeper: { n: 'Vrakvakten', e: '🐙' },
     intro: 'Dimman ligger tung över vattnet och någon spelar fiol i forsen. Funktioner, ekvationssystem och sannolikhet i flera steg.',
     foes: [['Träskpaddan', '🐸'], ['Djupbläckfisken', '🦑'], ['Sjöormen', '🐍'], ['Gäddkungen', '🐟'], ['Klokräftan', '🦀'], ['Dimslöjan', '🌫️']],
     levels: [
@@ -135,8 +135,8 @@ const WORLDS = [
       { n: 'Vassen', t: 'battle', topics: ['ekvsys', 'rot'], d: 1 },
       { n: 'Fyndhamnen', t: 'shop' },
       { n: 'Dimvågen', t: 'balance' },
-      { n: 'Näckrosbladen', t: 'battle', topics: ['sann2', 'kvad'], d: 2 },
-      { n: 'Speglingen', t: 'battle', topics: ['likf', 'linje', 'rot'], d: 2 },
+      { n: 'Vrakets kistor', t: 'chest' },
+      { n: 'Speglingen', t: 'battle', topics: ['likf', 'linje', 'rot', 'kvad'], d: 2 },
       { n: 'Ljuskastet', t: 'cannon' },
       { n: 'Djupet', t: 'battle', topics: ['fun', 'proc3', 'ekvsys', 'tiop'], d: 2 },
       { n: 'Virvelströmmen', t: 'battle', elite: true, topics: ['linje', 'ekvsys', 'kvad', 'sann2', 'tiop', 'likf'], d: 3 },
@@ -506,6 +506,7 @@ function levelIcon(W, i) {
   if (L.t === 'balance') return '⚖️';
   if (L.t === 'cannon') return '🎯';
   if (L.t === 'shop') return '🛒';
+  if (L.t === 'chest') return '💎';
   return foeFor(W, i).e;
 }
 
@@ -618,6 +619,7 @@ SCREENS.hub = () => {
 function levelBlurb(W, i) {
   const L = W.levels[i];
   if (L.t === 'balance') return `${W.troll} vaktar bron med en våg. Gör samma sak på båda sidor tills x står ensamt.`;
+  if (L.t === 'chest') return `${W.keeper.n} vaktar tre kistor med juveler och stenar. Välj kistan med bäst chans och räkna ut sannolikheten.`;
   if (L.t === 'shop') return `${W.merchant.n} säljer utrustning med rabatt. Räkna ut rätt pris så räcker pengarna längre, och det som blir kvar blir guld.`;
   if (L.t === 'cannon') return W.id === 1 ? 'Väsen gömmer sig i koordinatsystemet. Ange rätt koordinater för att träffa dem.' : W.id === 2 ? 'Rikta runstrålen genom origo med rätt lutning k.' : 'Hitta linjen y = kx + m som träffar flera väsen på en gång.';
   const names = L.topics.slice(0, 3).map(t => T[t].name.toLowerCase()).join(', ');
@@ -666,6 +668,7 @@ function startLevel(w, i) {
   if (L.t === 'balance') return startBalance(w, i);
   if (L.t === 'cannon') return startCannon(w, i);
   if (L.t === 'shop') return startShop(w, i);
+  if (L.t === 'chest') return startChest(w, i);
   const boss = L.t === 'boss';
   const foe = boss ? { n: W.boss.n, e: W.boss.e } : L.elite ? { n: L.n, e: W.foes[0][1] } : foeFor(W, i);
   startBattle({ kind: 'level', w, i, topics: L.topics, d: L.d, boss, elite: !!L.elite, foe, hp: boss ? 330 : L.elite ? 160 : 110 });
@@ -1050,11 +1053,11 @@ function finishLevel(win, special) {
   const kind = L.t === 'boss' ? 'boss' : L.elite ? 'elite' : 'normal';
   const firstClear = win && !prev;
   const blixt = special ? 0 : (b.blixt || 0);
-  const shopBonus = (special && special.bonus) || 0;
-  const rw = rewardFor(kind, correct, win, (firstClear ? 40 : 0) + blixt * 3 + shopBonus);
+  const bonus = (special && special.bonus) || 0;
+  const rw = rewardFor(kind, correct, win, (firstClear ? 40 : 0) + blixt * 3 + bonus);
   addGold(rw.gold);
   const xpRes = addXP(rw.xp);
-  const res = { win, stars, prev, gold: rw.gold, xp: rw.xp, correct, answered, blixt, shopBonus, shopLeft: special && special.left, best: special ? special.best : b.best, w, i, unlocks: [], weak: null, label: special && special.label };
+  const res = { win, stars, prev, gold: rw.gold, xp: rw.xp, correct, answered, blixt, bonus, bonusText: special && special.bonusText, best: special ? special.best : b.best, w, i, unlocks: [], weak: null, label: special && special.label };
   if (win) {
     S.stars[key] = Math.max(prev, stars);
     S.stats.wins++; quest('win'); if (stars === 3) quest('three');
@@ -1072,7 +1075,7 @@ function finishLevel(win, special) {
   res.levelUps = xpRes.ups;
   checkAch();
   save();
-  G.b = null; G.bal = null; G.can = null; G.shop = null;
+  G.b = null; G.bal = null; G.can = null; G.shop = null; G.chest = null;
   G.result = res;
   go('result');
   if (win) { setTimeout(() => confetti(res.bossFirst ? 140 : 60), 150); for (let k = 0; k < stars; k++) setTimeout(() => SFX.play('star'), 300 + k * 260); }
@@ -1098,7 +1101,7 @@ SCREENS.result = () => {
       <div class="reward"><b>${r.correct} / ${r.answered}</b><small>${r.label || 'rätt svar'}</small></div>
       ${r.best !== undefined && r.best !== null ? `<div class="reward"><b>${r.best}</b><small>bästa combo</small></div>` : ''}
       ${r.blixt ? `<div class="reward"><b>⚡ ${r.blixt}</b><small>blixtsnabba · +${r.blixt * 3} guld</small></div>` : ''}
-      ${r.shopBonus ? `<div class="reward"><b>💰 +${r.shopBonus}</b><small>guld från plånboken (${fmt(r.shopLeft)} kr kvar)</small></div>` : ''}
+      ${r.bonus ? `<div class="reward"><b>+${r.bonus}</b><small>${r.bonusText || 'bonusguld'}</small></div>` : ''}
     </div>
     ${TH.rankOnResult ? `<div class="rankbar"><span class="badge" data-tier="${tierFor(S.level)}">${S.level}</span><div><b>${esc(titleFor(S.level))}</b><small>${S.xp} / ${xpFor(S.level)} XP till nästa nivå</small><div class="xp"><i style="width:${Math.round(S.xp / xpFor(S.level) * 100)}%"></i></div></div></div>` : ''}
     ${r.win && !r.prev ? '<p class="muted" style="margin:0">Första gången du klarar nivån: +40 guld extra.</p>' : ''}
@@ -1202,7 +1205,131 @@ function shopNext() {
   Sh.k++; Sh.last = null;
   if (Sh.k >= n) {
     const bonus = Math.round(Sh.budget / 10);
-    return finishLevel(true, { w: Sh.w, i: Sh.i, stars: Sh.correct === n ? 3 : Sh.correct >= n - 1 ? 2 : 1, correct: Sh.correct, answered: n, best: null, label: 'rätta köp', bonus, left: Sh.budget });
+    return finishLevel(true, { w: Sh.w, i: Sh.i, stars: Sh.correct === n ? 3 : Sh.correct >= n - 1 ? 2 : 1, correct: Sh.correct, answered: n, best: null, label: 'rätta köp', bonus, bonusText: `guld från plånboken (${fmt(Sh.budget)} kr kvar)` });
+  }
+  render();
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+}
+
+/* ---------- Sannolikhetskistorna ---------- */
+const CHEST_LINES = {
+  intro: ['Mina kistor är fulla av juveler… och stenar! Hehe!', 'Ingen vaktar skatter bättre än jag!', 'Välj klokt. Eller inte. Jag tjänar på båda!'],
+  smart: ['Hmpf! Ett klokt val.', 'Grr… du hittade den bästa kistan!', 'Du räknar som en riktig skattjägare!'],
+  other: ['Hehe! Mina stenar är vackra också!', 'Den kistan var inte den bästa…', 'Mina skatter ligger säkert!']
+};
+function startChest(w, i) {
+  const W = WORLDS[w - 1];
+  const plan = CHEST_PLAN[W.grade];
+  G.chest = { w, i, rounds: plan.map(m => chestRound(W.grade, m)), k: 0, phase: 'pick', points: 0, smart: 0, jewels: 0, m: W.keeper };
+  G.screen = 'chest'; render();
+  if (!S.flags.chestIntro) chestIntro();
+  setTimeout(() => bubble(R.pick(CHEST_LINES.intro), 3600), 400);
+}
+function chestIntro() {
+  const C = G.chest;
+  const nine = C && WORLDS[C.w - 1].grade === 9;
+  modal(`<div class="eyebrow">Ny bana</div><h2>Sannolikhetskistorna</h2>
+    <ul class="rules" style="text-align:left">
+      <li>Varje kista innehåller ${JEWEL} juveler och ${STONE} stenar. Du drar på måfå ur den kista du väljer.</li>
+      <li><b>Välj kistan med störst chans</b> att ge juveler. Flest juveler är inte alltid bäst. Det är <b>andelen</b> som räknas.</li>
+      ${nine ? `<li>Ibland drar du <b>två saker utan att lägga tillbaka</b>. Då ändras chansen efter första dragningen.</li>` : ''}
+      <li>Sedan räknar du ut chansen för kistan du valde.</li>
+      <li>Juvelerna du drar blir guld, och stjärnorna får du för kloka val och rätta svar. Turen påverkar alltså bara guldet.</li>
+    </ul>
+    <button class="btn primary" data-m="chestintro">Öppna kistorna</button>`);
+}
+function chestPText(rd, i) {
+  const { j, s } = rd.chests[i], t = j + s;
+  const f = rd.mode === 'two' ? frac(j * (j - 1), t * (t - 1)) : rd.mode === 'atleast' ? frac(t * (t - 1) - s * (s - 1), t * (t - 1)) : frac(j, t);
+  return `${f} ≈ ${Math.round(rd.p[i] * 100)} %`;
+}
+SCREENS.chest = () => {
+  const C = G.chest, rd = C.rounds[C.k], n = C.rounds.length, L = C.last;
+  const picked = C.phase !== 'pick';
+  const chests = rd.chests.map((c, i) => {
+    const items = Array(c.j).fill(JEWEL).concat(Array(c.s).fill(STONE)).map(x => `<i>${x}</i>`).join('');
+    const cls = [picked && i === C.pick ? 'picked' : '', picked && i === rd.best ? 'best' : ''].join(' ');
+    return `<button class="tchest ${cls}" data-act="chestpick" data-arg="${i}" ${picked ? 'disabled' : ''} aria-label="Kista ${'ABC'[i]}: ${c.j} juveler och ${c.s} stenar">
+      ${picked && i === rd.best ? '<span class="besttag">Bäst chans</span>' : ''}
+      <span class="tl">${'ABC'[i]}</span><span class="items">${items}</span><span class="cnt">${c.j} ${JEWEL} · ${c.s} ${STONE}</span>
+      ${C.phase === 'done' ? `<span class="ptxt">${chestPText(rd, i)}</span>` : ''}</button>`;
+  }).join('');
+  let below = '';
+  if (picked) {
+    const smart = C.pick === rd.best;
+    below += `<div class="drawn ${C.gain ? 'win' : ''}"><span>Du drar:</span><span class="dr">${C.drawn.map((x, k) => `<i style="animation-delay:${k * .35}s">${x}</i>`).join('')}</span>
+      <b>${C.gain ? `+${C.gain} ${JEWEL}` : 'Bara sten den här gången'}</b><small>${smart ? 'Klokt val! +1 poäng' : `Kista ${'ABC'[rd.best]} hade bäst chans.`}</small></div>`;
+  }
+  if (C.phase === 'ask' || C.phase === 'done') {
+    below += `<div class="qcard"><div class="topic"><span>Följdfråga</span><span>${esc(T[rd.topic].name)}</span></div><div class="qtext">${C.ask.q}</div></div>
+      <div class="answers">${C.ask.opts.map((o, j) => { const cls = L ? (o === C.ask.a ? 'right' : j === L.idx ? 'wrong' : 'gone') : ''; return `<button class="ans ${cls}" data-act="chestans" data-arg="${j}" ${L ? 'disabled' : ''}><kbd>${j + 1}</kbd>${o}</button>`; }).join('')}</div>`;
+  }
+  if (C.phase === 'done') {
+    below += (L.ok ? `<div class="explain good"><div class="eyebrow">Rätt räknat! +1 poäng</div><div>Sannolikheten är <span class="right">${C.ask.a}</span>.</div></div>` : explainHTML(C.ask, false, undefined))
+      + `<button class="btn primary" data-act="chestnext" id="chestnext">${C.k + 1 < n ? 'Nästa kista' : 'Räkna skatten'}</button>`;
+  }
+  return `<section class="arena chestlevel" id="arena">
+    <div class="row" style="justify-content:space-between"><button class="back" data-act="quitask">← Lämna kammaren</button><span class="muted" style="font-size:13px">${WORLDS[C.w - 1].n} · nivå ${C.i + 1}</span></div>
+    <div class="foe merchant keeper" id="foe">
+      <div class="foefx" id="foefx" aria-hidden="true"></div>
+      <div class="face" id="face">${C.m.e}</div>
+      <div class="stack" style="gap:6px">
+        <div class="row" style="justify-content:space-between"><b id="foename">${esc(C.m.n)}</b><button class="btn small ghost" data-act="chesthelp">❓ Hur gör man?</button></div>
+        <div class="bubble" id="bubble" hidden></div>
+        <div class="loot"><span>${JEWEL} <b>${C.jewels}</b> juveler</span><span>⭐ <b>${C.points}</b> av ${n * 2} poäng</span></div>
+        <div class="shoplist">${C.rounds.map((x, j) => `<span class="${j < C.k || (j === C.k && C.phase === 'done') ? 'got' : ''} ${j === C.k ? 'now' : ''}">${JEWEL}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="qcard"><div class="topic"><span>${esc(WORLDS[C.w - 1].levels[C.i].n)} · kista ${C.k + 1} av ${n}</span><span>${esc(T[rd.topic].name)}</span></div>
+      <div class="qtext long">${CHEST_PICK_Q[rd.mode]}</div></div>
+    <div class="tchests">${chests}</div>
+    ${below}
+  </section>`;
+};
+AFTER.chest = () => { const C = G.chest; if (C && C.phase !== 'pick') setTimeout(() => ($('#chestnext') || $('.chestlevel .answers'))?.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }), 80); };
+function chestDraw(c, n) {
+  const bag = Array(c.j).fill(JEWEL).concat(Array(c.s).fill(STONE));
+  const out = [];
+  for (let k = 0; k < n; k++) out.push(bag.splice(Math.floor(Math.random() * bag.length), 1)[0]);
+  return out;
+}
+async function chestPick(i) {
+  const C = G.chest; if (!C || C.phase !== 'pick') return;
+  const rd = C.rounds[C.k];
+  C.pick = i; C.phase = 'draw';
+  const smart = i === rd.best;
+  if (smart) { C.points++; C.smart++; }
+  C.drawn = chestDraw(rd.chests[i], rd.mode === 'one' || rd.mode === 'notj' ? 1 : 2);
+  C.gain = C.drawn.filter(x => x === JEWEL).length;
+  C.jewels += C.gain;
+  SFX.play(C.gain ? 'chest' : 'click');
+  render();
+  foeFx(smart ? '😤' : '😏');
+  bubble(R.pick(smart ? CHEST_LINES.smart : CHEST_LINES.other), 3000);
+  await wait(1100);
+  if (G.chest !== C) return;
+  C.ask = chestAsk(rd, i); C.phase = 'ask'; C.last = null;
+  render();
+}
+function chestAnswer(idx) {
+  const C = G.chest; if (!C || C.phase !== 'ask') return;
+  const rd = C.rounds[C.k];
+  const ok = C.ask.opts[idx] === C.ask.a;
+  recordAnswer(rd.topic, ok);
+  S.stats.answered++;
+  if (ok) { C.points++; S.stats.correct++; quest('correct'); quest('topic', 1, rd.topic); SFX.play('right'); }
+  else SFX.play('wrong');
+  C.phase = 'done'; C.last = { ok, idx };
+  render();
+  save();
+}
+function chestNext() {
+  const C = G.chest; if (!C || C.phase !== 'done') return;
+  const n = C.rounds.length;
+  C.k++; C.phase = 'pick'; C.last = null;
+  if (C.k >= n) {
+    const max = n * 2, bonus = C.jewels * 8;
+    return finishLevel(true, { w: C.w, i: C.i, stars: C.points >= max ? 3 : C.points >= max - 2 ? 2 : 1, correct: C.points, answered: max, best: null, label: 'poäng för val och svar', bonus, bonusText: `guld från ${C.jewels} juveler` });
   }
   render();
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -1784,10 +1911,11 @@ function modal(html) {
   return m;
 }
 const MODAL_ACT = {
-  quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; G.shop = null; go('hub'); },
+  quit: () => { const b = G.b; if (b && b.kind === 'tower') return finishTower(); G.b = null; G.bal = null; G.can = null; G.shop = null; G.chest = null; go('hub'); },
   resume: () => { if (G.b && !G.b.locked) { G.b.tStart += performance.now() - (G.pausedAt || performance.now()); startTimer(); } },
   balintro: () => { S.flags.balIntro = true; save(); },
   shopintro: () => { S.flags.shopIntro = true; save(); },
+  chestintro: () => { S.flags.chestIntro = true; save(); },
   reset: () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } S = null; G.setup = { grade: 7, starter: null, name: '' }; go('setup'); },
   battleintro: () => { if (G.introDone) { const f = G.introDone; G.introDone = null; f(); } },
   close: () => { }
@@ -1810,7 +1938,7 @@ function showLoginBonus() {
 
 /* ===== Händelser ===== */
 const ACT = {
-  hub: () => { if (G.screen === 'setup') return; if (G.b || G.bal || G.can || G.shop) return ACT.quitask(); go('hub'); },
+  hub: () => { if (G.screen === 'setup') return; if (G.b || G.bal || G.can || G.shop || G.chest) return ACT.quitask(); go('hub'); },
   sound: () => { S.sound = !S.sound; save(); renderTop(); SFX.play('click'); },
   pickgrade: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.grade = Number(a); render(); },
   pickstarter: a => { G.setup.name = $('#pname')?.value || G.setup.name; G.setup.starter = a; render(); },
@@ -1870,6 +1998,10 @@ const ACT = {
   shopans: a => shopAnswer(Number(a)),
   shopnext: () => shopNext(),
   shophelp: () => shopIntro(),
+  chestpick: a => chestPick(Number(a)),
+  chestans: a => chestAnswer(Number(a)),
+  chestnext: () => chestNext(),
+  chesthelp: () => chestIntro(),
   tipok: () => showNextTip(),
   pracrevenge: () => { G.prac = { revenge: true, total: Math.min(10, (S.revenge || []).length), d: 1, n: 0, right: 0, write: false }; G.screen = 'practice'; practiceNext(); window.scrollTo({ top: 0 }); },
   balintro: () => balIntro(),
@@ -1897,6 +2029,8 @@ document.addEventListener('keydown', e => {
     if (G.screen === 'battle' && G.b && !G.b.locked && !G.b.write) { const btn = $$('.ans')[n - 1]; if (btn && !btn.classList.contains('gone')) answer(n - 1); }
     else if (G.screen === 'practice' && G.prac && G.prac.q && !G.prac.done && !G.prac.write) practiceAnswer(n - 1);
     else if (G.screen === 'shop' && G.shop && !G.shop.last) shopAnswer(n - 1);
+    else if (G.screen === 'chest' && G.chest && G.chest.phase === 'pick' && n <= 3) chestPick(n - 1);
+    else if (G.screen === 'chest' && G.chest && G.chest.phase === 'ask') chestAnswer(n - 1);
   }
 });
 // svarsknappar i övningsläget går via egen handler

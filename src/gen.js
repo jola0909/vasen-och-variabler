@@ -856,6 +856,68 @@ function shopRound(grade, kind, item) {
     `<span class="offers"><span class="shopcard"><b>Bod A</b>${offer.tA}</span><span class="shopcard"><b>Bod B</b>${offer.tB}</span></span>`, cheap, dear);
 }
 
+/* ===== Sannolikhetskistorna: välj kistan med bäst chans ===== */
+const CHEST_PLAN = {
+  7: ['one', 'one', 'one', 'one', 'one'],
+  8: ['one', 'one', 'one', 'notj', 'one'],
+  9: ['one', 'two', 'two', 'atleast', 'atleast']
+};
+const JEWEL = '💎', STONE = '🪨';
+function chestProb(c, mode) {
+  const t = c.j + c.s;
+  if (mode === 'two') return c.j * (c.j - 1) / (t * (t - 1));
+  if (mode === 'atleast') return 1 - c.s * (c.s - 1) / (t * (t - 1));
+  return c.j / t;
+}
+function chestRound(grade, mode) {
+  for (let tries = 0; tries < 500; tries++) {
+    const chests = [0, 1, 2].map(() => {
+      const t = R.int(mode === 'one' || mode === 'notj' ? 3 : 4, mode === 'one' || mode === 'notj' ? 9 : 8);
+      const j = R.int(mode === 'two' ? 2 : 1, t - (mode === 'atleast' ? 2 : 1));
+      return { j, s: t - j };
+    });
+    const p = chests.map(c => chestProb(c, mode));
+    const order = p.map((v, i) => i).sort((a, b) => p[b] - p[a]);
+    const best = order[0];
+    if (p[best] - p[order[1]] < .03 || p[order[1]] - p[order[2]] < .01) continue;
+    if (p[best] >= .99) continue;
+    // tvinga fram förhållande-tänkande: oftast har inte bästa kistan flest juveler
+    const mostJ = chests.reduce((m, c, i) => (c.j > chests[m].j ? i : m), 0);
+    if (mostJ === best && Math.random() < .75) continue;
+    return { mode, chests, p, best, topic: grade === 9 ? 'sann2' : 'sann' };
+  }
+  return { mode, chests: [{ j: 3, s: 2 }, { j: 5, s: 4 }, { j: 4, s: 3 }], p: [.6, 5 / 9, 4 / 7], best: 0, topic: grade === 9 ? 'sann2' : 'sann' };
+}
+const CHEST_PICK_Q = {
+  one: `Du drar en sak ur en kista. Vilken kista ger störst chans att få en ${JEWEL}?`,
+  notj: `Du drar en sak ur en kista. Vilken kista ger störst chans att få en ${JEWEL}?`,
+  two: `Du drar två saker utan att lägga tillbaka. Vilken kista ger störst chans att båda blir ${JEWEL}?`,
+  atleast: `Du drar två saker utan att lägga tillbaka. Vilken kista ger störst chans att få minst en ${JEWEL}?`
+};
+/* Följdfråga om den kista spelaren valde */
+function chestAsk(round, i) {
+  const { j, s } = round.chests[i], t = j + s, L = 'ABC'[i], mode = round.mode;
+  if (mode === 'notj') {
+    return mk({ q: `Hur stor är sannolikheten att <b>inte</b> få en ${JEWEL} ur kista ${L}?`, ans: frac(s, t), val: s / t,
+      wrongs: [frac(j, t), frac(s, j), frac(1, t), frac(s + 1, t)],
+      expl: [`Kista ${L} har ${s} ${STONE} av ${t} saker.`, `P(inte ${JEWEL}) = ${frac(s, t, false)}${gcd(s, t) > 1 ? ' = ' + frac(s, t) : ''}`, `Eller: 1 ${MINUS} P(${JEWEL}) = 1 ${MINUS} ${frac(j, t, false)}`] });
+  }
+  if (mode === 'two') {
+    return mk({ q: `Hur stor är sannolikheten att båda blir ${JEWEL} ur kista ${L}?`, ans: frac(j * (j - 1), t * (t - 1)), val: j * (j - 1) / (t * (t - 1)),
+      wrongs: [frac(j * j, t * t), frac(j, t), frac(j - 1, t - 1), frac(j * (j - 1), t * t), frac(2 * j, t * 2 + 1)],
+      expl: [`Första dragningen: ${frac(j, t, false)}`, `Sedan finns ${j - 1} ${JEWEL} kvar av ${t - 1} saker: ${frac(j - 1, t - 1, false)}`, `${frac(j, t, false)} · ${frac(j - 1, t - 1, false)} = ${frac(j * (j - 1), t * (t - 1), false)}${gcd(j * (j - 1), t * (t - 1)) > 1 ? ' = ' + frac(j * (j - 1), t * (t - 1)) : ''}`] });
+  }
+  if (mode === 'atleast') {
+    const none = s * (s - 1), all = t * (t - 1);
+    return mk({ q: `Hur stor är sannolikheten att få minst en ${JEWEL} ur kista ${L}?`, ans: frac(all - none, all), val: (all - none) / all,
+      wrongs: [frac(none, all), frac(j, t), frac(Math.min(2 * j, t), t), frac(j * j, t * t), frac(all - none, t * t)],
+      expl: [`Räkna motsatt händelse: att båda blir ${STONE}.`, `P(två ${STONE}) = ${frac(s, t, false)} · ${frac(s - 1, t - 1, false)} = ${frac(none, all)}`, `P(minst en ${JEWEL}) = 1 ${MINUS} ${frac(none, all)} = ${frac(all - none, all)}`] });
+  }
+  return mk({ q: `Hur stor är sannolikheten att få en ${JEWEL} ur kista ${L}?`, ans: frac(j, t), val: j / t,
+    wrongs: [frac(j, s), frac(1, t), frac(s, t), frac(j, t + 1), frac(j + 1, t)],
+    expl: [`Kista ${L} har ${j} ${JEWEL} av totalt ${t} saker.`, `P(${JEWEL}) = ${frac(j, t, false)}${gcd(j, t) > 1 ? ' = ' + frac(j, t) : ''}`, `Vanligt fel: ${j} ${JEWEL} mot ${s} ${STONE} är ett förhållande, inte en sannolikhet.`] });
+}
+
 /* Parsning av skrivna svar: 0,75  3/4  −2  x = 5  45 kr */
 function parseAnswer(s) {
   if (s === null || s === undefined) return null;
@@ -866,4 +928,4 @@ function parseAnswer(s) {
   return null;
 }
 
-if (typeof module !== 'undefined') module.exports = { T, R, fmt, frac, lin, quad, parseAnswer, gcd, round, shopRound, SHOP_PLAN, SHOP_ITEMS };
+if (typeof module !== 'undefined') module.exports = { T, R, fmt, frac, lin, quad, parseAnswer, gcd, round, shopRound, SHOP_PLAN, SHOP_ITEMS, chestRound, chestAsk, chestProb, CHEST_PLAN };
